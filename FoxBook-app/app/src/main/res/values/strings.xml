@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">FoxBook</string>
+    <string name="underlined_text_register"><u>Зареєструватися</u></string>
+    <string name="underlined_text_login"><u>Авторизуватися</u></string>
+    <string name="underlined_text_password"><u>Забули пароль?</u></string>
+</resources>
