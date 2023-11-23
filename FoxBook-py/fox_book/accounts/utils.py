@@ -13,7 +13,6 @@ def generate_otp():
 def send_code_to_user(email):
     subject = "One time passcode for Email verification"
     otp_code = generate_otp()
-    print(otp_code)
 
     user = User.objects.get(email=email)
     email_body = f"Привіт {user.name}!\nБудь ласка, підтвердить вашу пошту за допомогою коду {otp_code}"

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .manager import UserManager
 
@@ -24,7 +25,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.email}"
 
     def tokens(self):
-        pass
+        refresh = RefreshToken.for_user(self)
+
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
 
 
 class OneTimePassword(models.Model):

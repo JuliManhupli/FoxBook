@@ -41,9 +41,9 @@ INSTALLED_APPS = [
 
     # Для бібліотеки "djangorestframework"
     "rest_framework",
-    # "rest_framework.authtoken",
-    "rest_framework_simplejwt.token_blacklist",
+
     "rest_framework_simplejwt",
+
     "accounts.apps.AccountsConfig",
 ]
 
@@ -58,8 +58,8 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
-    "ROTATE_REFRESH_TOKENS": True,  # Система автоматично генерує новий "refresh token"
-    "BLACKLIST_AFTER_ROTATION": True,  # Старі токени неможливо використовувати
+    "ROTATE_REFRESH_TOKENS": False,  # Система автоматично генерує новий "refresh token"
+    "BLACKLIST_AFTER_ROTATION": False,  # Старі токени неможливо використовувати
     "UPDATE_LAST_LOGIN": False,
 
     "ALGORITHM": "HS256",
