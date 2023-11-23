@@ -60,3 +60,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
             'refresh_token': user_tokens.get('refresh'),
             'access_token': user_tokens.get('access'),
         }
+
+
+class ResendVerificationCodeSerializer(serializers.Serializer):
+    email = serializers.EmailField()

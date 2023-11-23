@@ -1,16 +1,12 @@
 from django.http import HttpResponse
-from django.contrib.auth import authenticate
 from rest_framework import status
-from rest_framework.parsers import JSONParser
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.generics import GenericAPIView
 
-from .serializers import UserRegisterSerializer, UserLoginSerializer
-from .models import OneTimePassword
-from .utils import send_code_to_user
+from .serializers import UserRegisterSerializer, UserLoginSerializer, ResendVerificationCodeSerializer
+from .models import OneTimePassword, User
+from .utils import send_code_to_user, generate_otp
 
 
 def home(request):
@@ -64,6 +60,38 @@ class VerifyUserEmail(GenericAPIView):
             }, status=status.HTTP_404_NOT_FOUND)
 
 
+class ResendVerificationView(GenericAPIView):
+    serializer_class = ResendVerificationCodeSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+
+        try:
+            user = User.objects.get(email=email)
+            if user.is_verified:
+                return Response({"message": "Акаунт вже підтверджено"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Спробуйте отримати існуючий OneTimePassword або створити новий
+            otp_instance, created = OneTimePassword.objects.get_or_create(user=user)
+
+            if not created:
+                # Якщо існуючий OneTimePassword, оновіть його код
+                otp_instance.code = generate_otp()
+                print(otp_instance.code)
+                otp_instance.save()
+                send_code_to_user(email, False, otp_instance.code)
+            else:
+                send_code_to_user(email)
+
+            return Response({"message": f"Ми відправили новий код підтвердження на пошту {email}"},
+                            status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response({"message": "Користувача з такою поштою не знайдено"}, status=status.HTTP_404_NOT_FOUND)
+
+
 class LoginUserView(GenericAPIView):
     serializer_class = UserLoginSerializer
 
@@ -74,7 +102,6 @@ class LoginUserView(GenericAPIView):
 
 
 class TestAuthenticationView(GenericAPIView):
-
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
