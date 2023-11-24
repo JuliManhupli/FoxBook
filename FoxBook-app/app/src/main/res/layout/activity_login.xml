@@ -28,6 +28,7 @@
         android:background="@drawable/rounded_genre_form_background"
         android:ems="10"
         android:hint="Email"
+        android:fontFamily="@font/inter"
         android:inputType="textEmailAddress"
         android:paddingStart="10dp"
         app:layout_constraintEnd_toStartOf="@+id/guideline7"
@@ -56,6 +57,7 @@
         android:background="@drawable/rounded_genre_form_background"
         android:ems="10"
         android:hint="Пароль"
+        android:fontFamily="@font/inter"
         android:inputType="textPassword"
         android:paddingStart="10dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline9"
@@ -117,7 +119,6 @@
         android:gravity="center"
         android:text="Не маєте акаунту?"
         android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@+id/btnToRegister"
         app:layout_constraintStart_toStartOf="@+id/guideline4"
         app:layout_constraintTop_toTopOf="@+id/guideline12" />
 

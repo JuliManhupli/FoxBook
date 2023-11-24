@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.15" />
+        app:layout_constraintGuide_percent="0.1504788" />
 
     <TextView
         android:id="@+id/textView7"
@@ -59,6 +59,7 @@
         android:background="@drawable/rounded_genre_form_background"
         android:ems="10"
         android:hint="Email"
+        android:fontFamily="@font/inter"
         android:inputType="textEmailAddress"
         android:paddingStart="10dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline18"
@@ -86,15 +87,14 @@
         android:gravity="center"
         android:text="Вже маєте акаунт?"
         android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@+id/btnToLogin"
         app:layout_constraintStart_toStartOf="@+id/guideline13"
         app:layout_constraintTop_toTopOf="@+id/guideline22" />
 
     <Button
         android:id="@+id/btnToLogin"
-        android:background="@color/transparent"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
+        android:background="@color/transparent"
         android:fontFamily="@font/inter"
         android:text="@string/underlined_text_login"
         android:textColor="#000000"
@@ -143,6 +143,7 @@
         android:background="@drawable/rounded_genre_form_background"
         android:ems="10"
         android:hint="Пароль"
+        android:fontFamily="@font/inter"
         android:inputType="textPassword"
         android:paddingStart="10dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline20"
@@ -158,7 +159,8 @@
         android:background="@drawable/rounded_genre_form_background"
         android:ems="10"
         android:hint="Ім'я"
-        android:inputType="textPassword"
+        android:fontFamily="@font/inter"
+        android:inputType="textPersonName"
         android:paddingStart="10dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline21"
         app:layout_constraintEnd_toStartOf="@+id/guideline14"
@@ -201,7 +203,8 @@
         android:layout_height="48dp"
         android:background="@drawable/rounded_genre_form_background"
         android:ems="10"
-        android:hint="Пароль повторно"
+        android:hint="Підтвердження паролю"
+        android:fontFamily="@font/inter"
         android:inputType="textPassword"
         android:paddingStart="10dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline16"
