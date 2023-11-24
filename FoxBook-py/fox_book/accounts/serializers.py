@@ -1,4 +1,9 @@
 from django.contrib.auth import authenticate
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import smart_str, smart_bytes
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -19,7 +24,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         password = attrs.get('password', '')
         password2 = attrs.get('password2', '')
         if password != password2:
-            raise serializers.ValidationError("Password don`t match")
+            raise serializers.ValidationError("Паролі не співпадають")
         return super().validate(attrs)
 
     def create(self, validated_data):
@@ -64,3 +69,20 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
 class ResendVerificationCodeSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=6)
+    new_password = serializers.CharField(max_length=68, min_length=6, write_only=True)
+    new_password2 = serializers.CharField(max_length=68, min_length=6, write_only=True)
+
+    def validate(self, attrs):
+        password = attrs.get('new_password', '')
+        password2 = attrs.get('new_password2', '')
+        if password != password2:
+            raise serializers.ValidationError("Паролі не співпадають")
+        return super().validate(attrs)

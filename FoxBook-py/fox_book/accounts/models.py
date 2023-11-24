@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
+from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .manager import UserManager
@@ -39,3 +40,13 @@ class OneTimePassword(models.Model):
 
     def __str__(self):
         return f"{self.user.name} {self.code}"
+
+
+class PasswordReset(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6, unique=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def is_expired(self):
+        expiration_time = timezone.timedelta(minutes=15)
+        return timezone.now() > self.created_at + expiration_time
