@@ -4,6 +4,7 @@ from .views import home, UserRegisterAPIView, VerifyUserEmail, LoginUserView, Te
     ResendVerificationView, PasswordResetRequestView, PasswordResetVerifyView, \
     PasswordResetSetPasswordView
 
+app_name = "accounts"
 urlpatterns = [
     path('register/', UserRegisterAPIView.as_view(), name='register'),
     path('verify-email/', VerifyUserEmail.as_view(), name='verify'),

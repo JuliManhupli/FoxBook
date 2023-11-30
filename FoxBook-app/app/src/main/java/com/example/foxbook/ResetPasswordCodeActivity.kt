@@ -1,6 +1,6 @@
 package com.example.foxbook
 
-import android.app.ProgressDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -10,34 +10,26 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.example.foxbook.api.Email
+import com.example.foxbook.api.PasswordResetVerify
 import com.example.foxbook.api.VerifyEmail
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ValidateEmailActivity : AppCompatActivity() {
+class ResetPasswordCodeActivity : AppCompatActivity() {
 
-    private lateinit var progressDialog: ProgressDialog
-    private var name = intent.getStringExtra("name")
     private var email = intent.getStringExtra("email")
-    private var password = intent.getStringExtra("password")
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_validate_email)
+        setContentView(R.layout.activity_reset_password_code)
 
-        // Вікно завантаження, поки створюється акаунт
-        progressDialog = ProgressDialog(this)
-        progressDialog.setTitle("Зачекайте, будь ласка...")
-        progressDialog.setCanceledOnTouchOutside(false)
-
-        val edtNum1: EditText = findViewById(R.id.edtEmailValid1)
-        val edtNum2: EditText = findViewById(R.id.edtEmailValid2)
-        val edtNum3: EditText = findViewById(R.id.edtEmailValid3)
-        val edtNum4: EditText = findViewById(R.id.edtEmailValid4)
-        val edtNum5: EditText = findViewById(R.id.edtEmailValid5)
-        val edtNum6: EditText = findViewById(R.id.edtEmailValid6)
+        val edtNum1: EditText = findViewById(R.id.edtCodeResetPassword1)
+        val edtNum2: EditText = findViewById(R.id.edtCodeResetPassword2)
+        val edtNum3: EditText = findViewById(R.id.edtCodeResetPassword3)
+        val edtNum4: EditText = findViewById(R.id.edtCodeResetPassword4)
+        val edtNum5: EditText = findViewById(R.id.edtCodeResetPassword5)
+        val edtNum6: EditText = findViewById(R.id.edtCodeResetPassword6)
 
         // Створюємо список, що є репрезентацією коду валідації
         val validationCodeNums = arrayListOf(edtNum1, edtNum2, edtNum3, edtNum4, edtNum5, edtNum6)
@@ -86,16 +78,16 @@ class ValidateEmailActivity : AppCompatActivity() {
         }
 
         // Пошук кнопки повторного відправлення коду підтвердження
-        val sendCodeAgain: Button = findViewById(R.id.btnSendValidationCodeAgain)
+        val sendCodeAgain: Button = findViewById(R.id.btnResetPasswordCodeAgain)
         // За натиском робимо перевіряємо дані
         sendCodeAgain.setOnClickListener{
-            sendVerificationCode()
+            sendResetCode()
         }
 
-        // Пошук кнопки реєстрації за айді
-        val emailValidation: Button = findViewById(R.id.btnValidateEmail)
-        // За натиском робимо перевіряємо дані
-        emailValidation.setOnClickListener{
+        // Пошук кнопки скидання паролю
+        val resetOldPassword: Button = findViewById(R.id.btnToNewPassword)
+        // За натиском перевіряємо дані
+        resetOldPassword.setOnClickListener{
             // Цифри коду
             val codeNum1 = edtNum1.text.toString()
             val codeNum2 = edtNum2.text.toString()
@@ -110,14 +102,14 @@ class ValidateEmailActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendVerificationCode() {
+    private fun sendResetCode() {
         // Валідуємо
         if (email == null){
             Toast.makeText(this, "Помилка перевірки пошти!", Toast.LENGTH_SHORT).show()
         }
         else {
-            val resendCodeToEmail = Email(email!!)
-            val requestCall = ClientAPI.apiService.resendVerification(resendCodeToEmail)
+            val resendCodeResetPassword = Email(email!!)
+            val requestCall = ClientAPI.apiService.resendVerification(resendCodeResetPassword)
 
             requestCall.enqueue(object: Callback<ResponseBody> {
                 override fun onResponse(
@@ -127,25 +119,25 @@ class ValidateEmailActivity : AppCompatActivity() {
                     if (response.isSuccessful){// успішне надсилання запиту
                         when (response.body()?.string()) {
                             null -> {
-                                Toast.makeText(this@ValidateEmailActivity, "Не вдалося отримати відповідь!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@ResetPasswordCodeActivity, "Не вдалося отримати відповідь!", Toast.LENGTH_SHORT).show()
                             }
                             "Акаунт вже підтверджено" -> {
-                                Toast.makeText(this@ValidateEmailActivity, "Акаунт вже підтверджено!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@ResetPasswordCodeActivity, "Акаунт вже підтверджено!", Toast.LENGTH_SHORT).show()
                             }
                             "Користувача з такою поштою не знайдено" -> {
-                                Toast.makeText(this@ValidateEmailActivity, "Користувача з такою поштою не знайдено!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@ResetPasswordCodeActivity, "Користувача з такою поштою не знайдено!", Toast.LENGTH_SHORT).show()
                             }
                             "Ми відправили новий код підтвердження на пошту $email" -> {
-                                Toast.makeText(this@ValidateEmailActivity, "Новий код відправлено!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@ResetPasswordCodeActivity, "Новий код відправлено!", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } else {
-                        Toast.makeText(this@ValidateEmailActivity, "Помилка повторного надсилання коду!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@ResetPasswordCodeActivity, "Помилка повторного надсилання коду!", Toast.LENGTH_SHORT).show()
                     }
                 }
                 // помилка надсилання запиту
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Toast.makeText(this@ValidateEmailActivity, "Помилка повторного надсилання коду!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ResetPasswordCodeActivity, "Помилка повторного надсилання коду!", Toast.LENGTH_SHORT).show()
                 }
 
             })
@@ -157,56 +149,48 @@ class ValidateEmailActivity : AppCompatActivity() {
         if (code == null){
             Toast.makeText(this, "Введіть код!", Toast.LENGTH_SHORT).show()
         }
-        else if (name == null){
-            Toast.makeText(this, "Помилка перевірки імені!", Toast.LENGTH_SHORT).show()
-        }
         else if (email == null){
             Toast.makeText(this, "Помилка перевірки пошти!", Toast.LENGTH_SHORT).show()
         }
-        else if (password == null){
-            Toast.makeText(this, "Помилка перевірки паролю!", Toast.LENGTH_SHORT).show()
-        }
         else {
-            createUserAfterValidation(code)
+            resetPassword(code)
         }
     }
 
-    private fun createUserAfterValidation(vefificationCode: String) {
+    private fun resetPassword(vefificationCode: String) {
 //        progressDialog.setMessage("Створюється акаунт...")
 //        progressDialog.show()
 
-        val userEmailValidation = VerifyEmail(vefificationCode)
-        val requestCall = ClientAPI.apiService.verify(userEmailValidation)
+        val resetPasswordCompletely = PasswordResetVerify(email.toString(), vefificationCode)
+        val requestCall = ClientAPI.apiService.passwordResetVerify(resetPasswordCompletely)
 
         requestCall.enqueue(object: retrofit2.Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {// успішне надсилання запиту
                     when (response.body()?.string()) {
                         null -> {
-                            Toast.makeText(this@ValidateEmailActivity, "Не вдалося отримати відповідь!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@ResetPasswordCodeActivity, "Не вдалося отримати відповідь!", Toast.LENGTH_SHORT).show()
+                        }
+                        "Час дії коду вийшов" -> {
+                            Toast.makeText(this@ResetPasswordCodeActivity, "Час дії коду вийшов!", Toast.LENGTH_SHORT).show()
                         }
                         "Код не було знайдено" -> {
-                            Toast.makeText(this@ValidateEmailActivity, "Код не було знайдено!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@ResetPasswordCodeActivity, "Код не було знайдено!", Toast.LENGTH_SHORT).show()
                         }
-                        "Код вже був використаний" -> {
-                            Toast.makeText(this@ValidateEmailActivity, "Код вже був використаний!", Toast.LENGTH_SHORT).show()
-                        }
-                        "Пошту успішно підтверджено!" -> {
-                            Toast.makeText(this@ValidateEmailActivity, "Пошту успішно підтверджено!", Toast.LENGTH_SHORT).show()
-
-                //                        progressDialog.setMessage("Створюється акаунт...")
-                //                        progressDialog.show()
-
-                //                        val account =
+                        "Код скидання пароля правильний" -> {
+                            Toast.makeText(this@ResetPasswordCodeActivity, "Пароль успішно скинуто!", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@ResetPasswordCodeActivity, NewPasswordActivity::class.java)
+                            intent.putExtra("code", vefificationCode)// передаємо дані
+                            startActivity(intent) // перехід на сторінку створення нового паролю
                         }
                     }
                 } else {// помилка надсилання запиту
-                    Toast.makeText(this@ValidateEmailActivity, "Не вдалося підтвердити код!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ResetPasswordCodeActivity, "Не вдалося підтвердити код!", Toast.LENGTH_SHORT).show()
                 }
             }
             // помилка надсилання запиту
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(this@ValidateEmailActivity, "Не вдалося підтвердити код!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ResetPasswordCodeActivity, "Не вдалося підтвердити код!", Toast.LENGTH_SHORT).show()
             }
         })
     }

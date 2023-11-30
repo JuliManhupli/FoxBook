@@ -8,6 +8,14 @@ import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.example.foxbook.api.Register
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -60,6 +68,9 @@ class RegisterActivity : AppCompatActivity() {
         if (name.isEmpty()){
             Toast.makeText(this, "Введіть ім'я!", Toast.LENGTH_SHORT).show()
         }
+        else if (email.isEmpty()){
+            Toast.makeText(this, "Введіть пошту!", Toast.LENGTH_SHORT).show()
+        }
         else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             Toast.makeText(this, "Неправильно введенна пошта!", Toast.LENGTH_SHORT).show()
         }
@@ -85,16 +96,32 @@ class RegisterActivity : AppCompatActivity() {
             Toast.makeText(this, "Паролі не співпадлають!", Toast.LENGTH_SHORT).show()
         }
         else {
-//            Toast.makeText(this, "Акаунт створено!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, ValidateEmailActivity::class.java)
-            startActivity(intent)
+            createUserBeforeValidation()
         }
     }
 
-    private fun createUser() {
-//        progressDialog.setMessage("Створюється акаунт...")
-//        progressDialog.show()
 
-        Toast.makeText(this, "Акаунт створено!", Toast.LENGTH_SHORT).show()
+    private fun createUserBeforeValidation() {
+        val userRegistration = Register(name, email)
+        val requestCall = ClientAPI.apiService.register(userRegistration)
+
+        requestCall.enqueue(object: Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful){ // успішне надсилання запиту
+                    Toast.makeText(this@RegisterActivity, "На Вашу пошту надіслано код підтвердження!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@RegisterActivity, ValidateEmailActivity::class.java)
+                    intent.putExtra("name", name) // передаємо дані
+                    intent.putExtra("email", email)
+                    intent.putExtra("password", password)
+                    startActivity(intent) // перехід на сторінку підтвердження пошти
+                } else {// помилка надсилання запиту
+                    Toast.makeText(this@RegisterActivity, "Не вдалося відправити дані!", Toast.LENGTH_SHORT).show()
+                }
+            }
+            // помилка надсилання запиту
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(this@RegisterActivity, "Не вдалося відправити дані!", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }
