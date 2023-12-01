@@ -8,6 +8,11 @@ import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.example.foxbook.api.Login
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
 
@@ -16,8 +21,10 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        // Пошук кнопки реєстрації за айді
         val linkToLoginActivity: Button = findViewById(R.id.btnToRegister)
 
+        // За натиском переходимо на сторінку реєстрації
         linkToLoginActivity.setOnClickListener{
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
@@ -28,7 +35,16 @@ class LoginActivity : AppCompatActivity() {
         progressDialog.setTitle("Зачекайте, будь ласка...")
         progressDialog.setCanceledOnTouchOutside(false)
 
-        // Пошук кнопки реєстрації за айді
+        // Пошук кнопки відновлення паролю за айді
+        val forgotPassword: Button = findViewById(R.id.btnForgotPassword)
+
+        // За натиском переходимо на сторінку вводу пошти
+        forgotPassword.setOnClickListener{
+            val intent = Intent(this, ForgotPasswordActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Пошук кнопки авторизації за айді
         val startRegister: Button = findViewById(R.id.btnLogin)
 
         // За натиском робимо перевіряємо дані
@@ -50,7 +66,10 @@ class LoginActivity : AppCompatActivity() {
         password = edtPasswordOne.text.toString().trim()
 
         // Валідуємо
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        if (email.isEmpty()){
+            Toast.makeText(this, "Введіть пошту!", Toast.LENGTH_SHORT).show()
+        }
+        else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             Toast.makeText(this, "Неправильно введенна пошта!", Toast.LENGTH_SHORT).show()
         }
         else if (password.isEmpty()){
@@ -77,6 +96,25 @@ class LoginActivity : AppCompatActivity() {
 //        progressDialog.setMessage("Авторизація користувача...")
 //        progressDialog.show()
 
-        Toast.makeText(this, "Користувача авторизовано!", Toast.LENGTH_SHORT).show()
+        val authoriseUser = Login(email, password)
+        val requestCall = ClientAPI.apiService.login(authoriseUser)
+
+        requestCall.enqueue(object: Callback<ResponseBody> {
+            override fun onResponse(
+                call: Call<ResponseBody>,
+                response: Response<ResponseBody>
+            ) {
+                if (response.isSuccessful){// успішне надсилання запиту
+                    Toast.makeText(this@LoginActivity, "Користувача авторизовано!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@LoginActivity, "Помилка авторизації!", Toast.LENGTH_SHORT).show()
+                }
+            }
+            // помилка надсилання запиту
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(this@LoginActivity, "Помилка авторизації!", Toast.LENGTH_SHORT).show()
+            }
+
+        })
     }
 }
