@@ -1,4 +1,4 @@
-package com.example.foxbook
+package com.example.foxbook.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,13 +8,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.foxbook.ClientAPI
+import com.example.foxbook.R
 import com.example.foxbook.api.Email
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.security.AccessController.getContext
 
 
 class ForgotPasswordActivity : AppCompatActivity() {
@@ -62,37 +63,24 @@ class ForgotPasswordActivity : AppCompatActivity() {
     }
 
     private fun sendCodeForNewPassword() {
-//        progressDialog.setMessage("Авторизація користувача...")
-//        progressDialog.show()
 
         val sendCodeForgotPassword = Email(email)
         val requestCall = ClientAPI.apiService.passwordResetRequest(sendCodeForgotPassword)
-        val request = requestCall.request()
-        val url = request.url().toString()
 
         requestCall.enqueue(object: Callback<ResponseBody> {
             override fun onResponse(
                 call: Call<ResponseBody>,
                 response: Response<ResponseBody>
             ) {
-
                 if (response.isSuccessful){// успішне надсилання запиту
-                    Log.d("response", "isSuccessful")
-
                     Toast.makeText(this@ForgotPasswordActivity, "Новий код відправлено!", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@ForgotPasswordActivity, ResetPasswordCodeActivity::class.java)
                     intent.putExtra("email", email) // передаємо дані
                     startActivity(intent) // перехід на сторінку підтвердження скидання паролю
                 } else {
-
                     try {
                         val jObjError = JSONObject(response.errorBody()!!.string())
-
-                        Toast.makeText(
-                            this@ForgotPasswordActivity,
-                            jObjError.getString("message"),
-                            Toast.LENGTH_LONG
-                        ).show()
+                        Toast.makeText(this@ForgotPasswordActivity, jObjError.getString("message"), Toast.LENGTH_LONG).show()
                     } catch (e: Exception) {
                         Toast.makeText(this@ForgotPasswordActivity, "Помилка скидання паролю!", Toast.LENGTH_LONG).show()
                     }
@@ -100,7 +88,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
             }
             // помилка надсилання запиту
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(this@ForgotPasswordActivity, "Помилка авторизації!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ForgotPasswordActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
 
         })

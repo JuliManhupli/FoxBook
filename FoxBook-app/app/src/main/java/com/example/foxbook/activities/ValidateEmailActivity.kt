@@ -1,4 +1,4 @@
-package com.example.foxbook
+package com.example.foxbook.activities
 
 import android.app.ProgressDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -10,24 +10,17 @@ import android.view.KeyEvent
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.example.foxbook.ClientAPI
+import com.example.foxbook.R
 import com.example.foxbook.api.Email
 import com.example.foxbook.api.VerifyEmail
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class ValidateEmailActivity : AppCompatActivity() {
-
-    private lateinit var progressDialog: ProgressDialog
-//    private var name = intent.getStringExtra("name")
-//    private var email = intent.getStringExtra("email")
-//    private var password = intent.getStringExtra("password")
-
-//    private var name = ""
-//    private val name = intent.getStringExtra("name") ?: ""
-//    private var email = intent.getStringExtra("email") ?: ""
-//    private var password = intent.getStringExtra("password") ?: ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,15 +29,6 @@ class ValidateEmailActivity : AppCompatActivity() {
         val name = intent.getStringExtra("name") ?: ""
         val email = intent.getStringExtra("email") ?: ""
         val password = intent.getStringExtra("password") ?: ""
-
-        Log.d("response", "дані 2")
-        Log.d("response", name)
-        Log.d("response", email)
-        Log.d("response", password)
-        // Вікно завантаження, поки створюється акаунт
-        progressDialog = ProgressDialog(this)
-        progressDialog.setTitle("Зачекайте, будь ласка...")
-        progressDialog.setCanceledOnTouchOutside(false)
 
         val edtNum1: EditText = findViewById(R.id.edtEmailValid1)
         val edtNum2: EditText = findViewById(R.id.edtEmailValid2)
@@ -139,27 +123,19 @@ class ValidateEmailActivity : AppCompatActivity() {
                     response: Response<ResponseBody>
                 ) {
                     if (response.isSuccessful){// успішне надсилання запиту
-                        when (response.body()?.string()) {
-                            null -> {
-                                Toast.makeText(this@ValidateEmailActivity, "Не вдалося отримати відповідь!", Toast.LENGTH_SHORT).show()
-                            }
-                            "Акаунт вже підтверджено" -> {
-                                Toast.makeText(this@ValidateEmailActivity, "Акаунт вже підтверджено!", Toast.LENGTH_SHORT).show()
-                            }
-                            "Користувача з такою поштою не знайдено" -> {
-                                Toast.makeText(this@ValidateEmailActivity, "Користувача з такою поштою не знайдено!", Toast.LENGTH_SHORT).show()
-                            }
-                            "Ми відправили новий код підтвердження на пошту $email" -> {
-                                Toast.makeText(this@ValidateEmailActivity, "Новий код відправлено!", Toast.LENGTH_SHORT).show()
-                            }
-                        }
+                        Toast.makeText(this@ValidateEmailActivity, "Новий код відправлено!", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this@ValidateEmailActivity, "Помилка повторного надсилання коду!", Toast.LENGTH_SHORT).show()
+                        try {
+                            val jObjError = JSONObject(response.errorBody()!!.string())
+                            Toast.makeText(this@ValidateEmailActivity, jObjError.getString("message"), Toast.LENGTH_LONG).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(this@ValidateEmailActivity, "Помилка повторного надсилання коду!", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
                 // помилка надсилання запиту
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Toast.makeText(this@ValidateEmailActivity, "Помилка повторного надсилання коду!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ValidateEmailActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
                 }
 
             })
@@ -186,8 +162,6 @@ class ValidateEmailActivity : AppCompatActivity() {
     }
 
     private fun createUserAfterValidation(vefificationCode: String) {
-//        progressDialog.setMessage("Створюється акаунт...")
-//        progressDialog.show()
 
         val userEmailValidation = VerifyEmail(vefificationCode)
         val requestCall = ClientAPI.apiService.verify(userEmailValidation)
@@ -195,32 +169,19 @@ class ValidateEmailActivity : AppCompatActivity() {
         requestCall.enqueue(object: retrofit2.Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {// успішне надсилання запиту
-                    when (response.body()?.string()) {
-                        null -> {
-                            Toast.makeText(this@ValidateEmailActivity, "Не вдалося отримати відповідь!", Toast.LENGTH_SHORT).show()
-                        }
-                        "Код не було знайдено" -> {
-                            Toast.makeText(this@ValidateEmailActivity, "Код не було знайдено!", Toast.LENGTH_SHORT).show()
-                        }
-                        "Код вже був використаний" -> {
-                            Toast.makeText(this@ValidateEmailActivity, "Код вже був використаний!", Toast.LENGTH_SHORT).show()
-                        }
-                        "Пошту успішно підтверджено!" -> {
-                            Toast.makeText(this@ValidateEmailActivity, "Пошту успішно підтверджено!", Toast.LENGTH_SHORT).show()
-
-                //                        progressDialog.setMessage("Створюється акаунт...")
-                //                        progressDialog.show()
-
-                //                        val account =
-                        }
-                    }
+                    Toast.makeText(this@ValidateEmailActivity, "Пошту успішно підтверджено!", Toast.LENGTH_SHORT).show()
                 } else {// помилка надсилання запиту
-                    Toast.makeText(this@ValidateEmailActivity, "Не вдалося підтвердити код!", Toast.LENGTH_SHORT).show()
+                    try {
+                        val jObjError = JSONObject(response.errorBody()!!.string())
+                        Toast.makeText(this@ValidateEmailActivity, jObjError.getString("message"), Toast.LENGTH_LONG).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@ValidateEmailActivity, "Помилка підтвердження пошти!", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
             // помилка надсилання запиту
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(this@ValidateEmailActivity, "Не вдалося підтвердити код!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ValidateEmailActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
     }

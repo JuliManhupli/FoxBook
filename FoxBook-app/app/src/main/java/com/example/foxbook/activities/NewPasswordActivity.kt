@@ -1,39 +1,41 @@
-package com.example.foxbook
+package com.example.foxbook.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import com.example.foxbook.api.Login
+import com.example.foxbook.ClientAPI
+import com.example.foxbook.R
 import com.example.foxbook.api.SetNewPassword
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class NewPasswordActivity : AppCompatActivity() {
 
-    private var code = intent.getStringExtra("code")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_password)
+
+        val code = intent.getStringExtra("code") ?: ""
 
         // Пошук кнопки зміни паролю
         val setNewPassword: Button = findViewById(R.id.btnNewPassword)
 
         // За натиском робимо перевіряємо дані
         setNewPassword.setOnClickListener{
-            validateAllData()
+            validateAllData(code)
         }
     }
 
     private var password = ""
     private var passwordAgain = ""
 
-    private fun validateAllData() {
+    private fun validateAllData(code: String?) {
         // Знаходимо поля редагування за айді
         val edtPasswordOne: EditText = findViewById(R.id.edtNewPassword)
         val edtPasswordTwo: EditText = findViewById(R.id.edtNewPasswordAgain)
@@ -62,13 +64,11 @@ class NewPasswordActivity : AppCompatActivity() {
             Toast.makeText(this, "Паролі не співпадлають!", Toast.LENGTH_SHORT).show()
         }
         else {
-            setCompletelyNewPassword()
+            setCompletelyNewPassword(code)
         }
     }
 
-    private fun setCompletelyNewPassword() {
-//        progressDialog.setMessage("Авторизація користувача...")
-//        progressDialog.show()
+    private fun setCompletelyNewPassword(code: String?) {
 
         val userNewPassword = SetNewPassword(code.toString(), password, passwordAgain)
         val requestCall = ClientAPI.apiService.passwordResetSetPassword(userNewPassword)
@@ -83,12 +83,17 @@ class NewPasswordActivity : AppCompatActivity() {
                     val intent = Intent(this@NewPasswordActivity, LoginActivity::class.java)
                     startActivity(intent)
                 } else {
-                    Toast.makeText(this@NewPasswordActivity, "Помилка авторизації!", Toast.LENGTH_SHORT).show()
+                    try {
+                        val jObjError = JSONObject(response.errorBody()!!.string())
+                        Toast.makeText(this@NewPasswordActivity, jObjError.getString("message"), Toast.LENGTH_LONG).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@NewPasswordActivity, "Помилка зміни паролю!", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
             // помилка надсилання запиту
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(this@NewPasswordActivity, "Помилка авторизації!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@NewPasswordActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
 
         })
