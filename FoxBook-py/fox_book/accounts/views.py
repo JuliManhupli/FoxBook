@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from django.utils import timezone
 from django.http import HttpResponse
 from rest_framework import status
@@ -125,12 +126,12 @@ class PasswordResetVerifyView(GenericAPIView):
         try:
             reset_instance = PasswordReset.objects.get(code=code)
             if reset_instance.is_expired():
-                raise ValidationError("Час дії коду вийшов")
+                return Response({"message": "Час дії коду вийшов"}, status=status.HTTP_408_REQUEST_TIMEOUT)
 
             return Response({"message": "Код скидання пароля правильний"},
                             status=status.HTTP_200_OK)
         except PasswordReset.DoesNotExist:
-            raise NotFound("Код не було знайдено")
+            return Response({"message": "Код не було знайдено"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class PasswordResetSetPasswordView(GenericAPIView):
@@ -154,16 +155,31 @@ class PasswordResetSetPasswordView(GenericAPIView):
             return Response({"message": "Пароль успішно скинутий"},
                             status=status.HTTP_200_OK)
         except PasswordReset.DoesNotExist:
-            raise NotFound("Код не знайдено")
+            return Response({"message": "Код не було знайдено"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class LoginUserView(GenericAPIView):
     serializer_class = UserLoginSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data, context={"request": request})
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"message": "Користувача з такою поштою не знайдено"}, status=status.HTTP_404_NOT_FOUND)
+
+        user = authenticate(request, email=email, password=password)
+
+        if not user:
+            return Response({"message": "Неправильний пароль"}, status=status.HTTP_401_UNAUTHORIZED)
+        if not user.is_verified:
+            return Response({"message": "Пошта не підтверджена"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"message": "Авторизація успішна"}, status=status.HTTP_200_OK)
 
 
 class TestAuthenticationView(GenericAPIView):
