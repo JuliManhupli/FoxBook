@@ -6,6 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-class HomePageFragment : Fragment(R.layout.fragment_home_page) {
+class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress) {
 
 }

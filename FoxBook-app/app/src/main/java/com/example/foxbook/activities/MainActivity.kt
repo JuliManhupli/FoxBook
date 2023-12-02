@@ -1,4 +1,4 @@
-package com.example.foxbook
+package com.example.foxbook.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +14,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnStart.setOnClickListener{
             val intent = Intent(this, LoginActivity::class.java)
-//            val intent = Intent(this, ValidateEmailActivity::class.java)
             startActivity(intent)
         }
     }

@@ -6,6 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-class HomePageFragment : Fragment(R.layout.fragment_home_page) {
+class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
 
 }

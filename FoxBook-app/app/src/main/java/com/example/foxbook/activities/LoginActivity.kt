@@ -1,4 +1,4 @@
-package com.example.foxbook
+package com.example.foxbook.activities
 
 import android.app.ProgressDialog
 import android.content.Intent
@@ -9,8 +9,11 @@ import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.example.foxbook.ClientAPI
+import com.example.foxbook.R
 import com.example.foxbook.api.Login
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -108,13 +111,18 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful){// успішне надсилання запиту
                     Toast.makeText(this@LoginActivity, "Користувача авторизовано!", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this@LoginActivity, "Помилка авторизації!", Toast.LENGTH_SHORT).show()
+                    try {
+                        val jObjError = JSONObject(response.errorBody()!!.string())
+                        Toast.makeText(this@LoginActivity, jObjError.getString("message"), Toast.LENGTH_LONG).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@LoginActivity, "Помилка авторизації!", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
             // помилка надсилання запиту
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Log.d("response", t.toString())
-                Toast.makeText(this@LoginActivity, "Помилка авторизації!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
 
         })

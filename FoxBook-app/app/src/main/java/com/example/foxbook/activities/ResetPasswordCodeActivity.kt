@@ -1,4 +1,4 @@
-package com.example.foxbook
+package com.example.foxbook.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -9,20 +9,23 @@ import android.view.KeyEvent
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.example.foxbook.ClientAPI
+import com.example.foxbook.R
 import com.example.foxbook.api.Email
 import com.example.foxbook.api.PasswordResetVerify
-import com.example.foxbook.api.VerifyEmail
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class ResetPasswordCodeActivity : AppCompatActivity() {
 
-    private var email = intent.getStringExtra("email")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reset_password_code)
+
+        val email = intent.getStringExtra("email") ?: ""
 
         val edtNum1: EditText = findViewById(R.id.edtCodeResetPassword1)
         val edtNum2: EditText = findViewById(R.id.edtCodeResetPassword2)
@@ -81,7 +84,7 @@ class ResetPasswordCodeActivity : AppCompatActivity() {
         val sendCodeAgain: Button = findViewById(R.id.btnResetPasswordCodeAgain)
         // За натиском робимо перевіряємо дані
         sendCodeAgain.setOnClickListener{
-            sendResetCode()
+            sendResetCode(email)
         }
 
         // Пошук кнопки скидання паролю
@@ -98,17 +101,17 @@ class ResetPasswordCodeActivity : AppCompatActivity() {
 
             val fullCode = "$codeNum1$codeNum2$codeNum3$codeNum4$codeNum5$codeNum6"
 
-            validateAllData(fullCode)
+            validateAllData(fullCode, email)
         }
     }
 
-    private fun sendResetCode() {
+    private fun sendResetCode(email: String?) {
         // Валідуємо
         if (email == null){
             Toast.makeText(this, "Помилка перевірки пошти!", Toast.LENGTH_SHORT).show()
         }
         else {
-            val resendCodeResetPassword = Email(email!!)
+            val resendCodeResetPassword = Email(email)
             val requestCall = ClientAPI.apiService.resendVerification(resendCodeResetPassword)
 
             requestCall.enqueue(object: Callback<ResponseBody> {
@@ -117,34 +120,26 @@ class ResetPasswordCodeActivity : AppCompatActivity() {
                     response: Response<ResponseBody>
                 ) {
                     if (response.isSuccessful){// успішне надсилання запиту
-                        when (response.body()?.string()) {
-                            null -> {
-                                Toast.makeText(this@ResetPasswordCodeActivity, "Не вдалося отримати відповідь!", Toast.LENGTH_SHORT).show()
-                            }
-                            "Акаунт вже підтверджено" -> {
-                                Toast.makeText(this@ResetPasswordCodeActivity, "Акаунт вже підтверджено!", Toast.LENGTH_SHORT).show()
-                            }
-                            "Користувача з такою поштою не знайдено" -> {
-                                Toast.makeText(this@ResetPasswordCodeActivity, "Користувача з такою поштою не знайдено!", Toast.LENGTH_SHORT).show()
-                            }
-                            "Ми відправили новий код підтвердження на пошту $email" -> {
-                                Toast.makeText(this@ResetPasswordCodeActivity, "Новий код відправлено!", Toast.LENGTH_SHORT).show()
-                            }
-                        }
+                        Toast.makeText(this@ResetPasswordCodeActivity, "Новий код відправлено!", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this@ResetPasswordCodeActivity, "Помилка повторного надсилання коду!", Toast.LENGTH_SHORT).show()
+                        try {
+                            val jObjError = JSONObject(response.errorBody()!!.string())
+                            Toast.makeText(this@ResetPasswordCodeActivity, jObjError.getString("message"), Toast.LENGTH_LONG).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(this@ResetPasswordCodeActivity, "Помилка повторного надсилання коду!", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
                 // помилка надсилання запиту
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Toast.makeText(this@ResetPasswordCodeActivity, "Помилка повторного надсилання коду!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ResetPasswordCodeActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
                 }
 
             })
         }
     }
 
-    private fun validateAllData(code: String?) {
+    private fun validateAllData(code: String?, email: String?) {
         // Валідуємо
         if (code == null){
             Toast.makeText(this, "Введіть код!", Toast.LENGTH_SHORT).show()
@@ -153,18 +148,18 @@ class ResetPasswordCodeActivity : AppCompatActivity() {
             Toast.makeText(this, "Помилка перевірки пошти!", Toast.LENGTH_SHORT).show()
         }
         else {
-            resetPassword(code)
+            resetPassword(code, email)
         }
     }
 
-    private fun resetPassword(vefificationCode: String) {
+    private fun resetPassword(vefificationCode: String, email: String?) {
 //        progressDialog.setMessage("Створюється акаунт...")
 //        progressDialog.show()
 
         val resetPasswordCompletely = PasswordResetVerify(email.toString(), vefificationCode)
         val requestCall = ClientAPI.apiService.passwordResetVerify(resetPasswordCompletely)
 
-        requestCall.enqueue(object: retrofit2.Callback<ResponseBody> {
+        requestCall.enqueue(object: Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {// успішне надсилання запиту
                     when (response.body()?.string()) {
