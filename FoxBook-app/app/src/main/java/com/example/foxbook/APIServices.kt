@@ -12,24 +12,24 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface APIServices {
-    @POST("/register")
+    @POST("register/")
     fun register(@Body data: Register) : Call<ResponseBody>
 
-    @POST("/verify")
+    @POST("verify-email/")
     fun verify(@Body data: VerifyEmail) : Call<ResponseBody>
 
-    @POST("/resend-verification")
+    @POST("resend-verification/")
     fun resendVerification(@Body data: Email) : Call<ResponseBody>
 
-    @POST("/login")
+    @POST("login/")
     fun login(@Body data: Login) : Call<ResponseBody>
 
-    @POST("/password-reset-request")
+    @POST("password-reset-request/")
     fun passwordResetRequest(@Body data: Email) : Call<ResponseBody>
 
-    @POST("/password-reset-verify")
+    @POST("password-reset/verify/")
     fun passwordResetVerify(@Body data: PasswordResetVerify) : Call<ResponseBody>
 
-    @POST("/password-reset-set-password")
+    @POST("password-reset/set-password/")
     fun passwordResetSetPassword(@Body data: SetNewPassword) : Call<ResponseBody>
 }

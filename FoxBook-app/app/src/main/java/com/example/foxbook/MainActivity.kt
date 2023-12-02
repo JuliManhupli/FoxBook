@@ -14,6 +14,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnStart.setOnClickListener{
             val intent = Intent(this, LoginActivity::class.java)
+//            val intent = Intent(this, ValidateEmailActivity::class.java)
             startActivity(intent)
         }
     }

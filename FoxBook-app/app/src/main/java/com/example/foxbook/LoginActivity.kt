@@ -4,6 +4,7 @@ import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
@@ -112,6 +113,7 @@ class LoginActivity : AppCompatActivity() {
             }
             // помилка надсилання запиту
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.d("response", t.toString())
                 Toast.makeText(this@LoginActivity, "Помилка авторизації!", Toast.LENGTH_SHORT).show()
             }
 
