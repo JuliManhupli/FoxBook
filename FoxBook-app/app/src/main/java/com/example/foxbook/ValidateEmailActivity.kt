@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.widget.Button
 import android.widget.EditText
@@ -19,14 +20,27 @@ import retrofit2.Response
 class ValidateEmailActivity : AppCompatActivity() {
 
     private lateinit var progressDialog: ProgressDialog
-    private var name = intent.getStringExtra("name")
-    private var email = intent.getStringExtra("email")
-    private var password = intent.getStringExtra("password")
+//    private var name = intent.getStringExtra("name")
+//    private var email = intent.getStringExtra("email")
+//    private var password = intent.getStringExtra("password")
+
+//    private var name = ""
+//    private val name = intent.getStringExtra("name") ?: ""
+//    private var email = intent.getStringExtra("email") ?: ""
+//    private var password = intent.getStringExtra("password") ?: ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_validate_email)
 
+        val name = intent.getStringExtra("name") ?: ""
+        val email = intent.getStringExtra("email") ?: ""
+        val password = intent.getStringExtra("password") ?: ""
+
+        Log.d("response", "дані 2")
+        Log.d("response", name)
+        Log.d("response", email)
+        Log.d("response", password)
         // Вікно завантаження, поки створюється акаунт
         progressDialog = ProgressDialog(this)
         progressDialog.setTitle("Зачекайте, будь ласка...")
@@ -89,7 +103,7 @@ class ValidateEmailActivity : AppCompatActivity() {
         val sendCodeAgain: Button = findViewById(R.id.btnSendValidationCodeAgain)
         // За натиском робимо перевіряємо дані
         sendCodeAgain.setOnClickListener{
-            sendVerificationCode()
+            sendVerificationCode(email)
         }
 
         // Пошук кнопки реєстрації за айді
@@ -106,17 +120,17 @@ class ValidateEmailActivity : AppCompatActivity() {
 
             val fullCode = "$codeNum1$codeNum2$codeNum3$codeNum4$codeNum5$codeNum6"
 
-            validateAllData(fullCode)
+            validateAllData(email, name, password, fullCode)
         }
     }
 
-    private fun sendVerificationCode() {
+    private fun sendVerificationCode(email: String?) {
         // Валідуємо
         if (email == null){
             Toast.makeText(this, "Помилка перевірки пошти!", Toast.LENGTH_SHORT).show()
         }
         else {
-            val resendCodeToEmail = Email(email!!)
+            val resendCodeToEmail = Email(email)
             val requestCall = ClientAPI.apiService.resendVerification(resendCodeToEmail)
 
             requestCall.enqueue(object: Callback<ResponseBody> {
@@ -152,7 +166,7 @@ class ValidateEmailActivity : AppCompatActivity() {
         }
     }
 
-    private fun validateAllData(code: String?) {
+    private fun validateAllData(email: String?, name: String?, password: String?, code: String?) {
         // Валідуємо
         if (code == null){
             Toast.makeText(this, "Введіть код!", Toast.LENGTH_SHORT).show()
