@@ -1,9 +1,4 @@
 from django.contrib.auth import authenticate
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import smart_str, smart_bytes
-from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -17,8 +12,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'name', 'password', 'password2']
-
-        # extra_kwargs = {'password': {'write_only': True}}  # пароль буде входити у лише Post-запит
 
     def validate(self, attrs):
         password = attrs.get('password', '')
@@ -46,25 +39,6 @@ class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'password', 'name', 'access_token', 'refresh_token']
-
-    def validate(self, attrs):
-        email = attrs.get('email')
-        password = attrs.get('password')
-        request = self.context.get('request')
-        user = authenticate(request, email=email, password=password)
-
-        if not user:
-            raise AuthenticationFailed("Неправильні дані! Спробуйте знову")
-        if not user.is_verified:
-            raise AuthenticationFailed("Пошта не підтверджена")
-        user_tokens = user.tokens()
-
-        return {
-            'email': user.email,
-            'name': user.name,
-            'refresh_token': user_tokens.get('refresh'),
-            'access_token': user_tokens.get('access'),
-        }
 
 
 class ResendVerificationCodeSerializer(serializers.Serializer):
