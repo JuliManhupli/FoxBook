@@ -35,7 +35,7 @@ class NewPasswordActivity : AppCompatActivity() {
     private var password = ""
     private var passwordAgain = ""
 
-    private fun validateAllData(code: String?) {
+    private fun validateAllData(code: String) {
         // Знаходимо поля редагування за айді
         val edtPasswordOne: EditText = findViewById(R.id.edtNewPassword)
         val edtPasswordTwo: EditText = findViewById(R.id.edtNewPasswordAgain)
@@ -63,14 +63,17 @@ class NewPasswordActivity : AppCompatActivity() {
         else if (password != passwordAgain) {
             Toast.makeText(this, "Паролі не співпадлають!", Toast.LENGTH_SHORT).show()
         }
+        else if (code.isEmpty()) {
+            Toast.makeText(this, "Код пустий!", Toast.LENGTH_SHORT).show()
+        }
         else {
             setCompletelyNewPassword(code)
         }
     }
 
-    private fun setCompletelyNewPassword(code: String?) {
+    private fun setCompletelyNewPassword(code: String) {
 
-        val userNewPassword = SetNewPassword(code.toString(), password, passwordAgain)
+        val userNewPassword = SetNewPassword(code, password, passwordAgain)
         val requestCall = ClientAPI.apiService.passwordResetSetPassword(userNewPassword)
 
         requestCall.enqueue(object: Callback<ResponseBody> {
@@ -79,7 +82,7 @@ class NewPasswordActivity : AppCompatActivity() {
                 response: Response<ResponseBody>
             ) {
                 if (response.isSuccessful){// успішне надсилання запиту
-                    Toast.makeText(this@NewPasswordActivity, "Користувача авторизовано!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@NewPasswordActivity, "Пароль змінено!", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@NewPasswordActivity, LoginActivity::class.java)
                     startActivity(intent)
                 } else {

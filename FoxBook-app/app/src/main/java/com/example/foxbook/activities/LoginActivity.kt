@@ -1,6 +1,5 @@
 package com.example.foxbook.activities
 
-import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -20,7 +19,6 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var progressDialog: ProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -33,11 +31,6 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
-
-        // Вікно завантаження, поки йде авторизація
-        progressDialog = ProgressDialog(this)
-        progressDialog.setTitle("Зачекайте, будь ласка...")
-        progressDialog.setCanceledOnTouchOutside(false)
 
         // Пошук кнопки відновлення паролю за айді
         val forgotPassword: Button = findViewById(R.id.btnForgotPassword)
@@ -97,8 +90,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginUser() {
-//        progressDialog.setMessage("Авторизація користувача...")
-//        progressDialog.show()
 
         val authoriseUser = Login(email, password)
         val requestCall = ClientAPI.apiService.login(authoriseUser)
@@ -113,7 +104,16 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     try {
                         val jObjError = JSONObject(response.errorBody()!!.string())
-                        Toast.makeText(this@LoginActivity, jObjError.getString("message"), Toast.LENGTH_LONG).show()
+                        val message = jObjError.getString("message")
+                        if (message == "Пошта не підтверджена") {
+                            val intent = Intent(this@LoginActivity, ValidateEmailActivity::class.java)
+                            intent.putExtra("name", "")
+                            intent.putExtra("email", email)
+                            intent.putExtra("password", password)
+                            startActivity(intent)
+                        } else {
+                            Toast.makeText(this@LoginActivity, message, Toast.LENGTH_LONG).show()
+                        }
                     } catch (e: Exception) {
                         Toast.makeText(this@LoginActivity, "Помилка авторизації!", Toast.LENGTH_LONG).show()
                     }
