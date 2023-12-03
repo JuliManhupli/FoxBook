@@ -162,30 +162,22 @@ class ResetPasswordCodeActivity : AppCompatActivity() {
         requestCall.enqueue(object: Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {// успішне надсилання запиту
-                    when (response.body()?.string()) {
-                        null -> {
-                            Toast.makeText(this@ResetPasswordCodeActivity, "Не вдалося отримати відповідь!", Toast.LENGTH_SHORT).show()
-                        }
-                        "Час дії коду вийшов" -> {
-                            Toast.makeText(this@ResetPasswordCodeActivity, "Час дії коду вийшов!", Toast.LENGTH_SHORT).show()
-                        }
-                        "Код не було знайдено" -> {
-                            Toast.makeText(this@ResetPasswordCodeActivity, "Код не було знайдено!", Toast.LENGTH_SHORT).show()
-                        }
-                        "Код скидання пароля правильний" -> {
-                            Toast.makeText(this@ResetPasswordCodeActivity, "Пароль успішно скинуто!", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this@ResetPasswordCodeActivity, NewPasswordActivity::class.java)
-                            intent.putExtra("code", vefificationCode)// передаємо дані
-                            startActivity(intent) // перехід на сторінку створення нового паролю
-                        }
-                    }
+                    Toast.makeText(this@ResetPasswordCodeActivity, "Пароль успішно скинуто!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@ResetPasswordCodeActivity, NewPasswordActivity::class.java)
+                    intent.putExtra("code", vefificationCode)// передаємо дані
+                    startActivity(intent) // перехід на сторінку створення нового паролю
                 } else {// помилка надсилання запиту
-                    Toast.makeText(this@ResetPasswordCodeActivity, "Не вдалося підтвердити код!", Toast.LENGTH_SHORT).show()
+                    try {
+                        val jObjError = JSONObject(response.errorBody()!!.string())
+                        Toast.makeText(this@ResetPasswordCodeActivity, jObjError.getString("message"), Toast.LENGTH_LONG).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@ResetPasswordCodeActivity, "Помилка підтвердження коду!", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
             // помилка надсилання запиту
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(this@ResetPasswordCodeActivity, "Не вдалося підтвердити код!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ResetPasswordCodeActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
     }
