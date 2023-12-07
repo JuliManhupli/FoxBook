@@ -112,7 +112,7 @@ class ResetPasswordCodeActivity : AppCompatActivity() {
         }
         else {
             val resendCodeResetPassword = Email(email)
-            val requestCall = ClientAPI.apiService.resendVerification(resendCodeResetPassword)
+            val requestCall = ClientAPI.apiService.passwordResetRequest(resendCodeResetPassword)
 
             requestCall.enqueue(object: Callback<ResponseBody> {
                 override fun onResponse(

@@ -145,6 +145,7 @@ class PasswordResetSetPasswordView(GenericAPIView):
 
         try:
             reset_instance = PasswordReset.objects.get(code=code)
+
             user = reset_instance.user
             user.set_password(new_password)
             user.save()

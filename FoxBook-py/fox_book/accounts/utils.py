@@ -11,7 +11,7 @@ def generate_otp():
 
 
 def send_code_to_user(email, create_code=True, otp_code=None, purpose='verification'):
-    subject = "One time passcode"
+    subject = "Підтвердження електронної пошти FoxBook"
     user = User.objects.get(email=email)
 
     if create_code:
@@ -20,6 +20,7 @@ def send_code_to_user(email, create_code=True, otp_code=None, purpose='verificat
         if purpose == 'verification':
             OneTimePassword.objects.create(user=user, code=otp_code)
         elif purpose == 'password_reset':
+            subject = "Код для скидання паролю FoxBook"
             PasswordReset.objects.create(user=user, code=otp_code)
 
     email_body = f"Привіт {user.name}!\nБудь ласка, введіть код {otp_code} щоб підтвердити пошту."
