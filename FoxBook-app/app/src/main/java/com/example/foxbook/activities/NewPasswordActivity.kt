@@ -3,6 +3,7 @@ package com.example.foxbook.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -81,6 +82,10 @@ class NewPasswordActivity : AppCompatActivity() {
                 call: Call<ResponseBody>,
                 response: Response<ResponseBody>
             ) {
+                Log.d("1", response.toString())
+                val request = call.request()
+                val url = request.url().toString()
+                Log.d("1", url.toString())
                 if (response.isSuccessful){// успішне надсилання запиту
                     Toast.makeText(this@NewPasswordActivity, "Пароль змінено!", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@NewPasswordActivity, LoginActivity::class.java)
@@ -90,6 +95,7 @@ class NewPasswordActivity : AppCompatActivity() {
                         val jObjError = JSONObject(response.errorBody()!!.string())
                         Toast.makeText(this@NewPasswordActivity, jObjError.getString("message"), Toast.LENGTH_LONG).show()
                     } catch (e: Exception) {
+                        Log.d("1", e.toString())
                         Toast.makeText(this@NewPasswordActivity, "Помилка зміни паролю!", Toast.LENGTH_LONG).show()
                     }
                 }

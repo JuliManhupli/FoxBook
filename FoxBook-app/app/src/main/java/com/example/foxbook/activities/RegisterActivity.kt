@@ -148,7 +148,7 @@ class RegisterActivity : AppCompatActivity() {
             }
             // помилка надсилання запиту
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(this@RegisterActivity, "Не вдалося відправити дані!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@RegisterActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
     }
