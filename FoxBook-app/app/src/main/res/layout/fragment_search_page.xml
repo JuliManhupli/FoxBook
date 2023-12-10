@@ -6,14 +6,58 @@
     android:layout_height="match_parent"
     tools:context=".SearchPageFragment">
 
-
-    <TextView
-        android:id="@+id/textView28"
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchUpperBar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="SearchPage"
+        android:layout_margin="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:iconifiedByDefault="false"
+        android:background="@drawable/search_bg"
+        app:searchHintIcon="@null"
+        app:queryBackground="@android:color/transparent"
+        app:queryHint="Пошук..."
+        android:textColor="@color/white"
+        app:closeIcon="@drawable/baseline_clear_24"
+        app:searchIcon="@drawable/search_icon"/>
+
+    <ImageButton
+        android:id="@+id/imgButtonSorting"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:scaleType="fitXY"
+        android:layout_margin="15dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/baseline_compare_arrows_24"
+        app:layout_constraintBottom_toTopOf="@+id/search_recycler_view"
+        app:layout_constraintEnd_toStartOf="@+id/imgButtonFiltering"
+        app:layout_constraintTop_toBottomOf="@+id/searchUpperBar"
+        android:contentDescription="Сортування" />
+
+
+    <ImageButton
+        android:id="@+id/imgButtonFiltering"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:scaleType="fitXY"
+        android:layout_margin="15dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/baseline_filter_alt_24"
+        app:layout_constraintBottom_toTopOf="@+id/search_recycler_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchUpperBar"
+        android:contentDescription="Фільрування" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="60dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/searchUpperBar"
+        tools:listitem="@layout/book_item_layout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,4 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="genre_color">#F4B880</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="entrance_bg">#FCD7B5</color>
+    <color name="menu_bg">#D4A994</color>
+    <color name="book_bg">#FFECDA</color>
 </resources>

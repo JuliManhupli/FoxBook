@@ -1,50 +1,49 @@
 package com.example.foxbook.activities
 
-import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.example.foxbook.BookInfoFragment
 import com.example.foxbook.HomePageFragment
 import com.example.foxbook.ProfileFragment
 import com.example.foxbook.R
 import com.example.foxbook.ReadingInProgressFragment
 import com.example.foxbook.SearchPageFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
+
 
 class UserActivity : AppCompatActivity() {
-    @SuppressLint("CommitTransaction")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
 
-        val homePage = HomePageFragment()
-        val searchPage = SearchPageFragment()
-        val redingToDo = ReadingInProgressFragment()
-        val profilePage = ProfileFragment()
+        //фрагменти
+        val homeFragment = HomePageFragment()
+        val searchFragment = SearchPageFragment()
+        val inProgressFragment = ReadingInProgressFragment()
+        val profileFragment = ProfileFragment()
 
+        // початкова сторінка
+        setCurrentFragment(homeFragment)
+
+        val buttonNavView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+
+        // переключання між екранми меню
+        buttonNavView.setOnNavigationItemSelectedListener {
+            when(it.itemId) {
+                R.id.miHome -> setCurrentFragment(homeFragment)
+                R.id.miSearch -> setCurrentFragment(searchFragment)
+                R.id.miReadProgress -> setCurrentFragment(inProgressFragment)
+                R.id.miProfile -> setCurrentFragment(profileFragment)
+            }
+            true
+        }
+    }
+
+    private fun setCurrentFragment(fragment: Fragment){
         supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flFragment, homePage)
+            replace(R.id.flFragment, fragment)
             commit()
-        }
-
-        // Пошук кнопки авторизації за айді
-        val toHomePage: Button = findViewById(R.id.button3)
-
-        // За натиском робимо перевіряємо дані
-        toHomePage.setOnClickListener{
-            supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, homePage)
-                commit()
-            }
-        }
-
-        val toSearchPage: Button = findViewById(R.id.button4)
-
-        // За натиском робимо перевіряємо дані
-        toSearchPage.setOnClickListener{
-            supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, searchPage)
-                commit()
-            }
         }
     }
 }
