@@ -19,6 +19,8 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -106,6 +108,7 @@ class LoginActivity : AppCompatActivity() {
                         val jObjError = JSONObject(response.errorBody()!!.string())
                         val message = jObjError.getString("message")
                         if (message == "Пошта не підтверджена") {
+
                             val intent = Intent(this@LoginActivity, ValidateEmailActivity::class.java)
                             intent.putExtra("name", "")
                             intent.putExtra("email", email)
