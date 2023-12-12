@@ -9,6 +9,7 @@ import com.example.foxbook.api.VerifyEmail
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface APIServices {
@@ -32,4 +33,7 @@ interface APIServices {
 
     @POST("password-reset/set-password/")
     fun passwordResetSetPassword(@Body data: SetNewPassword) : Call<ResponseBody>
+
+    @GET("books/")
+    fun getBooks() : Call<List<Book>>
 }

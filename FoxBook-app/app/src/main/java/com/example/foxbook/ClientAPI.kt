@@ -3,7 +3,7 @@ package com.example.foxbook
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-const val BASE_URL: String = "http://192.168.0.107:8000/"
+const val BASE_URL: String = "http://192.168.0.106:8000/"
 object ClientAPI {
 
     val apiService: APIServices by lazy {
