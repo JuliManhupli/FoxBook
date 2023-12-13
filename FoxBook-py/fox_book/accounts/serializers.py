@@ -32,13 +32,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255)
     password = serializers.CharField(max_length=68, min_length=6, write_only=True)
-    name = serializers.CharField(max_length=255, read_only=True)
-    access_token = serializers.CharField(max_length=255, read_only=True)
-    refresh_token = serializers.CharField(max_length=255, read_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'name', 'access_token', 'refresh_token']
+        fields = ['email', 'password']
 
 
 class ResendVerificationCodeSerializer(serializers.Serializer):
