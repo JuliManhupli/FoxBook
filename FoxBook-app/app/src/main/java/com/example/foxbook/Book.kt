@@ -9,7 +9,7 @@ data class Book(
     val author: String,
     val rating: Double,
     val genre: String,
-    val description: String): Parcelable {
+    val annotation: String): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
@@ -30,7 +30,7 @@ data class Book(
         dest.writeString(author)
         dest.writeDouble(rating)
         dest.writeString(genre)
-        dest.writeString(description)
+        dest.writeString(annotation)
     }
 
     companion object CREATOR : Parcelable.Creator<Book> {

@@ -1,15 +1,20 @@
 package com.example.foxbook
 
+import com.example.foxbook.api.BooksResponse
 import com.example.foxbook.api.Email
 import com.example.foxbook.api.Login
 import com.example.foxbook.api.PasswordResetVerify
 import com.example.foxbook.api.Register
 import com.example.foxbook.api.SetNewPassword
+import com.example.foxbook.api.UserProfile
 import com.example.foxbook.api.VerifyEmail
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface APIServices {
     @POST("register/")
@@ -32,4 +37,11 @@ interface APIServices {
 
     @POST("password-reset/set-password/")
     fun passwordResetSetPassword(@Body data: SetNewPassword) : Call<ResponseBody>
+
+    @GET("books/")
+    fun getBooks(@Query("page") page: Int): Call<BooksResponse>
+
+
+    @GET("profile/")
+    fun getUserProfile(@Header("Authorization") authHeader: String): Call<UserProfile>
 }

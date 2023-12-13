@@ -8,9 +8,13 @@ import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.Fragment
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
+import com.example.foxbook.SearchPageFragment
 import com.example.foxbook.api.Login
+import com.example.foxbook.api.Tokens
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -92,7 +96,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginUser() {
-
         val authoriseUser = Login(email, password)
         val requestCall = ClientAPI.apiService.login(authoriseUser)
 
@@ -101,14 +104,25 @@ class LoginActivity : AppCompatActivity() {
                 call: Call<ResponseBody>,
                 response: Response<ResponseBody>
             ) {
-                if (response.isSuccessful){// успішне надсилання запиту
-                    Toast.makeText(this@LoginActivity, "Користувача авторизовано!", Toast.LENGTH_SHORT).show()
+                if (response.isSuccessful){
+                    // Extract tokens from the response
+                    val tokens = extractTokensFromResponse(response)
+                    if (tokens != null) {
+                        saveTokens(tokens)
+
+                        // Start the UserActivity
+                        val intent = Intent(this@LoginActivity, UserActivity::class.java)
+                        startActivity(intent)
+
+                        Toast.makeText(this@LoginActivity, "Користувача авторизовано!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@LoginActivity, "Помилка вилучення токенів!", Toast.LENGTH_LONG).show()
+                    }
                 } else {
                     try {
                         val jObjError = JSONObject(response.errorBody()!!.string())
                         val message = jObjError.getString("message")
                         if (message == "Пошта не підтверджена") {
-
                             val intent = Intent(this@LoginActivity, ValidateEmailActivity::class.java)
                             intent.putExtra("name", "")
                             intent.putExtra("email", email)
@@ -122,12 +136,37 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             }
-            // помилка надсилання запиту
+
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Log.d("response", t.toString())
                 Toast.makeText(this@LoginActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
-
         })
     }
+
+    private fun extractTokensFromResponse(response: Response<ResponseBody>): Pair<String, String>? {
+        return try {
+            val jsonObject = JSONObject(response.body()?.string())
+            val accessToken = jsonObject.getString("access_token")
+            val refreshToken = jsonObject.getString("refresh_token")
+            Pair(accessToken, refreshToken)
+        } catch (e: Exception) {
+            null
+        }
+    }
+    private fun saveTokens(tokens: Pair<String, String>?) {
+        if (tokens != null) {
+            val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+            with(sharedPreferences.edit()) {
+                Log.d("qwe", tokens.first.toString())
+                Log.d("qwe", tokens.second.toString())
+                Log.d("qwe", "bookArrayList")
+                putString("access_token", tokens.first)
+                putString("refresh_token", tokens.second)
+                apply()
+            }
+        }
+    }
+
+
 }
