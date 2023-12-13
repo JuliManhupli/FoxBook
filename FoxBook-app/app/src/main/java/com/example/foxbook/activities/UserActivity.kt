@@ -3,12 +3,12 @@ package com.example.foxbook.activities
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.foxbook.BookInfoFragment
-import com.example.foxbook.HomePageFragment
-import com.example.foxbook.ProfileFragment
+import com.example.foxbook.fragments.FiltersFragment
+import com.example.foxbook.fragments.ProfileFragment
 import com.example.foxbook.R
-import com.example.foxbook.ReadingInProgressFragment
-import com.example.foxbook.SearchPageFragment
+import com.example.foxbook.fragments.HomePageFragment
+import com.example.foxbook.fragments.ReadingInProgressFragment
+import com.example.foxbook.fragments.SearchPageFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 

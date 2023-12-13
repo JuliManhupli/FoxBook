@@ -1,4 +1,4 @@
-package com.example.foxbook
+package com.example.foxbook.fragments
 
 import android.os.Bundle
 import android.os.Handler
@@ -6,11 +6,15 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.foxbook.BookAdapter
+import com.example.foxbook.R
+import com.example.foxbook.api.Book
 import java.util.Locale
 
 class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
@@ -39,13 +43,11 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
         val filterButton: ImageButton = view.findViewById(R.id.imgButtonFiltering)
 
         filterButton.setOnClickListener{
-            Toast.makeText(requireContext(), "Фільтрування!", Toast.LENGTH_SHORT).show()
-        }
-
-        val sortingButton: ImageButton = view.findViewById(R.id.imgButtonSorting)
-
-        sortingButton.setOnClickListener{
-            Toast.makeText(requireContext(), "Сортування!", Toast.LENGTH_SHORT).show()
+            val filtersFragment = FiltersFragment()
+            val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+            transaction.replace(R.id.flFragment, filtersFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
         }
 
         coverURL = arrayOf(
@@ -248,7 +250,7 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
         val progressBar: ProgressBar = requireView().findViewById(R.id.progressBarSearch)
         progressBar.visibility = View.VISIBLE
 
-        for (i in start..end){
+        for (i in coverURL.indices){
             val book = Book(coverURL[i],
                 titleName[i],
                 authorName[i],
@@ -257,7 +259,7 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
                 descriptionText[i])
             bookArrayList.add(book)
         }
-
+//
         Handler().postDelayed({
             if (::bookAdapter.isInitialized){
                 recyclerView.adapter!!.notifyDataSetChanged()
