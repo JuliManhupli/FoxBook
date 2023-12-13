@@ -7,4 +7,5 @@
     <color name="entrance_bg">#FCD7B5</color>
     <color name="menu_bg">#D4A994</color>
     <color name="book_bg">#FFECDA</color>
+    <color name="chosen_filter">#A69BD1</color>
 </resources>
