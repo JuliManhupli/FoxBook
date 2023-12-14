@@ -1,3 +1,5 @@
+package com.example.foxbook.api
+
 import android.os.Parcel
 import android.os.Parcelable
 

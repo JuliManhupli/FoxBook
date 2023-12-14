@@ -1,4 +1,4 @@
-package com.example.foxbook
+package com.example.foxbook.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.foxbook.BookAdapter
+import com.example.foxbook.ClientAPI
+import com.example.foxbook.R
+import com.example.foxbook.api.Book
 import com.example.foxbook.api.BooksResponse
 import retrofit2.Call
 import retrofit2.Callback

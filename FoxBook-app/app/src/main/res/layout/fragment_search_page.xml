@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchPageFragment">
+    tools:context=".fragments.SearchPageFragment">
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchUpperBar"
@@ -23,42 +23,27 @@
         app:closeIcon="@drawable/baseline_clear_24"
         app:searchIcon="@drawable/search_icon"/>
 
-    <ImageButton
-        android:id="@+id/imgButtonSorting"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:scaleType="fitXY"
-        android:layout_margin="15dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/baseline_compare_arrows_24"
-        app:layout_constraintBottom_toTopOf="@+id/scrollViewBooks"
-        app:layout_constraintEnd_toStartOf="@+id/imgButtonFiltering"
-        app:layout_constraintTop_toBottomOf="@+id/searchUpperBar"
-        android:contentDescription="Сортування" />
-
 
     <ImageButton
         android:id="@+id/imgButtonFiltering"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:scaleType="fitXY"
         android:layout_margin="15dp"
         android:background="@android:color/transparent"
+        android:contentDescription="Фільрування"
+        android:scaleType="fitXY"
         android:src="@drawable/baseline_filter_alt_24"
-        app:layout_constraintBottom_toTopOf="@+id/scrollViewBooks"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchUpperBar"
-        android:contentDescription="Фільрування" />
+        app:layout_constraintTop_toBottomOf="@+id/searchUpperBar" />
 
     <ScrollView
         android:id="@+id/scrollViewBooks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgButtonSorting">
+        app:layout_constraintTop_toBottomOf="@+id/imgButtonFiltering">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -67,7 +52,6 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/search_recycler_view"
-                android:layout_marginBottom="125dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:listitem="@layout/book_item_layout" />
@@ -75,7 +59,7 @@
             <ProgressBar
                 android:id="@+id/progressBarSearch"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"/>
+                android:layout_height="48dp" />
         </LinearLayout>
 
     </ScrollView>
