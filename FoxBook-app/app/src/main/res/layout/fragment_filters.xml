@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#E2D3F6"
-    tools:context=".FiltersFragment">
+    android:id="@+id/rootFilters"
+    tools:context=".fragments.FiltersFragment">
 
     <ImageButton
         android:id="@+id/imgBtnBackToSearchFromFilters"
@@ -71,6 +72,7 @@
         android:fontFamily="@font/inter"
         android:text="Пошук"
         android:textSize="20sp"
+        android:layout_marginTop="10dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/guideline52"
         app:layout_constraintStart_toStartOf="@+id/guideline51"
@@ -83,25 +85,98 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.15" />
 
-    <TextView
-        android:id="@+id/textView28"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Жанр"
-        android:fontFamily="@font/inter"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="@+id/guideline51"
-        app:layout_constraintTop_toTopOf="@+id/guideline54" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/AllGenresRecyclerView"
+    <ScrollView
         android:layout_width="0dp"
-        android:layout_height="260dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline53"
         app:layout_constraintEnd_toStartOf="@+id/guideline52"
         app:layout_constraintStart_toStartOf="@+id/guideline51"
-        app:layout_constraintTop_toBottomOf="@+id/textView28"
-        tools:listitem="@layout/genre_item_layout"/>
+        app:layout_constraintTop_toTopOf="@+id/guideline54">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <TextView
+                android:id="@+id/textView28"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:text="Жанр"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/AllGenresRecyclerView"
+                android:layout_width="0dp"
+                android:layout_height="260dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView28"
+                tools:listitem="@layout/genre_item_layout" />
+
+            <TextView
+                android:id="@+id/textView31"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/inter"
+                android:text="Автор"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/AllGenresRecyclerView" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAuthorUkraine"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                android:text="ВІТЧИЗНЯНИЙ"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView31" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAuthorForeign"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@color/white"
+                android:text="ІНОЗЕМНИЙ"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnAuthorUkraine" />
+
+            <TextView
+                android:id="@+id/textView33"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/inter"
+                android:text="Сортування"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnAuthorForeign" />
+
+            <Spinner
+                android:id="@+id/spnrSorting"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                android:fontFamily="@font/inter"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView33" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,13 +8,9 @@ import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.Fragment
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
-import com.example.foxbook.SearchPageFragment
 import com.example.foxbook.api.Login
-import com.example.foxbook.api.Tokens
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call

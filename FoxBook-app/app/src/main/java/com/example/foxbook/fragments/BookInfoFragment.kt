@@ -1,4 +1,4 @@
-package com.example.foxbook
+package com.example.foxbook.fragments
 
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.RequestListener
@@ -6,19 +6,17 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import androidx.fragment.app.Fragment
-
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
+import com.example.foxbook.R
+import com.example.foxbook.api.Book
 
 
 class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
