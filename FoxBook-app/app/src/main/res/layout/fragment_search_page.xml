@@ -28,21 +28,19 @@
         android:id="@+id/imgButtonFiltering"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:scaleType="fitXY"
         android:layout_margin="15dp"
         android:background="@android:color/transparent"
+        android:contentDescription="Фільрування"
+        android:scaleType="fitXY"
         android:src="@drawable/baseline_filter_alt_24"
-        app:layout_constraintBottom_toTopOf="@+id/scrollViewBooks"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchUpperBar"
-        android:contentDescription="Фільрування"/>
+        app:layout_constraintTop_toBottomOf="@+id/searchUpperBar" />
 
     <ScrollView
         android:id="@+id/scrollViewBooks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgButtonFiltering">
@@ -54,7 +52,6 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/search_recycler_view"
-                android:layout_marginBottom="125dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:listitem="@layout/book_item_layout" />
