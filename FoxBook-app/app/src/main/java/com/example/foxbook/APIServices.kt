@@ -15,6 +15,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
+import retrofit2.http.QueryMap
 
 interface APIServices {
     @POST("register/")
@@ -39,8 +40,14 @@ interface APIServices {
     fun passwordResetSetPassword(@Body data: SetNewPassword) : Call<ResponseBody>
 
     @GET("books/")
-    fun getBooks(@Query("page") page: Int): Call<BooksResponse>
+    fun getBooks(
+        @Query("page") page: Int,
+        @QueryMap filterQuery: Map<String, String>
+    ): Call<BooksResponse>
 
+
+    @GET("genres/")
+    fun getGenres(): Call<List<String>>
 
     @GET("profile/")
     fun getUserProfile(@Header("Authorization") authHeader: String): Call<UserProfile>

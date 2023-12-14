@@ -3,6 +3,7 @@ package com.example.foxbook.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
@@ -31,11 +32,30 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
 
     private var page = 1
     private var isLoading = false
-    private var limit = 5
+
+    private var selectedGenres: List<String> = emptyList()
+    private var selectedAuthors: String? = null
+    private var selectedSorting: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         page = 1
+        val args = arguments
+        if (args != null) {
+            selectedGenres = args.getStringArrayList("selectedGenres") ?: emptyList()
+            selectedAuthors = args.getString("selectedAuthors")
+            selectedSorting = args.getString("selectedSorting")
+        }
+
+        val filterButton: ImageButton = view.findViewById(R.id.imgButtonFiltering)
+
+        filterButton.setOnClickListener{
+            val filtersFragment = FiltersFragment()
+            val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+            transaction.replace(R.id.flFragment, filtersFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
 
         recyclerView = view.findViewById(R.id.search_recycler_view)
         searchView = view.findViewById(R.id.searchUpperBar)
@@ -65,7 +85,10 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
     }
 
     private fun loadData() {
-        getAllBooks(page) { booksFromApi ->
+        val query = buildFilterQuery(selectedGenres, selectedAuthors, selectedSorting)
+        val progressBar: ProgressBar = requireView().findViewById(R.id.progressBarSearch)
+
+        getAllBooks(page, query) { booksFromApi ->
             if (booksFromApi != null) {
                 page++
                 bookArrayList.addAll(booksFromApi)
@@ -112,6 +135,8 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
                     transaction.commit()
                 }
             } else {
+                // To hide the ProgressBar
+                progressBar.visibility = View.GONE
                 // Handle the case when data retrieval fails
                 Log.e("qwe", "Failed to retrieve data from the API")
                 Log.e("qwe", page.toString())
@@ -124,11 +149,8 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
 
         val progressBar: ProgressBar = requireView().findViewById(R.id.progressBarSearch)
         progressBar.visibility = View.VISIBLE
-
-        val start = page * limit
-        val end = (page + 1) * limit
-
-        getAllBooks(page) { newBooks ->
+        val query = buildFilterQuery(selectedGenres, selectedAuthors, selectedSorting)
+        getAllBooks(page, query) { newBooks ->
             if (newBooks != null) {
                 bookArrayList.addAll(newBooks)
                 searchList.addAll(newBooks)
@@ -141,6 +163,8 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
 
                 page++
             } else {
+                // To hide the ProgressBar
+                progressBar.visibility = View.GONE
                 // Handle the case when data retrieval fails
                 Log.e("qwe", "Failed to retrieve more data from the API")
                 Log.e("qwe", page.toString())
@@ -150,18 +174,43 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
             progressBar.visibility = View.GONE
         }
     }
-    private fun getAllBooks(page: Int, callback: (List<Book>?) -> Unit) {
-        val requestCall = ClientAPI.apiService.getBooks(page)
+
+    private fun buildFilterQuery(genres: List<String>, author: String?, sorting: String?): Map<String, String> {
+        val queryMap = mutableMapOf<String, String>()
+
+        if (genres.isNotEmpty()) {
+            queryMap["genres"] = genres.joinToString(",")
+        }
+
+        Log.d("qwe", genres.toString())
+        Log.d("qwe", "genres.toString()")
+
+        if (!author.isNullOrBlank()) {
+            queryMap["author"] = author
+        }
+
+        if (!sorting.isNullOrBlank()) {
+            queryMap["sorting"] = sorting
+        }
+
+        return queryMap
+    }
+
+    private fun getAllBooks(page: Int, filterQuery: Map<String, String>, callback: (List<Book>?) -> Unit) {
+        val requestCall = ClientAPI.apiService.getBooks(page, filterQuery)
 
         requestCall.enqueue(object : Callback<BooksResponse> {
             override fun onResponse(call: Call<BooksResponse>, response: Response<BooksResponse>) {
                 if (response.isSuccessful) {
                     val booksResponse = response.body()
                     val books = booksResponse?.results
-                    if (books != null) {
+                    Log.d("qwe", "books.toString()")
+                    Log.d("qwe", books.toString())
+                    if (!books.isNullOrEmpty()) {
                         Log.d("qwe", books.toString())
                         callback(books)
                     } else {
+                        Toast.makeText(requireContext(), "Даних немає!",Toast.LENGTH_SHORT).show()
                         Log.e("qwe", "Books list is null")
                         callback(null)
                     }
