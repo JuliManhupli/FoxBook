@@ -1,17 +1,33 @@
 package com.example.foxbook
 
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 const val BASE_URL: String = "http://192.168.0.107:8000/"
 object ClientAPI {
 
+//    val apiService: APIServices by lazy {
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl(BASE_URL)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        retrofit.create(APIServices::class.java)
+//    }
+
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(AuthInterceptor())
+        .build()
+
     val apiService: APIServices by lazy {
-        val retrofit = Retrofit.Builder()
+        Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
-
-        retrofit.create(APIServices::class.java)
+            .create(APIServices::class.java)
     }
+
 }

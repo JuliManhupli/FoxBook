@@ -25,10 +25,6 @@ class BookList(ListAPIView):
         author = self.request.query_params.get('author', None)
         sorting = self.request.query_params.get('sorting', None)
 
-        print(genres)
-        print(type(genres))
-        print(author)
-        print(sorting)
         # Apply filters
         if genres:
             genres = genres.split(',')
@@ -39,7 +35,6 @@ class BookList(ListAPIView):
 
         if sorting and sorting != "Без сортувань":
             # Sort by the selected sorting option
-            sorting = self.request.query_params.get('sorting', None)
             if sorting == 'Назва(А-Я)':
                 queryset = queryset.order_by('title')
             elif sorting == 'Назва(Я-А)':

@@ -34,8 +34,8 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnStart.setOnClickListener{
             if (isNetworkAvailable(this)) {
-//            val intent = Intent(this, LoginActivity::class.java)
-            val intent = Intent(this, UserActivity::class.java)
+            val intent = Intent(this, LoginActivity::class.java)
+//            val intent = Intent(this, UserActivity::class.java)
             startActivity(intent)
             } else {
                 // No internet connection, show a message to the user

@@ -84,7 +84,7 @@ class NewPasswordActivity : AppCompatActivity() {
             ) {
                 Log.d("1", response.toString())
                 val request = call.request()
-                val url = request.url().toString()
+                val url = request.url.toString()
                 Log.d("1", url.toString())
                 if (response.isSuccessful){// успішне надсилання запиту
                     Toast.makeText(this@NewPasswordActivity, "Пароль змінено!", Toast.LENGTH_SHORT).show()

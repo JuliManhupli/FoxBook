@@ -1,6 +1,7 @@
 package com.example.foxbook.activities
 
 import android.app.ProgressDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -170,6 +171,8 @@ class ValidateEmailActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {// успішне надсилання запиту
                     Toast.makeText(this@ValidateEmailActivity, "Пошту успішно підтверджено!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@ValidateEmailActivity, LoginActivity::class.java)
+                    startActivity(intent)
                 } else {// помилка надсилання запиту
                     try {
                         val jObjError = JSONObject(response.errorBody()!!.string())
