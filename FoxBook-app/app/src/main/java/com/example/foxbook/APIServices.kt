@@ -67,8 +67,12 @@ interface APIServices {
     fun getGenres(): Call<List<String>>
 
     @GET("profile/")
-    fun getUserProfile(@Header("Authorization") authHeader: String): Call<UserProfile>
-
+    fun getUserProfile(): Call<UserProfile>
+    @GET("favorites/books/")
+    fun getFavouriteBooks(
+        @Query("page") page: Int,
+        @QueryMap filterQuery: Map<String, String>
+    ): Call<BooksResponse>
 
     @GET("favorites/check/{bookId}/")
     fun checkIfBookInFavorites(@Path("bookId") bookId: Int): Call<CheckIfBookInFavorites>

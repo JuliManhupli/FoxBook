@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.FavouriteBooksFragment">
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchUpperBarFavouriteBooks"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:iconifiedByDefault="false"
+        android:background="@drawable/search_bg"
+        app:searchHintIcon="@null"
+        app:queryBackground="@android:color/transparent"
+        app:queryHint="Пошук..."
+        android:textColor="@color/white"
+        app:closeIcon="@drawable/baseline_clear_24"
+        app:searchIcon="@drawable/search_icon"/>
+
+
+    <ImageButton
+        android:id="@+id/imgButtonFilteringFavouriteBooks"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_margin="15dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Фільрування"
+        android:scaleType="fitXY"
+        android:src="@drawable/baseline_filter_alt_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchUpperBarFavouriteBooks" />
+
+    <ScrollView
+        android:id="@+id/scrollViewBooksFavouriteBooks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgButtonFilteringFavouriteBooks">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/search_recycler_viewFavouriteBooks"
+                android:layout_marginBottom="125dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/book_item_layout" />
+
+            <ProgressBar
+                android:id="@+id/progressBarSearchFavouriteBooks"
+                android:layout_width="match_parent"
+                android:layout_height="48dp" />
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

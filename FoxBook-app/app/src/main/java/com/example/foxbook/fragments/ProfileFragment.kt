@@ -2,11 +2,19 @@ package com.example.foxbook.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
+import com.example.foxbook.api.Book
+import com.example.foxbook.api.BooksResponse
+import com.example.foxbook.api.CheckIfBookInFavorites
 import com.example.foxbook.api.UserProfile
 import retrofit2.Call
 import retrofit2.Callback
@@ -15,43 +23,56 @@ import retrofit2.Response
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
 
-    private lateinit var txtProfileName: TextView
-    private lateinit var txtProfileEmail: TextView
+//    private lateinit var txtProfileName: TextView
+//    private lateinit var txtProfileEmail: TextView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        txtProfileName = view.findViewById(R.id.txtProfileName)
-        txtProfileEmail = view.findViewById(R.id.txtProfileEmail)
+        val txtProfileName: TextView = view.findViewById(R.id.txtProfileName)
+        val txtProfileEmail: TextView = view.findViewById(R.id.txtProfileEmail)
 
-        // Assuming you have a function to retrieve the access token
-        val accessToken = getAccessToken()
+        getUserProfileInfo { profileInfo ->
 
-        // Make a Retrofit API call to get user profile
-        val requestCall = ClientAPI.apiService.getUserProfile("Bearer $accessToken")
 
-        requestCall.enqueue(object : Callback<UserProfile> {
+            txtProfileName.text = profileInfo?.name ?: ""
+            txtProfileEmail.text = profileInfo?.email ?: ""
+
+        }
+
+        val favouriteBooksButton: ConstraintLayout = view.findViewById(R.id.likedBooks)
+        favouriteBooksButton.setOnClickListener {
+            val favouriteBooksFragment = FavouriteBooksFragment()
+            val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+            transaction.replace(R.id.flFragment, favouriteBooksFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+    }
+
+    private fun getUserProfileInfo(callback: (UserProfile?) -> Unit) {
+        val call = ClientAPI.apiService.getUserProfile()
+
+        call.enqueue(object : Callback<UserProfile> {
             override fun onResponse(call: Call<UserProfile>, response: Response<UserProfile>) {
                 if (response.isSuccessful) {
-                    val userProfile = response.body()
 
-                    // Update UI with user profile data
-                    txtProfileName.text = userProfile?.name ?: ""
-                    txtProfileEmail.text = userProfile?.email ?: ""
+                    val profileInfo = response.body()
+                    Log.e("qwe", "profileInfo")
+                    Log.e("qwe", profileInfo.toString())
+                    callback(profileInfo)
                 } else {
-                    // Handle API error
+                    // Handle unsuccessful response
+                    Log.e("qwe", "Unsuccessful response getUserProfileInfo: ${response.code()}")
+                    Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
 
             override fun onFailure(call: Call<UserProfile>, t: Throwable) {
-                // Handle network error
+                Log.e("qwe", "API request failed with exception", t)
+                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-
-    // Replace this function with your actual implementation to retrieve the access token
-    private fun getAccessToken(): String {
-        val sharedPreferences = context?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        return sharedPreferences?.getString("access_token", "") ?: ""
     }
 }

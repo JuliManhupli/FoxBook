@@ -41,17 +41,28 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
     private var selectedAuthors: String? = null
     private var selectedSorting: String? = null
 
+    private var targetFragment: String = ""
+
+    companion object {
+        fun newInstance(targetFragment: String): FiltersFragment {
+            val fragment = FiltersFragment()
+            fragment.targetFragment = targetFragment
+            return fragment
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // Назад до пошуку
         val backToSearch: ImageButton = view.findViewById(R.id.imgBtnBackToSearchFromFilters)
 
-        backToSearch.setOnClickListener{
-            val bookInfoFragment = SearchPageFragment()
-            val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-            transaction.replace(R.id.flFragment, bookInfoFragment)
-            transaction.commit()
+        backToSearch.setOnClickListener {
+            if (targetFragment == SearchPageFragment::class.java.simpleName) {
+                navigateToSearchPageFragment()
+            } else if (targetFragment == FavouriteBooksFragment::class.java.simpleName) {
+                navigateToFavoriteBooksFragment()
+            }
         }
 
         // Ініціалізація recyclerView
@@ -129,19 +140,11 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
             Log.d("qwe", selectedAuthors ?: "No Sorting Selected")
             Log.d("qwe", selectedSorting ?: "No Sorting Selected")
 
-            // Передача параметрів фільтра як аргументів
-            val searchPageFragment = SearchPageFragment().apply {
-                arguments = Bundle().apply {
-                    putStringArrayList("selectedGenres", ArrayList(selectedGenres))
-                    putString("selectedAuthors", selectedAuthors)
-                    putString("selectedSorting", selectedSorting)
-                }
+            if (targetFragment == SearchPageFragment::class.java.simpleName) {
+                navigateToSearchPageFragment()
+            } else if (targetFragment == FavouriteBooksFragment::class.java.simpleName) {
+                navigateToFavoriteBooksFragment()
             }
-
-            // Назад до SearchPageFragment
-            val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-            transaction.replace(R.id.flFragment, searchPageFragment)
-            transaction.commit()
         }
 
         // Кнопка очищення фільтрів
@@ -169,6 +172,35 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
             // Вертаємо сортування на варіант без нього
             spinner.setSelection(0)
         }
+    }
+
+    private fun navigateToSearchPageFragment() {
+        val searchPageFragment = SearchPageFragment().apply {
+            arguments = createBundle()
+        }
+        navigateToFragment(searchPageFragment)
+    }
+
+    private fun navigateToFavoriteBooksFragment() {
+        val favoriteBooksFragment = FavouriteBooksFragment().apply {
+            arguments = createBundle()
+        }
+        navigateToFragment(favoriteBooksFragment)
+    }
+
+    private fun createBundle(): Bundle {
+        return Bundle().apply {
+            putStringArrayList("selectedGenres", ArrayList(selectedGenres))
+            putString("selectedAuthors", selectedAuthors)
+            putString("selectedSorting", selectedSorting)
+        }
+    }
+
+    private fun navigateToFragment(fragment: Fragment) {
+        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+        transaction.replace(R.id.flFragment, fragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 
     private fun changeAuthorBackground(buttonOn: AppCompatButton, buttonOff: AppCompatButton) {

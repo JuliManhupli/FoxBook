@@ -3,6 +3,7 @@ package com.example.foxbook.activities
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import com.example.foxbook.fragments.FiltersFragment
 import com.example.foxbook.fragments.ProfileFragment
 import com.example.foxbook.R
@@ -43,7 +44,16 @@ class UserActivity : AppCompatActivity() {
     private fun setCurrentFragment(fragment: Fragment){
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment)
+//            addToBackStack(null)
             commit()
+        }
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
+        } else {
+            super.onBackPressed()
         }
     }
 }

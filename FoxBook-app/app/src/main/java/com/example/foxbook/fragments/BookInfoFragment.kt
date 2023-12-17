@@ -28,6 +28,16 @@ import retrofit2.Response
 
 class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
+    private var targetFragment: String = ""
+
+    companion object {
+        fun newInstance(targetFragment: String): BookInfoFragment {
+            val fragment = BookInfoFragment()
+            fragment.targetFragment = targetFragment
+            return fragment
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val data = requireArguments().getParcelable<Book>("android")
@@ -37,10 +47,11 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
         val backButton: ImageButton = view.findViewById(R.id.imgBtnBackToSearch)
 
         backButton.setOnClickListener {
-            val bookInfoFragment = SearchPageFragment()
-            val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-            transaction.replace(R.id.flFragment, bookInfoFragment)
-            transaction.commit()
+            if (targetFragment == SearchPageFragment::class.java.simpleName) {
+                navigateToSearchPageFragment()
+            } else if (targetFragment == FavouriteBooksFragment::class.java.simpleName) {
+                navigateToFavoriteBooksFragment()
+            }
         }
 
 
@@ -56,10 +67,6 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
                 likeButton.setOnClickListener {
                     checkIfBookInFavorites(data.id) { isBookInFavorites ->
-                    Log.e("qwe", "--------")
-                    Log.e("qwe", "isBookInFavorites")
-                    Log.e("qwe", isBookInFavorites.toString())
-                    Log.e("qwe", "--------")
                     if (isBookInFavorites) {
                         // Remove the book from favorites
                         removeBookFromFavorites(data.id)
@@ -121,6 +128,20 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
         }
     }
 
+    private fun navigateToSearchPageFragment() {
+        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+        transaction.replace(R.id.flFragment, SearchPageFragment())
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
+    private fun navigateToFavoriteBooksFragment() {
+        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+        transaction.replace(R.id.flFragment, FavouriteBooksFragment())
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
     private fun updateUI(isBookInFavorites: Boolean) {
         val likeButton: ImageButton = view?.findViewById(R.id.imgBtnUnliked) ?: return
 
@@ -136,8 +157,6 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
         // You may need to make an API call to check this on the server
         val call = ClientAPI.apiService.checkIfBookInFavorites(bookId)
 
-        var isBookInFavorites = false
-
         call.enqueue(object : Callback<CheckIfBookInFavorites> {
             override fun onResponse(
                 call: Call<CheckIfBookInFavorites>,
@@ -147,7 +166,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
                 if (response.isSuccessful) {
 
-                    isBookInFavorites = response.body()?.isInFavorites ?: false
+                    val isBookInFavorites = response.body()?.isInFavorites ?: false
                     callback(isBookInFavorites)
                 } else {
                     // Handle unsuccessful response

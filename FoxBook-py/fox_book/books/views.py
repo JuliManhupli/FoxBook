@@ -13,7 +13,6 @@ class CustomPageNumberPagination(PageNumberPagination):
 
 
 class BookList(ListAPIView):
-    queryset = Book.objects.all()
     serializer_class = BookSerializer
     pagination_class = CustomPageNumberPagination
 
