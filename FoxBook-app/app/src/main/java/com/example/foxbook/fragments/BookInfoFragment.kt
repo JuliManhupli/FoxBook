@@ -24,8 +24,6 @@ import com.example.foxbook.api.CheckIfBookInFavorites
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.Locale
-
 
 
 class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
@@ -35,27 +33,6 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
         val data = requireArguments().getParcelable<Book>("android")
         Log.e("qwe", "data")
         Log.e("qwe", data.toString())
-
-        val likeButton: ImageButton = view.findViewById(R.id.imgBtnUnliked)
-
-        likeButton.setOnClickListener {
-
-            if (data != null) {
-                // Check if the book is in favorites
-                val isBookInFavorites = checkIfBookInFavorites(data.id)
-                Log.e("qwe", "isBookInFavorites")
-                Log.e("qwe", isBookInFavorites.toString())
-                if (isBookInFavorites) {
-                    // Remove the book from favorites
-                    removeBookFromFavorites(data.id)
-                    Toast.makeText(requireContext(), "Removed from favorites!", Toast.LENGTH_SHORT).show()
-                } else {
-                    // Add the book to favorites
-                    addBookToFavorites(data.id)
-                    Toast.makeText(requireContext(), "Added to favorites!", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
 
         val backButton: ImageButton = view.findViewById(R.id.imgBtnBackToSearch)
 
@@ -68,14 +45,40 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
 
         if (data != null) {
+
+                val likeButton: ImageButton = view.findViewById(R.id.imgBtnUnliked)
+
+                checkIfBookInFavorites(data.id) { isBookInFavorites ->
+                    requireActivity().runOnUiThread {
+                        updateUI(isBookInFavorites)
+                    }
+                }
+
+                likeButton.setOnClickListener {
+                    checkIfBookInFavorites(data.id) { isBookInFavorites ->
+                    Log.e("qwe", "--------")
+                    Log.e("qwe", "isBookInFavorites")
+                    Log.e("qwe", isBookInFavorites.toString())
+                    Log.e("qwe", "--------")
+                    if (isBookInFavorites) {
+                        // Remove the book from favorites
+                        removeBookFromFavorites(data.id)
+                        likeButton.setImageResource(R.drawable.heart)
+                    } else {
+                        // Add the book to favorites
+                        addBookToFavorites(data.id)
+                        likeButton.setImageResource(R.drawable.heart_full)
+                    }
+                }
+            }
+
             val coverImg: ImageView = view.findViewById(R.id.imgBookInfoCover)
             val titleView: TextView = view.findViewById(R.id.txtBookInfoTitle)
             val authorView: TextView = view.findViewById(R.id.txtBookInfoAuthor)
             val ratingView: TextView = view.findViewById(R.id.txtBookInfoRating)
             val genreView: TextView = view.findViewById(R.id.txtBookInfoGenre)
             val descView: TextView = view.findViewById(R.id.txtBookInfoDescription)
-            Log.e("qwe", "coverImg")
-            Log.e("qwe", coverImg.toString())
+
 
             if (data.cover != null) {
                 Glide.with(coverImg.context)
@@ -110,8 +113,6 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 coverImg.setImageResource(R.drawable.no_image)
             }
 
-            Log.d("qwe", coverImg.context.toString())
-            Log.d("qwe", coverImg.context.toString())
             titleView.text = data.title ?: "Назва невідома"
             authorView.text = data.author ?: "Автор невідомий"
             ratingView.text = data.rating.toString()
@@ -120,7 +121,17 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
         }
     }
 
-    private fun checkIfBookInFavorites(bookId: Int): Boolean {
+    private fun updateUI(isBookInFavorites: Boolean) {
+        val likeButton: ImageButton = view?.findViewById(R.id.imgBtnUnliked) ?: return
+
+        if (isBookInFavorites) {
+            likeButton.setImageResource(R.drawable.heart_full)
+        } else {
+            likeButton.setImageResource(R.drawable.heart)
+        }
+    }
+
+    private fun checkIfBookInFavorites(bookId: Int, callback: (Boolean) -> Unit) {
         // Replace this with your actual logic to check if the book is in favorites
         // You may need to make an API call to check this on the server
         val call = ClientAPI.apiService.checkIfBookInFavorites(bookId)
@@ -133,12 +144,11 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 response: Response<CheckIfBookInFavorites>
             ) {
 
-                Log.e("qwe", "response checkIfBookInFavorites")
-                Log.e("qwe", response.toString())
+
                 if (response.isSuccessful) {
+
                     isBookInFavorites = response.body()?.isInFavorites ?: false
-                    Log.e("qwe", "checkIfBookInFavorites")
-                    Log.e("qwe", isBookInFavorites.toString())
+                    callback(isBookInFavorites)
                 } else {
                     // Handle unsuccessful response
                     Log.e("qwe", "Unsuccessful response checkIfBookInFavorites: ${response.code()}")
@@ -152,8 +162,6 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
-
-        return isBookInFavorites
     }
 
     private fun addBookToFavorites(bookId: Int) {
@@ -165,19 +173,17 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 response: Response<AddRemoveFavorite>
             ) {
                 if (response.isSuccessful) {
-                    val addRemoveFavoriteResponse = response.body()
-                    Log.e("qwe", "addRemoveFavoriteResponse")
-                    Log.e("qwe", addRemoveFavoriteResponse.toString())
+
+                    val addRemoveFavoriteResponse = response.body()?.message
                     // Handle the response as needed
-                    if (addRemoveFavoriteResponse != null) {
+                    if (addRemoveFavoriteResponse == "Book added to favorites successfully") {
                         // Update UI or perform other actions
-                        Toast.makeText(
-                            requireContext(),
-                            "Book added to favorites successfully",
+                        Toast.makeText(requireContext(),"Книгу успішно додано до улюбленого!",
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        // Handle null response
+                        Toast.makeText(requireContext(), "Помилка додавання!",
+                            Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     // Handle unsuccessful response
@@ -203,22 +209,22 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 response: Response<AddRemoveFavorite>
             ) {
                 if (response.isSuccessful) {
-                    val addRemoveFavoriteResponse = response.body()
-
+                    val addRemoveFavoriteResponse = response.body()?.message
                     // Handle the response as needed
-                    if (addRemoveFavoriteResponse != null) {
+                    if (addRemoveFavoriteResponse == "Book removed from favorites successfully") {
                         // Update UI or perform other actions
-                        Toast.makeText(
-                            requireContext(),
-                            "Book removed from favorites successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(),"Книгу видалено з улюбленого!",
+                            Toast.LENGTH_SHORT).show()
                     } else {
-                        // Handle null response
+                        Toast.makeText(requireContext(), "Помилка видалення!",
+                            Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     // Handle unsuccessful response
-                    Log.e("qwe", "Unsuccessful response removeBookFromFavorites: ${response.code()}")
+                    Log.e(
+                        "qwe",
+                        "Unsuccessful response removeBookFromFavorites: ${response.code()}"
+                    )
                     Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -229,12 +235,5 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-
-
-    // Replace this function with your actual implementation to retrieve the access token
-    private fun getAccessToken(): String {
-        val sharedPreferences = context?.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        return sharedPreferences?.getString("access_token", "") ?: ""
     }
 }

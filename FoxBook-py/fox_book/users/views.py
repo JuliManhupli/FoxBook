@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -19,12 +20,14 @@ def get_user_profile(request):
 @permission_classes([IsAuthenticated])
 def check_if_book_in_favorites(request, book_id):
     user = request.user
+    book = get_object_or_404(Book, pk=book_id)
     print("user")
     print(user)
-    try:
-        favorite_book = FavoriteBook.objects.get(user=user, book__id=book_id)
+    if FavoriteBook.objects.filter(user=user, book=book).exists():
+        print("+")
         return Response({'isInFavorites': True})
-    except FavoriteBook.DoesNotExist:
+    else:
+        print("-")
         return Response({'isInFavorites': False})
 
 
@@ -32,7 +35,7 @@ def check_if_book_in_favorites(request, book_id):
 @permission_classes([IsAuthenticated])
 def add_book_to_favorites(request, book_id):
     user = request.user
-    book = Book.objects.get(pk=book_id)
+    book = get_object_or_404(Book, pk=book_id)
 
     if FavoriteBook.objects.filter(user=user, book=book).exists():
         return Response({'message': 'Book is already in favorites'})
@@ -47,11 +50,9 @@ def add_book_to_favorites(request, book_id):
 @permission_classes([IsAuthenticated])
 def remove_book_from_favorites(request, book_id):
     user = request.user
-    book = Book.objects.get(pk=book_id)
+    book = get_object_or_404(Book, pk=book_id)
 
-    try:
-        favorite_book = FavoriteBook.objects.get(user=user, book=book)
-        favorite_book.delete()
-        return Response({'message': 'Book removed from favorites successfully'})
-    except FavoriteBook.DoesNotExist:
-        return Response({'message': 'Book is not in favorites'})
+    favorite_book = get_object_or_404(FavoriteBook, user=user, book=book)
+    favorite_book.delete()
+
+    return Response({'message': 'Book removed from favorites successfully'})

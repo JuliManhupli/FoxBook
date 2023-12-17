@@ -16,10 +16,7 @@ class AuthInterceptor : Interceptor {
         // Check if the request method is annotated with NoAuth
         val noAuthAnnotation = request.header("NoAuth") != null
 
-        Log.d("qwe", "noAuthAnnotation")
-        Log.d("qwe", noAuthAnnotation.toString())
         if (noAuthAnnotation) {
-            Log.d("qwe", "noAuthAnnotation != null")
             return chain.proceed(request)
         }
 

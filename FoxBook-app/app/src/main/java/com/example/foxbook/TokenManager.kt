@@ -13,11 +13,6 @@ object TokenManager {
     }
 
     fun saveTokens(accessToken: String, refreshToken: String) {
-        Log.d("Token", "----------------")
-        Log.d("Token", "saveTokens")
-        Log.d("Token", accessToken)
-        Log.d("Token", refreshToken)
-        Log.d("Token", "----------------")
         with(getSharedPreferences().edit()) {
             putString(KEY_ACCESS_TOKEN, accessToken)
             putString(KEY_REFRESH_TOKEN, refreshToken)

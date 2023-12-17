@@ -1,9 +1,6 @@
 from django.contrib.auth import authenticate
-from django.utils import timezone
 from django.http import HttpResponse
 from rest_framework import status
-from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -191,14 +188,10 @@ class LoginUserView(GenericAPIView):
 class AccessRecovery(GenericAPIView):
     def post(self, request, *args, **kwargs):
         refresh_token_value = request.data.get('refresh_token')
-        print("refresh_token_value")
-        print(refresh_token_value)
         if refresh_token_value:
             # Використовуйте refresh_token для отримання нового access_token
             refresh = RefreshToken(refresh_token_value)
             access_token = str(refresh.access_token)
-            print("access_token")
-            print(access_token)
             return Response({
                 'access_token': access_token,
                 'refresh_token': str(refresh),
