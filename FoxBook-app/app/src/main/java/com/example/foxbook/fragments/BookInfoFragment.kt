@@ -1,6 +1,7 @@
 package com.example.foxbook.fragments
 
 import android.content.Context
+import android.content.Intent
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.load.DataSource
@@ -10,14 +11,17 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
+import com.example.foxbook.activities.ReadingActivity
 import com.example.foxbook.api.AddRemoveFavorite
 import com.example.foxbook.api.Book
 import com.example.foxbook.api.CheckIfBookInFavorites
@@ -43,6 +47,13 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
         val data = requireArguments().getParcelable<Book>("android")
         Log.e("qwe", "data")
         Log.e("qwe", data.toString())
+
+        val btnToReadingBook: Button = view.findViewById(R.id.btnToReading)
+
+        btnToReadingBook.setOnClickListener{
+            val intent = Intent(activity, ReadingActivity::class.java)
+            startActivity(intent)
+        }
 
         val backButton: ImageButton = view.findViewById(R.id.imgBtnBackToSearch)
 
@@ -82,6 +93,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
             val coverImg: ImageView = view.findViewById(R.id.imgBookInfoCover)
             val titleView: TextView = view.findViewById(R.id.txtBookInfoTitle)
             val authorView: TextView = view.findViewById(R.id.txtBookInfoAuthor)
+            val userRatingView: TextView = view.findViewById(R.id.txtBookInfoUserRating)
             val ratingView: TextView = view.findViewById(R.id.txtBookInfoRating)
             val genreView: TextView = view.findViewById(R.id.txtBookInfoGenre)
             val descView: TextView = view.findViewById(R.id.txtBookInfoDescription)
@@ -122,9 +134,23 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
             titleView.text = data.title ?: "Назва невідома"
             authorView.text = data.author ?: "Автор невідомий"
-            ratingView.text = data.rating.toString()
+            ratingView.text = (data.rating ?: "-").toString()
             genreView.text = data.genre ?: "-"
             descView.text = data.annotation ?: "Анотації немає"
+
+
+            // Оцінювання користувачем книги
+            val ratingBar: RatingBar = view.findViewById(R.id.ratingUserBar)
+
+            // Якщо оцінка вже стоїть
+            if (userRatingView.text == "2.0") {
+                ratingBar.rating = 2.0F
+            }
+
+            // Зміна оцінки
+            ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+                userRatingView.text = rating.toString()
+            }
         }
     }
 
