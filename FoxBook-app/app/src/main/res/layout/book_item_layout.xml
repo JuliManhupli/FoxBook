@@ -35,6 +35,7 @@
             android:fontFamily="@font/inter"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:ems="10"
             app:layout_constraintBottom_toTopOf="@+id/txtBookAuthor"
             app:layout_constraintStart_toEndOf="@+id/imgBookCover"
             app:layout_constraintTop_toTopOf="parent"

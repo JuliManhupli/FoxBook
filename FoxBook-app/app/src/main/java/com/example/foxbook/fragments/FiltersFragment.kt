@@ -2,9 +2,11 @@ package com.example.foxbook.fragments
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.Toast
@@ -14,9 +16,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.foxbook.ClientAPI
 import com.example.foxbook.GenreAdapter
 import com.example.foxbook.R
+import com.example.foxbook.api.Book
+import com.example.foxbook.api.BooksResponse
 import com.example.foxbook.api.Genre
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.Locale
 
 
 class FiltersFragment : Fragment(R.layout.fragment_filters) {
@@ -27,7 +36,20 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
     private lateinit var genreArrayList: ArrayList<Genre>
 
     lateinit var genreAdapter: GenreAdapter
-    lateinit var genreNames: Array<String>
+
+    private var selectedGenres: List<String> = emptyList()
+    private var selectedAuthors: String? = null
+    private var selectedSorting: String? = null
+
+    private var targetFragment: String = ""
+
+    companion object {
+        fun newInstance(targetFragment: String): FiltersFragment {
+            val fragment = FiltersFragment()
+            fragment.targetFragment = targetFragment
+            return fragment
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,26 +57,13 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
         // Назад до пошуку
         val backToSearch: ImageButton = view.findViewById(R.id.imgBtnBackToSearchFromFilters)
 
-        backToSearch.setOnClickListener{
-            val bookInfoFragment = SearchPageFragment()
-            val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-            transaction.replace(R.id.flFragment, bookInfoFragment)
-            transaction.commit()
+        backToSearch.setOnClickListener {
+            if (targetFragment == SearchPageFragment::class.java.simpleName) {
+                navigateToSearchPageFragment()
+            } else if (targetFragment == FavouriteBooksFragment::class.java.simpleName) {
+                navigateToFavoriteBooksFragment()
+            }
         }
-
-        // Жанри
-        genreNames = arrayOf(
-            "GenreName1",
-            "GenreName2",
-            "GenreName3",
-            "GenreName4",
-            "GenreName5",
-            "GenreName6",
-            "GenreName7",
-            "GenreName8",
-            "GenreName9",
-            "GenreName10"
-        )
 
         // Ініціалізація recyclerView
         recyclerView = view.findViewById(R.id.AllGenresRecyclerView)
@@ -62,7 +71,7 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
         recyclerView.setHasFixedSize(true)
 
         genreArrayList = arrayListOf()
-        dataInitialise()
+        getAllGenre()
 
         genreAdapter = GenreAdapter(genreArrayList)
         recyclerView.adapter = genreAdapter
@@ -77,10 +86,12 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
 
         authorUkraine.setOnClickListener {
             changeAuthorBackground(authorUkraine, authorForeign)
+            selectedAuthors = "Українська література"
         }
 
         authorForeign.setOnClickListener {
             changeAuthorBackground(authorForeign, authorUkraine)
+            selectedAuthors = "Зарубіжна література"
         }
 
         // Сортування
@@ -108,14 +119,32 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
                 position: Int,
                 id: Long
             ) {
+                selectedSorting = parent.getItemAtPosition(position).toString()
                 val selectedItem = parent.getItemAtPosition(position).toString()
-                Toast.makeText(requireContext(), "Selected $selectedItem",Toast.LENGTH_SHORT).show()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
+//                TODO()
+
+
             }
 
+        }
+
+
+        // Кнопка пошуку
+        val searchByFilters: Button = view.findViewById(R.id.btnSearchByFilters)
+        searchByFilters.setOnClickListener {
+            Log.d("qwe", "11")
+            Log.d("qwe", selectedGenres.toString())
+            Log.d("qwe", selectedAuthors ?: "No Sorting Selected")
+            Log.d("qwe", selectedSorting ?: "No Sorting Selected")
+
+            if (targetFragment == SearchPageFragment::class.java.simpleName) {
+                navigateToSearchPageFragment()
+            } else if (targetFragment == FavouriteBooksFragment::class.java.simpleName) {
+                navigateToFavoriteBooksFragment()
+            }
         }
 
         // Кнопка очищення фільтрів
@@ -143,6 +172,35 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
             // Вертаємо сортування на варіант без нього
             spinner.setSelection(0)
         }
+    }
+
+    private fun navigateToSearchPageFragment() {
+        val searchPageFragment = SearchPageFragment().apply {
+            arguments = createBundle()
+        }
+        navigateToFragment(searchPageFragment)
+    }
+
+    private fun navigateToFavoriteBooksFragment() {
+        val favoriteBooksFragment = FavouriteBooksFragment().apply {
+            arguments = createBundle()
+        }
+        navigateToFragment(favoriteBooksFragment)
+    }
+
+    private fun createBundle(): Bundle {
+        return Bundle().apply {
+            putStringArrayList("selectedGenres", ArrayList(selectedGenres))
+            putString("selectedAuthors", selectedAuthors)
+            putString("selectedSorting", selectedSorting)
+        }
+    }
+
+    private fun navigateToFragment(fragment: Fragment) {
+        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+        transaction.replace(R.id.flFragment, fragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 
     private fun changeAuthorBackground(buttonOn: AppCompatButton, buttonOff: AppCompatButton) {
@@ -177,13 +235,57 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
             button.setBackgroundResource(R.color.white)
             button.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
         }
+
+        val genreName = button.text.toString()
+        selectedGenres = if (selectedGenres.contains(genreName)) {
+            selectedGenres - genreName
+        } else {
+            selectedGenres + genreName
+        }
+
+        // Print or use the selected genres as needed
+        Log.d("SelectedGenres", selectedGenres.toString())
+
     }
 
-    private fun dataInitialise() {
-        for (i in genreNames) {
-            val genre = Genre(i)
+    private fun getAllGenre() {
+        val requestCall = ClientAPI.apiService.getGenres()
+
+        requestCall.enqueue(object : Callback<List<String>> {
+            override fun onResponse(call: Call<List<String>>, response: Response<List<String>>) {
+                if (response.isSuccessful) {
+                    val genres = response.body()
+                    if (genres != null) {
+                        Log.d("qwe", genres.toString())
+                        updateUIWithGenres(genres)
+                    } else {
+                        Log.e("qwe", "Genres list is null")
+                        // Handle the case where genres list is null
+                    }
+                } else {
+                    // Handle unsuccessful response
+                    Log.e("qwe", "Unsuccessful response: ${response.code()}")
+                    Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT).show()
+                    // Handle the case where the response is not successful
+                }
+            }
+
+            override fun onFailure(call: Call<List<String>>, t: Throwable) {
+                Log.e("qwe", "API request failed with exception", t)
+                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
+                // Handle the case where the API request fails
+            }
+        })
+    }
+
+    private fun updateUIWithGenres(genres: List<String>) {
+        // Update your UI with the fetched genres
+        // Assuming you have a recycler view adapter (genreAdapter), update the data and notify the adapter
+        genreArrayList.clear()
+        for (genreName in genres) {
+            val genre = Genre(genreName)
             genreArrayList.add(genre)
         }
-        recyclerView.adapter = GenreAdapter(genreArrayList)
+        recyclerView.adapter?.notifyDataSetChanged()
     }
 }

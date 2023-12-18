@@ -1,9 +1,6 @@
 from django.contrib.auth import authenticate
-from django.utils import timezone
 from django.http import HttpResponse
 from rest_framework import status
-from rest_framework.exceptions import NotFound, ValidationError
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -172,7 +169,7 @@ class LoginUserView(GenericAPIView):
         user = authenticate(request, email=email, password=password)
 
         if not user:
-            return Response({"message": "Неправильний пароль"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"message": "Користувача не знайдено. Перевірте дані!"}, status=status.HTTP_401_UNAUTHORIZED)
         if not user.is_verified:
             return Response({"message": "Пошта не підтверджена"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -191,12 +188,10 @@ class LoginUserView(GenericAPIView):
 class AccessRecovery(GenericAPIView):
     def post(self, request, *args, **kwargs):
         refresh_token_value = request.data.get('refresh_token')
-
         if refresh_token_value:
             # Використовуйте refresh_token для отримання нового access_token
             refresh = RefreshToken(refresh_token_value)
             access_token = str(refresh.access_token)
-
             return Response({
                 'access_token': access_token,
                 'refresh_token': str(refresh),

@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.SearchPageFragment">
+    tools:context=".fragments.FavouriteBooksFragment">
 
     <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchUpperBar"
+        android:id="@+id/searchUpperBarFavouriteBooks"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
@@ -25,7 +25,7 @@
 
 
     <ImageButton
-        android:id="@+id/imgButtonFiltering"
+        android:id="@+id/imgButtonFilteringFavouriteBooks"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_margin="15dp"
@@ -34,16 +34,16 @@
         android:scaleType="fitXY"
         android:src="@drawable/baseline_filter_alt_24"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchUpperBar" />
+        app:layout_constraintTop_toBottomOf="@+id/searchUpperBarFavouriteBooks" />
 
     <ScrollView
-        android:id="@+id/scrollViewBooks"
+        android:id="@+id/scrollViewBooksFavouriteBooks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgButtonFiltering">
+        app:layout_constraintTop_toBottomOf="@+id/imgButtonFilteringFavouriteBooks">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -51,14 +51,14 @@
             android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/search_recycler_view"
+                android:id="@+id/search_recycler_viewFavouriteBooks"
                 android:layout_marginBottom="125dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:listitem="@layout/book_item_layout" />
 
             <ProgressBar
-                android:id="@+id/progressBarSearch"
+                android:id="@+id/progressBarSearchFavouriteBooks"
                 android:layout_width="match_parent"
                 android:layout_height="48dp" />
         </LinearLayout>

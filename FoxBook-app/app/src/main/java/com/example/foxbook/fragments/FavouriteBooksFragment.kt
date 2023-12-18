@@ -21,7 +21,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.Locale
 
-class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
+class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
     private lateinit var recyclerView: RecyclerView
     private lateinit var bookArrayList: MutableList<Book>
 
@@ -47,18 +47,18 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
             selectedSorting = args.getString("selectedSorting")
         }
 
-        val filterButton: ImageButton = view.findViewById(R.id.imgButtonFiltering)
+        val filterButton: ImageButton = view.findViewById(R.id.imgButtonFilteringFavouriteBooks)
 
         filterButton.setOnClickListener{
-            val filtersFragment = FiltersFragment.newInstance(SearchPageFragment::class.java.simpleName)
+            val filtersFragment = FiltersFragment.newInstance(FavouriteBooksFragment::class.java.simpleName)
             val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
             transaction.replace(R.id.flFragment, filtersFragment)
             transaction.addToBackStack(null)
             transaction.commit()
         }
 
-        recyclerView = view.findViewById(R.id.search_recycler_view)
-        searchView = view.findViewById(R.id.searchUpperBar)
+        recyclerView = view.findViewById(R.id.search_recycler_viewFavouriteBooks)
+        searchView = view.findViewById(R.id.searchUpperBarFavouriteBooks)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.setHasFixedSize(true)
@@ -86,9 +86,9 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
 
     private fun loadData() {
         val query = buildFilterQuery(selectedGenres, selectedAuthors, selectedSorting)
-        val progressBar: ProgressBar = requireView().findViewById(R.id.progressBarSearch)
+        val progressBar: ProgressBar = requireView().findViewById(R.id.progressBarSearchFavouriteBooks)
 
-        getAllBooks(page, query) { booksFromApi ->
+        getAllFavouriteBooks(page, query) { booksFromApi ->
             if (booksFromApi != null) {
                 page++
                 bookArrayList.addAll(booksFromApi)
@@ -125,7 +125,7 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
                 recyclerView.adapter = bookAdapter
 
                 bookAdapter.onItemClick = {
-                    val bookInfoFragment = BookInfoFragment.newInstance(SearchPageFragment::class.java.simpleName)
+                    val bookInfoFragment = BookInfoFragment.newInstance(FavouriteBooksFragment::class.java.simpleName)
                     val bundle = Bundle()
                     bundle.putParcelable("android", it)
                     bookInfoFragment.arguments = bundle
@@ -148,10 +148,10 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
     private fun loadMoreData() {
         isLoading = true
 
-        val progressBar: ProgressBar = requireView().findViewById(R.id.progressBarSearch)
+        val progressBar: ProgressBar = requireView().findViewById(R.id.progressBarSearchFavouriteBooks)
         progressBar.visibility = View.VISIBLE
         val query = buildFilterQuery(selectedGenres, selectedAuthors, selectedSorting)
-        getAllBooks(page, query) { newBooks ->
+        getAllFavouriteBooks(page, query) { newBooks ->
             if (newBooks != null) {
                 bookArrayList.addAll(newBooks)
                 searchList.addAll(newBooks)
@@ -197,8 +197,8 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
         return queryMap
     }
 
-    private fun getAllBooks(page: Int, filterQuery: Map<String, String>, callback: (List<Book>?) -> Unit) {
-        val requestCall = ClientAPI.apiService.getBooks(page, filterQuery)
+    private fun getAllFavouriteBooks(page: Int, filterQuery: Map<String, String>, callback: (List<Book>?) -> Unit) {
+        val requestCall = ClientAPI.apiService.getFavouriteBooks(page, filterQuery)
 
         requestCall.enqueue(object : Callback<BooksResponse> {
             override fun onResponse(call: Call<BooksResponse>, response: Response<BooksResponse>) {
@@ -236,4 +236,6 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
             }
         })
     }
+
+
 }

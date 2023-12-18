@@ -1,5 +1,6 @@
 package com.example.foxbook.fragments
 
+import android.content.Context
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.load.DataSource
@@ -15,42 +16,76 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
+import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
+import com.example.foxbook.api.AddRemoveFavorite
 import com.example.foxbook.api.Book
+import com.example.foxbook.api.CheckIfBookInFavorites
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
+    private var targetFragment: String = ""
+
+    companion object {
+        fun newInstance(targetFragment: String): BookInfoFragment {
+            val fragment = BookInfoFragment()
+            fragment.targetFragment = targetFragment
+            return fragment
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val likeButton: ImageButton = view.findViewById(R.id.imgBtnUnliked)
-
-        likeButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Like!", Toast.LENGTH_SHORT).show()
-        }
+        val data = requireArguments().getParcelable<Book>("android")
+        Log.e("qwe", "data")
+        Log.e("qwe", data.toString())
 
         val backButton: ImageButton = view.findViewById(R.id.imgBtnBackToSearch)
 
         backButton.setOnClickListener {
-            val bookInfoFragment = SearchPageFragment()
-            val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-            transaction.replace(R.id.flFragment, bookInfoFragment)
-            transaction.commit()
+            if (targetFragment == SearchPageFragment::class.java.simpleName) {
+                navigateToSearchPageFragment()
+            } else if (targetFragment == FavouriteBooksFragment::class.java.simpleName) {
+                navigateToFavoriteBooksFragment()
+            }
         }
 
-        val data = requireArguments().getParcelable<Book>("android")
-        Log.e("qwe", "data")
-        Log.e("qwe", data.toString())
+
         if (data != null) {
+
+                val likeButton: ImageButton = view.findViewById(R.id.imgBtnUnliked)
+
+                checkIfBookInFavorites(data.id) { isBookInFavorites ->
+                    requireActivity().runOnUiThread {
+                        updateUI(isBookInFavorites)
+                    }
+                }
+
+                likeButton.setOnClickListener {
+                    checkIfBookInFavorites(data.id) { isBookInFavorites ->
+                    if (isBookInFavorites) {
+                        // Remove the book from favorites
+                        removeBookFromFavorites(data.id)
+                        likeButton.setImageResource(R.drawable.heart)
+                    } else {
+                        // Add the book to favorites
+                        addBookToFavorites(data.id)
+                        likeButton.setImageResource(R.drawable.heart_full)
+                    }
+                }
+            }
+
             val coverImg: ImageView = view.findViewById(R.id.imgBookInfoCover)
             val titleView: TextView = view.findViewById(R.id.txtBookInfoTitle)
             val authorView: TextView = view.findViewById(R.id.txtBookInfoAuthor)
             val ratingView: TextView = view.findViewById(R.id.txtBookInfoRating)
             val genreView: TextView = view.findViewById(R.id.txtBookInfoGenre)
             val descView: TextView = view.findViewById(R.id.txtBookInfoDescription)
-            Log.e("qwe", "coverImg")
-            Log.e("qwe", coverImg.toString())
+
 
             if (data.cover != null) {
                 Glide.with(coverImg.context)
@@ -85,13 +120,139 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 coverImg.setImageResource(R.drawable.no_image)
             }
 
-            Log.d("qwe", coverImg.context.toString())
-            Log.d("qwe", coverImg.context.toString())
             titleView.text = data.title ?: "Назва невідома"
             authorView.text = data.author ?: "Автор невідомий"
             ratingView.text = data.rating.toString()
             genreView.text = data.genre ?: "-"
             descView.text = data.annotation ?: "Анотації немає"
         }
+    }
+
+    private fun navigateToSearchPageFragment() {
+        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+        transaction.replace(R.id.flFragment, SearchPageFragment())
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
+    private fun navigateToFavoriteBooksFragment() {
+        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+        transaction.replace(R.id.flFragment, FavouriteBooksFragment())
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
+    private fun updateUI(isBookInFavorites: Boolean) {
+        val likeButton: ImageButton = view?.findViewById(R.id.imgBtnUnliked) ?: return
+
+        if (isBookInFavorites) {
+            likeButton.setImageResource(R.drawable.heart_full)
+        } else {
+            likeButton.setImageResource(R.drawable.heart)
+        }
+    }
+
+    private fun checkIfBookInFavorites(bookId: Int, callback: (Boolean) -> Unit) {
+        // Replace this with your actual logic to check if the book is in favorites
+        // You may need to make an API call to check this on the server
+        val call = ClientAPI.apiService.checkIfBookInFavorites(bookId)
+
+        call.enqueue(object : Callback<CheckIfBookInFavorites> {
+            override fun onResponse(
+                call: Call<CheckIfBookInFavorites>,
+                response: Response<CheckIfBookInFavorites>
+            ) {
+
+
+                if (response.isSuccessful) {
+
+                    val isBookInFavorites = response.body()?.isInFavorites ?: false
+                    callback(isBookInFavorites)
+                } else {
+                    // Handle unsuccessful response
+                    Log.e("qwe", "Unsuccessful response checkIfBookInFavorites: ${response.code()}")
+                    Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            override fun onFailure(call: Call<CheckIfBookInFavorites>, t: Throwable) {
+                Log.e("qwe", "API request failed with exception", t)
+                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun addBookToFavorites(bookId: Int) {
+        val call = ClientAPI.apiService.addToFavorites(bookId)
+
+        call.enqueue(object : Callback<AddRemoveFavorite> {
+            override fun onResponse(
+                call: Call<AddRemoveFavorite>,
+                response: Response<AddRemoveFavorite>
+            ) {
+                if (response.isSuccessful) {
+
+                    val addRemoveFavoriteResponse = response.body()?.message
+                    // Handle the response as needed
+                    if (addRemoveFavoriteResponse == "Book added to favorites successfully") {
+                        // Update UI or perform other actions
+                        Toast.makeText(requireContext(),"Книгу успішно додано до улюбленого!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Помилка додавання!",
+                            Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    // Handle unsuccessful response
+                    Log.e("qwe", "Unsuccessful response addBookToFavorites: ${response.code()}")
+                    Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            override fun onFailure(call: Call<AddRemoveFavorite>, t: Throwable) {
+                Log.e("qwe", "API request failed with exception", t)
+                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun removeBookFromFavorites(bookId: Int) {
+        val call = ClientAPI.apiService.removeFromFavorites(bookId)
+
+        call.enqueue(object : Callback<AddRemoveFavorite> {
+            override fun onResponse(
+                call: Call<AddRemoveFavorite>,
+                response: Response<AddRemoveFavorite>
+            ) {
+                if (response.isSuccessful) {
+                    val addRemoveFavoriteResponse = response.body()?.message
+                    // Handle the response as needed
+                    if (addRemoveFavoriteResponse == "Book removed from favorites successfully") {
+                        // Update UI or perform other actions
+                        Toast.makeText(requireContext(),"Книгу видалено з улюбленого!",
+                            Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Помилка видалення!",
+                            Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    // Handle unsuccessful response
+                    Log.e(
+                        "qwe",
+                        "Unsuccessful response removeBookFromFavorites: ${response.code()}"
+                    )
+                    Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            override fun onFailure(call: Call<AddRemoveFavorite>, t: Throwable) {
+                Log.e("qwe", "API request failed with exception", t)
+                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

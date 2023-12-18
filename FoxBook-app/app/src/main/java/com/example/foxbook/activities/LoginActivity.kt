@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
+import com.example.foxbook.TokenManager
 import com.example.foxbook.api.Login
 import okhttp3.ResponseBody
 import org.json.JSONObject
@@ -96,17 +97,16 @@ class LoginActivity : AppCompatActivity() {
         val requestCall = ClientAPI.apiService.login(authoriseUser)
 
         requestCall.enqueue(object: Callback<ResponseBody> {
-            override fun onResponse(
-                call: Call<ResponseBody>,
-                response: Response<ResponseBody>
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>
             ) {
+                Log.d("qwe", response.toString())
                 if (response.isSuccessful){
                     // Extract tokens from the response
                     val tokens = extractTokensFromResponse(response)
                     if (tokens != null) {
-                        saveTokens(tokens)
+                        TokenManager.saveTokens(tokens.first, tokens.second)
 
-                        // Start the UserActivity
+                        // Переходимо на меню додатка (UserActivity)
                         val intent = Intent(this@LoginActivity, UserActivity::class.java)
                         startActivity(intent)
 
@@ -128,6 +128,7 @@ class LoginActivity : AppCompatActivity() {
                             Toast.makeText(this@LoginActivity, message, Toast.LENGTH_LONG).show()
                         }
                     } catch (e: Exception) {
+                        Log.d("qwe", e.toString())
                         Toast.makeText(this@LoginActivity, "Помилка авторизації!", Toast.LENGTH_LONG).show()
                     }
                 }
@@ -150,19 +151,4 @@ class LoginActivity : AppCompatActivity() {
             null
         }
     }
-    private fun saveTokens(tokens: Pair<String, String>?) {
-        if (tokens != null) {
-            val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
-            with(sharedPreferences.edit()) {
-                Log.d("qwe", tokens.first.toString())
-                Log.d("qwe", tokens.second.toString())
-                Log.d("qwe", "bookArrayList")
-                putString("access_token", tokens.first)
-                putString("refresh_token", tokens.second)
-                apply()
-            }
-        }
-    }
-
-
-}
+   }
