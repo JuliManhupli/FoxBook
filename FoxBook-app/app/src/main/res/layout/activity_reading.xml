@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,73 +7,56 @@
     android:background="@color/reading_bg_standard"
     tools:context=".activities.ReadingActivity">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline55"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <FrameLayout
+        android:id="@+id/readingFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginVertical="@dimen/activity_vertical_margin"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.93" />
+        tools:context=".activities.ReadingActivity" >
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline56"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.07" />
+        
+        <ImageButton
+            android:id="@+id/imgBtnBackFromReading"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/baseline_arrow_back_24"
+            android:background="@color/transparent"
+            android:layout_margin="10dp"/>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline57"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.04" />
+        <ImageButton
+            android:id="@+id/imgBtnTextFormat"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_margin="10dp"
+            android:background="@color/transparent"
+            android:src="@drawable/baseline_text_format_24"
+            android:layout_gravity="right"/>
 
-    <ImageButton
-        android:id="@+id/imgBtnBackToBookInfo"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:background="@android:color/transparent"
-        android:scaleType="fitXY"
-        android:src="@drawable/baseline_arrow_back_24"
-        app:layout_constraintStart_toStartOf="@+id/guideline56"
-        app:layout_constraintTop_toTopOf="@+id/guideline57" />
+        <ProgressBar
+            android:id="@+id/progressBarInReading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+        </ProgressBar>
 
-    <ImageButton
-        android:id="@+id/imgBtnFormatText"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@android:color/transparent"
-        android:scaleType="fitXY"
-        android:src="@drawable/baseline_text_format_24"
-        app:layout_constraintEnd_toStartOf="@+id/guideline55"
-        app:layout_constraintTop_toTopOf="@+id/guideline57" />
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPagerForReading"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline58"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.15" />
+        <LinearLayout
+            android:id="@+id/pageIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="2dp"
+            android:background="#FFFFFF"
+            android:orientation="horizontal" >
+        </LinearLayout>
+    </FrameLayout>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline59"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.9" />
-
-    <TextView
-        android:id="@+id/txtBookText"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="BookText"
-        android:justificationMode="inter_word"
-        android:textSize="16sp"
-        android:fontFamily="@font/inter"
-        app:layout_constraintBottom_toTopOf="@+id/guideline59"
-        app:layout_constraintEnd_toStartOf="@+id/guideline55"
-        app:layout_constraintStart_toStartOf="@+id/guideline56"
-        app:layout_constraintTop_toTopOf="@+id/guideline58" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
