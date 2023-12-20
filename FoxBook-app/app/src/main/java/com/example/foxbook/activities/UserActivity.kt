@@ -3,12 +3,8 @@ package com.example.foxbook.activities
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProvider
-import com.example.foxbook.fragments.FiltersFragment
 import com.example.foxbook.fragments.ProfileFragment
 import com.example.foxbook.R
-import com.example.foxbook.SharedViewModel
 import com.example.foxbook.fragments.HomePageFragment
 import com.example.foxbook.fragments.ReadingInProgressFragment
 import com.example.foxbook.fragments.SearchPageFragment
@@ -17,12 +13,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class UserActivity : AppCompatActivity() {
 
-    lateinit var sharedViewModel: SharedViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
 
-        sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
 
         //фрагменти
         val homeFragment = HomePageFragment()

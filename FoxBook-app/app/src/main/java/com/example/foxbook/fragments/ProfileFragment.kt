@@ -3,12 +3,14 @@ package com.example.foxbook.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.foxbook.ClientAPI
+import com.example.foxbook.EditProfileFragment
 import com.example.foxbook.R
 import com.example.foxbook.api.UserProfile
 import retrofit2.Call
@@ -23,6 +25,23 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // до редагування профілю
+        val toProfileEdit: Button = view.findViewById(R.id.btnEditProfile)
+        toProfileEdit.setOnClickListener {
+            val editProfileFragment = EditProfileFragment()
+            val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+            transaction.replace(R.id.flFragment, editProfileFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+
+        // вихід з акаунту
+        val exitBtn: Button = view.findViewById(R.id.btnExit)
+        exitBtn.setOnClickListener {
+            Toast.makeText(context, "Вихід з акаунту!", Toast.LENGTH_SHORT).show()
+        }
+
 
         val txtProfileName: TextView = view.findViewById(R.id.txtProfileName)
         val txtProfileEmail: TextView = view.findViewById(R.id.txtProfileEmail)

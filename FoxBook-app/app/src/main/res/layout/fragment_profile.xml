@@ -14,6 +14,13 @@
         app:layout_constraintGuide_percent="0.12" />
 
     <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline78"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline49"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,6 +32,7 @@
         android:layout_width="130dp"
         android:layout_height="130dp"
         app:cardCornerRadius="100dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline77"
         app:layout_constraintStart_toStartOf="@+id/guideline48"
         app:layout_constraintTop_toTopOf="@+id/guideline50">
 
@@ -42,6 +50,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.04" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline77"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.27" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline68"
@@ -68,28 +83,57 @@
         android:id="@+id/txtProfileName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:layout_marginTop="40dp"
+        android:ems="9"
         android:fontFamily="@font/inter"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:text="ProfileName"
         android:maxEms="10"
-        android:ems="10"
+        android:text="ProfileName"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/txtProfileEmail"
         app:layout_constraintEnd_toStartOf="@+id/guideline49"
-        app:layout_constraintStart_toEndOf="@+id/cardView"
-        app:layout_constraintTop_toTopOf="@+id/guideline50" />
+        app:layout_constraintStart_toStartOf="@+id/guideline78"
+        app:layout_constraintTop_toTopOf="@+id/guideline50"
+        app:layout_constraintVertical_bias="0.5" />
 
     <TextView
         android:id="@+id/txtProfileEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
         android:lines="2"
         android:text="ProfileEmail"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/btnEditProfile"
         app:layout_constraintEnd_toStartOf="@+id/guideline49"
-        app:layout_constraintStart_toEndOf="@+id/cardView"
-        app:layout_constraintTop_toBottomOf="@+id/txtProfileName" />
+        app:layout_constraintStart_toStartOf="@+id/guideline78"
+        app:layout_constraintTop_toBottomOf="@+id/txtProfileName"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <Button
+        android:id="@+id/btnEditProfile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Редагувати"
+        android:fontFamily="@font/inter"
+        android:backgroundTint="@color/settings"
+        app:layout_constraintBottom_toTopOf="@+id/btnExit"
+        app:layout_constraintEnd_toStartOf="@+id/guideline49"
+        app:layout_constraintStart_toStartOf="@+id/guideline78"
+        app:layout_constraintTop_toBottomOf="@+id/txtProfileEmail"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <Button
+        android:id="@+id/btnExit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Вийти"
+        android:fontFamily="@font/inter"
+        android:backgroundTint="@color/settings"
+        app:layout_constraintBottom_toTopOf="@+id/guideline77"
+        app:layout_constraintEnd_toStartOf="@+id/guideline49"
+        app:layout_constraintStart_toStartOf="@+id/guideline78"
+        app:layout_constraintTop_toBottomOf="@+id/btnEditProfile"
+        app:layout_constraintVertical_bias="0.5" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/likedBooks"

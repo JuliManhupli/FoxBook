@@ -1,24 +1,35 @@
 package com.example.foxbook.page
 
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.example.foxbook.R
+import com.example.foxbook.api.BookPage
 
 
-class BookPageAdapter(fragmentManager: FragmentManager, private var pages: Int) : FragmentPagerAdapter(
-    fragmentManager
-) {
-
-    override fun getItem(position: Int): Fragment {
-        return PageContents.create(position)
+class BookPageAdapter(private val pageList: ArrayList<BookPage>): RecyclerView.Adapter<BookPageAdapter.PageViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookPageAdapter.PageViewHolder {
+        val itemView = LayoutInflater.from(parent.context).inflate(
+            R.layout.page_item, parent,
+            false)
+        return PageViewHolder((itemView))
     }
 
-    override fun getCount(): Int {
-        return pages
+    override fun onBindViewHolder(holder: PageViewHolder, position: Int) {
+        val currentItem = pageList[position]
+        holder.bookPage.text = currentItem.text
     }
 
-    fun incrementPageCount() {
-        pages += 1
-        notifyDataSetChanged()
+    override fun getItemCount(): Int {
+        return pageList.size
+    }
+
+    class PageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+        val bookPage: TextView = itemView.findViewById(R.id.mText)
     }
 }
