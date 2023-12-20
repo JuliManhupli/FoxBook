@@ -8,14 +8,12 @@ open class PageContents : Fragment() {
     companion object {
         const val ARG_PAGE = "page"
 
+        // створення фрагменту, у який додається текст
         fun create(pageNumber: Int): PageContents {
             val fragment = PageFragment()
-            Log.d("PAGER", fragment.toString())
             val args = Bundle()
-            Log.d("PAGER", args.toString())
             args.putInt(ARG_PAGE, pageNumber)
             fragment.arguments = args
-            Log.d("PAGER", args.toString())
             return fragment
         }
     }

@@ -1,20 +1,15 @@
 package com.example.foxbook.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
-import com.example.foxbook.api.Book
-import com.example.foxbook.api.BooksResponse
-import com.example.foxbook.api.CheckIfBookInFavorites
 import com.example.foxbook.api.UserProfile
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,11 +35,22 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         }
 
-        val favouriteBooksButton: ConstraintLayout = view.findViewById(R.id.likedBooks)
+        // до улюблених книг
+        val favouriteBooksButton: CardView = view.findViewById(R.id.likedBooks)
         favouriteBooksButton.setOnClickListener {
             val favouriteBooksFragment = FavouriteBooksFragment()
             val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
             transaction.replace(R.id.flFragment, favouriteBooksFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+
+        // до налаштувань
+        val toSettings: CardView = view.findViewById(R.id.toReadingSettings)
+        toSettings.setOnClickListener {
+            val settingsFragment = SettingsFragment()
+            val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+            transaction.replace(R.id.flFragment, settingsFragment)
             transaction.addToBackStack(null)
             transaction.commit()
         }

@@ -1,5 +1,6 @@
 package com.example.foxbook.activities
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.TextPaint
 import android.util.Log
@@ -102,138 +103,26 @@ open class ReadingActivity : AppCompatActivity() {
                 "below for those interested. Sections 1.10.32 and 1.10.33 from de Finibus Bonorum et Malorum" +
                 "by Cicero are also reproduced in their exact original form, accompanied by English versions from" +
                 "the 1914 translation by H. Rackham."
-//                "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in" +
-//                "a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard" +
-//                "McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more" +
-//                "obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of" +
-//                "the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from" +
-//                "sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum(The Extremes of Good and Evil)" +
-//                "by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular" +
-//                "during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet, comes from" +
-//                "a line in section 1.10.32.The standard chunk of Lorem Ipsum used since the 1500s is reproduced" +
-//                "below for those interested. Sections 1.10.32 and 1.10.33 from de Finibus Bonorum et Malorum" +
-//                "by Cicero are also reproduced in their exact original form, accompanied by English versions from" +
-//                "the 1914 translation by H. Rackham." +
-//                "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in" +
-//                "a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard" +
-//                "McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more" +
-//                "obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of" +
-//                "the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from" +
-//                "sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum(The Extremes of Good and Evil)" +
-//                "by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular" +
-//                "during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet, comes from" +
-//                "a line in section 1.10.32.The standard chunk of Lorem Ipsum used since the 1500s is reproduced" +
-//                "below for those interested. Sections 1.10.32 and 1.10.33 from de Finibus Bonorum et Malorum" +
-//                "by Cicero are also reproduced in their exact original form, accompanied by English versions from" +
-//                "the 1914 translation by H. Rackham." +
-//                "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in" +
-//                "a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard" +
-//                "McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more" +
-//                "obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of" +
-//                "the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from" +
-//                "sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum(The Extremes of Good and Evil)" +
-//                "by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular" +
-//                "during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet, comes from" +
-//                "a line in section 1.10.32.The standard chunk of Lorem Ipsum used since the 1500s is reproduced" +
-//                "below for those interested. Sections 1.10.32 and 1.10.33 from de Finibus Bonorum et Malorum" +
-//                "by Cicero are also reproduced in their exact original form, accompanied by English versions from" +
-//                "the 1914 translation by H. Rackham." +
-//                "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in" +
-//                "a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard" +
-//                "McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more" +
-//                "obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of" +
-//                "the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from" +
-//                "sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum(The Extremes of Good and Evil)" +
-//                "by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular" +
-//                "during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet, comes from" +
-//                "a line in section 1.10.32.The standard chunk of Lorem Ipsum used since the 1500s is reproduced" +
-//                "below for those interested. Sections 1.10.32 and 1.10.33 from de Finibus Bonorum et Malorum" +
-//                "by Cicero are also reproduced in their exact original form, accompanied by English versions from" +
-//                "the 1914 translation by H. Rackham." +
-//                "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in" +
-//                "a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard" +
-//                "McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more" +
-//                "obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of" +
-//                "the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from" +
-//                "sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum(The Extremes of Good and Evil)" +
-//                "by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular" +
-//                "during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet, comes from" +
-//                "a line in section 1.10.32.The standard chunk of Lorem Ipsum used since the 1500s is reproduced" +
-//                "below for those interested. Sections 1.10.32 and 1.10.33 from de Finibus Bonorum et Malorum" +
-//                "by Cicero are also reproduced in their exact original form, accompanied by English versions from" +
-//                "the 1914 translation by H. Rackham." +
-//                "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in" +
-//                "a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard" +
-//                "McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more" +
-//                "obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of" +
-//                "the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from" +
-//                "sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum(The Extremes of Good and Evil)" +
-//                "by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular" +
-//                "during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet, comes from" +
-//                "a line in section 1.10.32.The standard chunk of Lorem Ipsum used since the 1500s is reproduced" +
-//                "below for those interested. Sections 1.10.32 and 1.10.33 from de Finibus Bonorum et Malorum" +
-//                "by Cicero are also reproduced in their exact original form, accompanied by English versions from" +
-//                "the 1914 translation by H. Rackham." +
-//                "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in" +
-//                "a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard" +
-//                "McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more" +
-//                "obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of" +
-//                "the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from" +
-//                "sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum(The Extremes of Good and Evil)" +
-//                "by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular" +
-//                "during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet, comes from" +
-//                "a line in section 1.10.32.The standard chunk of Lorem Ipsum used since the 1500s is reproduced" +
-//                "below for those interested. Sections 1.10.32 and 1.10.33 from de Finibus Bonorum et Malorum" +
-//                "by Cicero are also reproduced in their exact original form, accompanied by English versions from" +
-//                "the 1914 translation by H. Rackham." +
-//                "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in" +
-//                "a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard" +
-//                "McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more" +
-//                "obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of" +
-//                "the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from" +
-//                "sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum(The Extremes of Good and Evil)" +
-//                "by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular" +
-//                "during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet, comes from" +
-//                "a line in section 1.10.32.The standard chunk of Lorem Ipsum used since the 1500s is reproduced" +
-//                "below for those interested. Sections 1.10.32 and 1.10.33 from de Finibus Bonorum et Malorum" +
-//                "by Cicero are also reproduced in their exact original form, accompanied by English versions from" +
-//                "the 1914 translation by H. Rackham." +
-//                "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in" +
-//                "a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard" +
-//                "McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more" +
-//                "obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of" +
-//                "the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from" +
-//                "sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum(The Extremes of Good and Evil)" +
-//                "by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular" +
-//                "during the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor sit amet, comes from" +
-//                "a line in section 1.10.32.The standard chunk of Lorem Ipsum used since the 1500s is reproduced" +
-//                "below for those interested. Sections 1.10.32 and 1.10.33 from de Finibus Bonorum et Malorum" +
-//                "by Cicero are also reproduced in their exact original form, accompanied by English versions from" +
-//                "the 1914 translation by H. Rackham."
-
 
 
         progressBar = findViewById(R.id.progressBarInReading)
 
+        // лейаут тексту
         val textViewLayout = layoutInflater.inflate(
             R.layout.page_item,
             window.decorView.findViewById<View>(android.R.id.content) as ViewGroup,
             false
         ) as ViewGroup
 
-
-
+        // Текстове поле
         val contentTextView = textViewLayout.findViewById(R.id.mText) as TextView
 
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            contentTextView.justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
-//        }
-//        contentTextView.text = bookString
-//
-////        contentTextView.justificationMode = View.TEXT_ALIGNMENT_GRAVITY
-//        Log.d("PAGER", contentTextView.text as String)
+//        contentTextView.setBackgroundColor(resources.getColor(R.color.settings_grey_bg))
+//        contentTextView.setTextColor(resources.getColor(R.color.white))
+//        contentTextView.textSize = 60.0f
+//        contentTextView.typeface = Typeface.create("Sans-serif-condensed", Typeface.NORMAL)
 
-        // Instantiate a ViewPager and a PagerAdapter.
+        // Ініціалізація ВьюПейджера
         viewPager = findViewById(R.id.viewPagerForReading)
 
 
@@ -243,6 +132,8 @@ open class ReadingActivity : AppCompatActivity() {
             contentTextView.paint, textViewLayout,
             screenWidth(), getMaxLineCount(contentTextView), bookString
         )
+
+        // Передаємо текст на розділення
         val pt = PagerTask(this)
         pt.execute(viewAndPaint)
     }
@@ -257,13 +148,13 @@ open class ReadingActivity : AppCompatActivity() {
         val screenHeight = mDisplay.height
         val paint = view.paint
 
-        //Working Out How Many Lines Can Be Entered In The Screen
+        // Вираховуємо скількі ліній поміститься на екран
         val fm = paint.fontMetrics
         var textHeight = fm.top - fm.bottom
         textHeight = abs(textHeight)
         var maxLineCount = ((screenHeight - verticalMargin) / textHeight).toInt()
 
-        // add extra spaces at the bottom, remove 2 lines
+        // Додаткове місце внизу
         maxLineCount -= 2
         return maxLineCount
     }
@@ -281,6 +172,8 @@ open class ReadingActivity : AppCompatActivity() {
 
             override fun onPageSelected(position: Int) {
                 showPageIndicator(position)
+                val currentPageNumber: Int = position + 1
+                Log.d("HEEEEEEEEEEEEEEEE", "Current Page Number: $currentPageNumber")
             }
 
             override fun onPageScrollStateChanged(state: Int) {
@@ -290,15 +183,15 @@ open class ReadingActivity : AppCompatActivity() {
 
     fun onPageProcessedUpdate(progress: ProgressTracker) {
         mPages = progress.pages
-        // init the pager if necessary
+
         if (!::bookPageAdapter.isInitialized) {
-            Log.d("PAGER", "YES")
             initViewPager()
             progressBar.visibility = View.GONE
         } else {
-            Log.d("PAGER", "NO :(")
             (bookPageAdapter as BookPageAdapter).incrementPageCount()
         }
+
+        // створення індикатору сторінок
         addPageIndicator(progress.totalPages)
     }
 

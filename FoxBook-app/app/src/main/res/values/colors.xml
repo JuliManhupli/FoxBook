@@ -9,4 +9,7 @@
     <color name="book_bg">#FFECDA</color>
     <color name="chosen_filter">#A69BD1</color>
     <color name="reading_bg_standard">#FFECDA</color>
+    <color name="settings">#9D8ED7</color>
+    <color name="settings_grey_bg">#8E8E8E</color>
+    <color name="progress_leftover">#E2D3F6</color>
 </resources>
