@@ -1,28 +1,23 @@
 package com.example.foxbook.fragments
 
 import android.graphics.Typeface
-import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProvider
 import com.example.foxbook.R
-import com.example.foxbook.SharedViewModel
 import kotlin.properties.Delegates
 
 
@@ -47,6 +42,40 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             transaction.addToBackStack(null)
             transaction.commit()
         }
+
+//        val seekBrightnessBar: SeekBar = view.findViewById(R.id.seekBarBrightness)
+//        val brightness: Int = Settings.System.getInt(requireActivity().contentResolver,
+//            Settings.System.SCREEN_BRIGHTNESS, 0)
+//        seekBrightnessBar.progress = brightness
+
+//        seekBrightnessBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+//            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+//                val canWrite = Settings.System.canWrite(context)
+//
+//                if (canWrite) {
+//                    Settings.System.putInt(requireActivity().contentResolver,
+//                        Settings.System.SCREEN_BRIGHTNESS, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
+//                    Settings.System.putInt(requireActivity().contentResolver,
+//                        Settings.System.SCREEN_BRIGHTNESS, progress)
+//                } else {
+//                    val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+//                    startActivity(intent)
+//                }
+//            }
+//
+//            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+//                TODO("Not yet implemented")
+//            }
+//
+//        }
+//        )
+
+
+
 
         // текстове поле
         exampleText = view.findViewById(R.id.sampleBookText)
@@ -131,7 +160,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             ) {
                 if (position == 0) {
                         Log.d("TXTFONT", "Here")
-                        val customFont = ResourcesCompat.getFont(context!!, R.font.inter)
+                        val customFont = ResourcesCompat.getFont(requireContext(), R.font.inter)
                         exampleText.typeface = customFont
                 } else {
                     val chosenFont = parent.getItemAtPosition(position).toString().lowercase()
@@ -146,22 +175,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         }
 
         // встановлення всіх параметрів для тексту
-        val changeSettingsBtn: Button = view.findViewById(R.id.btnChangeTextBookSettings)
-
-        val sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
-
-        changeSettingsBtn.setOnClickListener {
-            Log.d("TEXTDATA", currentBg.toString())
-            Log.d("TEXTDATA", currentSampleTextColor.toString())
-            Log.d("TEXTDATA", currentTextSize.toString())
-            Log.d("TEXTDATA", currentFont.toString())
-            val tempArray = arrayListOf(
-                currentBg, currentSampleTextColor, currentTextSize, currentFont
-            )
-            sharedViewModel.data.value = tempArray
-            Log.d("AAAAAAAAAAAAAAAAAAAAA", sharedViewModel.data.value.toString())
-            Toast.makeText(context, "Дані збережено", Toast.LENGTH_LONG).show()
-        }
+//        val changeSettingsBtn: Button = view.findViewById(R.id.btnChangeTextBookSettings)
+//        changeSettingsBtn.setOnClickListener {
+//        }
     }
 
     private fun setBGColor(bgColor: Int, textColor: Int) {
