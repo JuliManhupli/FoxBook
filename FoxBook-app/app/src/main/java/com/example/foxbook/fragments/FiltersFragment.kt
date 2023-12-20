@@ -35,7 +35,7 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
     private lateinit var recyclerView: RecyclerView
     private lateinit var genreArrayList: ArrayList<Genre>
 
-    lateinit var genreAdapter: GenreAdapter
+    private lateinit var genreAdapter: GenreAdapter
 
     private var selectedGenres: List<String> = emptyList()
     private var selectedAuthors: String? = null
@@ -120,7 +120,6 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
                 id: Long
             ) {
                 selectedSorting = parent.getItemAtPosition(position).toString()
-                val selectedItem = parent.getItemAtPosition(position).toString()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {

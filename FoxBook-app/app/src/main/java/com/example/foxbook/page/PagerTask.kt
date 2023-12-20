@@ -25,9 +25,10 @@ class PagerTask(private val activity: ReadingActivity) :
         val maxLineCount: Int = viewAndPaint.maxLineCount
         var totalCharactersProcessedSoFar = 0
 
-        // contentString is the whole string of the book
         var totalPages = 0
         while (viewAndPaint.contentString.isNotEmpty()) {
+
+            // рахує кількість ссимволів на сторінці
             while (lineCount < maxLineCount && charactersProcessed < viewAndPaint.contentString.length) {
                 val breakResult = paint.breakText(
                     viewAndPaint.contentString.substring(charactersProcessed),
@@ -39,6 +40,7 @@ class PagerTask(private val activity: ReadingActivity) :
                 val newlineIndex = viewAndPaint.contentString.indexOf('\n', charactersProcessed)
                 val tabIndex = viewAndPaint.contentString.indexOf('\t', charactersProcessed)
 
+                // обрахунки для табуляції і ентерів
                 if ((newlineIndex != -1 && newlineIndex < charactersProcessed + breakResult) ||
                     (tabIndex != -1 && tabIndex < charactersProcessed + breakResult)) {
                     // Include characters up to the newline or tab character
@@ -51,23 +53,29 @@ class PagerTask(private val activity: ReadingActivity) :
                     // Include the entire breakResult
                     charactersProcessed += breakResult
                 }
-                Log.d("HEEEEEEEEEEEEEEEE", charactersProcessed.toString())
                 lineCount++
             }
 
-            // Retrieve the String to be displayed in the current textview
+            // Обрізаємо текст для показу на одну сторінку
             var stringToBeDisplayed: String = viewAndPaint.contentString.substring(0, charactersProcessed)
+
             val nextIndex = charactersProcessed
+
+            // беремо наступний символ
             val nextChar =
                 if (nextIndex < viewAndPaint.contentString.length) viewAndPaint.contentString[nextIndex] else ' '
+
+            // обрізаємо останній пробіл
             if (!Character.isWhitespace(nextChar)) {
                 stringToBeDisplayed =
                     stringToBeDisplayed.substring(0, stringToBeDisplayed.lastIndexOf(" "))
             }
             charactersProcessed = stringToBeDisplayed.length
+
+            // обрізаємо в нову стрічку залишок тексту
             viewAndPaint.contentString = viewAndPaint.contentString.substring(charactersProcessed)
 
-            // publish progress
+            // передаємо дані
             progress.totalPages = totalPages
             progress.addPage(
                 totalPages,
@@ -78,7 +86,7 @@ class PagerTask(private val activity: ReadingActivity) :
 
             totalCharactersProcessedSoFar += charactersProcessed
 
-            // reset per page items
+            // Онульовуємо дані для нової сторінки
             charactersProcessed = 0
             lineCount = 0
 

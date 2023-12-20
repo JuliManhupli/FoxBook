@@ -8,11 +8,6 @@ import androidx.fragment.app.FragmentPagerAdapter
 class BookPageAdapter(fragmentManager: FragmentManager, private var pages: Int) : FragmentPagerAdapter(
     fragmentManager
 ) {
-//    init {
-//        if (fragmentManager == null) {
-//            throw IllegalArgumentException("FragmentManager cannot be null")
-//        }
-//    }
 
     override fun getItem(position: Int): Fragment {
         return PageContents.create(position)
