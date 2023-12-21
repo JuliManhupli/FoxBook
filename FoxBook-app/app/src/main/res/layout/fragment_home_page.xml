@@ -6,14 +6,256 @@
     android:layout_height="match_parent"
     tools:context=".fragments.HomePageFragment">
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:backgroundTint="@color/book_bg"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline98"
+        app:layout_constraintEnd_toStartOf="@+id/guideline92"
+        app:layout_constraintStart_toStartOf="@+id/guideline91"
+        app:layout_constraintTop_toTopOf="@+id/guideline96">
+        
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:padding="10dp"
+                android:text="Вітаємо, "
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline89"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.97" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline90"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.63" />
 
     <TextView
         android:id="@+id/textView25"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="HomePage"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Рекомендації"
+        android:fontFamily="@font/inter"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline90"
+        app:layout_constraintStart_toStartOf="@+id/guideline91" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerRecommendView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/book_bg"
+        app:layout_constraintBottom_toTopOf="@+id/guideline89"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/guideline90"
+        tools:listitem="@layout/book_recommendation_layout" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline91"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.07" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline92"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.93" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline93"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline96"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline98"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.12" />
+
+    <TextView
+        android:id="@+id/txtForReading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/inter"
+        android:text="Продовжити читати"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline93"
+        app:layout_constraintStart_toStartOf="@+id/guideline91" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:cardCornerRadius="20dp"
+        android:backgroundTint="@color/book_bg"
+        app:layout_constraintBottom_toTopOf="@+id/guideline94"
+        app:layout_constraintEnd_toStartOf="@+id/guideline92"
+        app:layout_constraintStart_toStartOf="@+id/guideline91"
+        app:layout_constraintTop_toTopOf="@+id/guideline93">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView2"
+                android:layout_width="160dp"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="10dp"
+                android:layout_marginStart="10dp"
+                app:cardCornerRadius="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/imgBookContinueReadCover"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/peremozhtsi" />
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/txtBookContinueReadName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="20dp"
+                android:lines="3"
+                android:text="BookName"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cardView2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/bookContinueReadAuthor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Author"
+                android:textSize="14sp"
+                android:fontFamily="@font/inter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cardView2"
+                app:layout_constraintTop_toBottomOf="@+id/txtBookContinueReadName" />
+
+            <TextView
+                android:id="@+id/bookContinueReadRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:fontFamily="@font/inter"
+                android:text="Rating"
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@+id/cardView2"
+                app:layout_constraintTop_toBottomOf="@+id/bookContinueReadAuthor" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/baseline_star_24"
+                app:layout_constraintStart_toEndOf="@+id/bookContinueReadRating"
+                app:layout_constraintTop_toBottomOf="@+id/bookContinueReadAuthor" />
+
+            <TextView
+                android:id="@+id/txtBookContinueReadProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:text="Прочитано"
+                android:textSize="14sp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/seekBarProgressContinueRead"
+                app:layout_constraintStart_toEndOf="@+id/cardView2" />
+
+            <TextView
+                android:id="@+id/txtContinueReadPercentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:text="Percent%"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintBottom_toTopOf="@+id/seekBarProgressContinueRead"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <SeekBar
+                android:id="@+id/seekBarProgressContinueRead"
+                android:layout_width="0dp"
+                android:layout_height="10dp"
+                android:indeterminate="false"
+                android:max="255"
+                android:progress="50"
+                android:progressTint="@color/settings"
+                android:scaleX="1.1"
+                android:scaleY="5"
+                android:thumb="@color/transparent"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cardView2"
+                app:trackThickness="10dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline94"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.55" />
 </androidx.constraintlayout.widget.ConstraintLayout>
