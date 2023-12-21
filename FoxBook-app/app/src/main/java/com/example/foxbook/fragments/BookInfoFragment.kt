@@ -1,6 +1,5 @@
 package com.example.foxbook.fragments
 
-import android.content.Context
 import android.content.Intent
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.RequestListener
@@ -22,9 +21,9 @@ import com.bumptech.glide.Glide
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
 import com.example.foxbook.activities.ReadingActivity
-import com.example.foxbook.api.AddRemoveFavorite
 import com.example.foxbook.api.Book
 import com.example.foxbook.api.CheckIfBookInFavorites
+import com.example.foxbook.api.Message
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,12 +47,6 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
         Log.e("qwe", "data")
         Log.e("qwe", data.toString())
 
-        val btnToReadingBook: Button = view.findViewById(R.id.btnToReading)
-
-        btnToReadingBook.setOnClickListener{
-            val intent = Intent(activity, ReadingActivity::class.java)
-            startActivity(intent)
-        }
 
         val backButton: ImageButton = view.findViewById(R.id.imgBtnBackToSearch)
 
@@ -68,16 +61,26 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
         if (data != null) {
 
-                val likeButton: ImageButton = view.findViewById(R.id.imgBtnUnliked)
+            // кнопка "читати"
+            val btnToReadingBook: Button = view.findViewById(R.id.btnToReading)
 
-                checkIfBookInFavorites(data.id) { isBookInFavorites ->
-                    requireActivity().runOnUiThread {
-                        updateUI(isBookInFavorites)
-                    }
+            btnToReadingBook.setOnClickListener {
+                addBookToLibrary(data.id)
+                val intent = Intent(activity, ReadingActivity::class.java)
+                intent.putExtra(ReadingActivity.BOOK_ID, data.id)
+                startActivity(intent)
+            }
+
+            val likeButton: ImageButton = view.findViewById(R.id.imgBtnUnliked)
+
+            checkIfBookInFavorites(data.id) { isBookInFavorites ->
+                requireActivity().runOnUiThread {
+                    updateUI(isBookInFavorites)
                 }
+            }
 
-                likeButton.setOnClickListener {
-                    checkIfBookInFavorites(data.id) { isBookInFavorites ->
+            likeButton.setOnClickListener {
+                checkIfBookInFavorites(data.id) { isBookInFavorites ->
                     if (isBookInFavorites) {
                         // Remove the book from favorites
                         removeBookFromFavorites(data.id)
@@ -212,10 +215,10 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
     private fun addBookToFavorites(bookId: Int) {
         val call = ClientAPI.apiService.addToFavorites(bookId)
 
-        call.enqueue(object : Callback<AddRemoveFavorite> {
+        call.enqueue(object : Callback<Message> {
             override fun onResponse(
-                call: Call<AddRemoveFavorite>,
-                response: Response<AddRemoveFavorite>
+                call: Call<Message>,
+                response: Response<Message>
             ) {
                 if (response.isSuccessful) {
 
@@ -223,12 +226,15 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                     // Handle the response as needed
                     if (addRemoveFavoriteResponse == "Book added to favorites successfully") {
                         // Update UI or perform other actions
-                        Toast.makeText(requireContext(),"Книгу успішно додано до улюбленого!",
+                        Toast.makeText(
+                            requireContext(), "Книгу успішно додано до улюбленого!",
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        Toast.makeText(requireContext(), "Помилка додавання!",
-                            Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(), "Помилка додавання!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else {
                     // Handle unsuccessful response
@@ -238,7 +244,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 }
             }
 
-            override fun onFailure(call: Call<AddRemoveFavorite>, t: Throwable) {
+            override fun onFailure(call: Call<Message>, t: Throwable) {
                 Log.e("qwe", "API request failed with exception", t)
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
@@ -248,21 +254,25 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
     private fun removeBookFromFavorites(bookId: Int) {
         val call = ClientAPI.apiService.removeFromFavorites(bookId)
 
-        call.enqueue(object : Callback<AddRemoveFavorite> {
+        call.enqueue(object : Callback<Message> {
             override fun onResponse(
-                call: Call<AddRemoveFavorite>,
-                response: Response<AddRemoveFavorite>
+                call: Call<Message>,
+                response: Response<Message>
             ) {
                 if (response.isSuccessful) {
                     val addRemoveFavoriteResponse = response.body()?.message
                     // Handle the response as needed
                     if (addRemoveFavoriteResponse == "Book removed from favorites successfully") {
                         // Update UI or perform other actions
-                        Toast.makeText(requireContext(),"Книгу видалено з улюбленого!",
-                            Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(), "Книгу видалено з улюбленого!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
-                        Toast.makeText(requireContext(), "Помилка видалення!",
-                            Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(), "Помилка видалення!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else {
                     // Handle unsuccessful response
@@ -275,7 +285,48 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 }
             }
 
-            override fun onFailure(call: Call<AddRemoveFavorite>, t: Throwable) {
+            override fun onFailure(call: Call<Message>, t: Throwable) {
+                Log.e("qwe", "API request failed with exception", t)
+                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
+    private fun addBookToLibrary(bookId: Int) {
+        val call = ClientAPI.apiService.addBookToLibrary(bookId)
+
+        call.enqueue(object : Callback<Message> {
+            override fun onResponse(
+                call: Call<Message>,
+                response: Response<Message>
+            ) {
+                if (response.isSuccessful) {
+
+                    val addBookToLibraryResponse = response.body()?.message
+                    Log.e("qwe", "addBookToLibraryResponse - $addBookToLibraryResponse")
+                    // Handle the response as needed
+                    if (addBookToLibraryResponse == "Book added to library") {
+                        // Update UI or perform other actions
+                        Toast.makeText(
+                            requireContext(), "Книгу додано до бібліотеки!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else if (addBookToLibraryResponse != "Book is already library") {
+                        Toast.makeText(
+                            requireContext(), "Помилка додавання!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    // Handle unsuccessful response
+                    Log.e("qwe", "Unsuccessful response addBookToLibrary: ${response.code()}")
+                    Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            override fun onFailure(call: Call<Message>, t: Throwable) {
                 Log.e("qwe", "API request failed with exception", t)
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }

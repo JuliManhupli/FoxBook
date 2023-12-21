@@ -10,3 +10,13 @@ class FavoriteBook(models.Model):
 
     class Meta:
         unique_together = ('user', 'book')
+
+
+class Library(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_rating = models.IntegerField(default=0, null=True, blank=True)
+    reading_progress = models.IntegerField(default=0, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('user', 'book')

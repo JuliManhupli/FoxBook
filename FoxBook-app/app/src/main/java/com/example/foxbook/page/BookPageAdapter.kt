@@ -12,24 +12,31 @@ import com.example.foxbook.R
 import com.example.foxbook.api.BookPage
 
 
-class BookPageAdapter(private val pageList: ArrayList<BookPage>): RecyclerView.Adapter<BookPageAdapter.PageViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookPageAdapter.PageViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(
-            R.layout.page_item, parent,
-            false)
-        return PageViewHolder((itemView))
+class BookPageAdapter : RecyclerView.Adapter<BookPageAdapter.PageViewHolder>() {
+
+    private val pages: MutableList<String> = mutableListOf()
+
+    fun addPage(pageText: String) {
+        pages.add(pageText)
+        notifyDataSetChanged()
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.page_item, parent, false)
+        return PageViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: PageViewHolder, position: Int) {
-        val currentItem = pageList[position]
-        holder.bookPage.text = currentItem.text
+        holder.bind(pages[position])
     }
 
-    override fun getItemCount(): Int {
-        return pageList.size
-    }
+    override fun getItemCount(): Int = pages.size
 
-    class PageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-        val bookPage: TextView = itemView.findViewById(R.id.mText)
+    class PageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val contentTextView: TextView = itemView.findViewById(R.id.mText)
+
+        fun bind(pageText: String) {
+            contentTextView.text = pageText
+        }
     }
 }
