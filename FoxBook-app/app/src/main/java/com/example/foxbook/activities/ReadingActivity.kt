@@ -2,6 +2,7 @@ package com.example.foxbook.activities
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,10 +22,16 @@ open class ReadingActivity : AppCompatActivity() {
 
     private lateinit var pageText: ArrayList<String>
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reading)
+
+        val textLayout = layoutInflater.inflate(R.layout.page_item, null)
+        val textView: TextView = textLayout.findViewById(R.id.mText)
+
+        Log.d("RRRRRRRRRRRRRRRRRRR", textView.text.toString())
+        Log.d("RRRRRRRRRRRRRRRRRRR", textView.textSize.toString())
+
 
         pageText = arrayListOf(
             "Contrary to popular belief, Lorem Ipsum\n \n\nis not simply random text. It has roots in" +

@@ -13,7 +13,7 @@ import com.example.foxbook.api.BookPage
 
 
 class BookPageAdapter(private val pageList: ArrayList<BookPage>): RecyclerView.Adapter<BookPageAdapter.PageViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookPageAdapter.PageViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(
             R.layout.page_item, parent,
             false)
