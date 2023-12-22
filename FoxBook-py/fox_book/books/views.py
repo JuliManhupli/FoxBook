@@ -4,7 +4,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from .models import Book
-from .serializers import BookSerializer
+from .serializers import BookSerializer, BookTextSerializer
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -17,42 +17,54 @@ class BookList(ListAPIView):
     pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
-        queryset = Book.objects.all()
+        try:
+            queryset = Book.objects.all()
 
-        # Get filter parameters from the request
-        genres = self.request.query_params.get('genres', None)
-        author = self.request.query_params.get('author', None)
-        sorting = self.request.query_params.get('sorting', None)
+            genres = self.request.query_params.get('genres', None)
+            author = self.request.query_params.get('author', None)
+            sorting = self.request.query_params.get('sorting', None)
 
-        # Apply filters
-        if genres:
-            genres = genres.split(',')
-            queryset = queryset.filter(genre__in=genres)
+            if genres:
+                genres = genres.split(',')
+                queryset = queryset.filter(genre__in=genres)
 
-        if author:
-            queryset = queryset.filter(type=author)
+            if author:
+                queryset = queryset.filter(type=author)
 
-        if sorting and sorting != "Без сортувань":
-            # Sort by the selected sorting option
-            if sorting == 'Назва(А-Я)':
-                queryset = queryset.order_by('title')
-            elif sorting == 'Назва(Я-А)':
-                queryset = queryset.order_by('-title')
-            elif sorting == 'Автор(А-Я)':
-                queryset = queryset.order_by('author')
-            elif sorting == 'Автор(Я-А)':
-                queryset = queryset.order_by('-author')
-            elif sorting == 'Оцінка(За зростанням)':
-                queryset = queryset.order_by('rating')
-            elif sorting == 'Оцінка(За спаданням)':
-                queryset = queryset.order_by('-rating')
+            if sorting and sorting != "Без сортувань":
+                # Define a dictionary to map sorting options to fields
+                sorting_options = {
+                    'Назва(А-Я)': 'title',
+                    'Назва(Я-А)': '-title',
+                    'Автор(А-Я)': 'author',
+                    'Автор(Я-А)': '-author',
+                    'Оцінка(За зростанням)': 'rating',
+                    'Оцінка(За спаданням)': '-rating',
+                }
 
-        return queryset
+                # Use get() to get the corresponding field or default to None
+                sort_field = sorting_options.get(sorting)
+
+                if sort_field:
+                    queryset = queryset.order_by(sort_field)
+
+            return queryset
+
+        except Exception as e:
+            return Book.objects.none()
 
 
 @api_view(['GET'])
 def get_all_genres(request):
-    genres = set()
-    for book in Book.objects.all():
-        genres.update(book.genre.split(','))
-    return Response(list(genres))
+    genres = Book.objects.values_list('genre', flat=True).distinct()
+    return Response(genres)
+
+
+@api_view(['GET'])
+def get_book_text(request, book_id):
+    try:
+        book = Book.objects.get(id=book_id)
+        serializer = BookTextSerializer(book)
+        return Response(serializer.data)
+    except Book.DoesNotExist:
+        return Response({"error": "Book not found"}, status=404)

@@ -1,22 +1,28 @@
 package com.example.foxbook
 
-import com.example.foxbook.api.AddRemoveFavorite
+import com.example.foxbook.api.BookInProgress
+import com.example.foxbook.api.BookPage
+import com.example.foxbook.api.BooksInProgressResponse
 import com.example.foxbook.api.BooksResponse
 import com.example.foxbook.api.CheckIfBookInFavorites
 import com.example.foxbook.api.Email
 import com.example.foxbook.api.Login
+import com.example.foxbook.api.Message
 import com.example.foxbook.api.PasswordResetVerify
+import com.example.foxbook.api.ReadingProgress
 import com.example.foxbook.api.RefreshToken
 import com.example.foxbook.api.Register
 import com.example.foxbook.api.SetNewPassword
 import com.example.foxbook.api.UserProfile
+import com.example.foxbook.api.UserRating
 import com.example.foxbook.api.VerifyEmail
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -66,8 +72,35 @@ interface APIServices {
     @GET("genres/")
     fun getGenres(): Call<List<String>>
 
+    @GET("books/{bookId}/text")
+    fun getBookText(@Path("bookId") bookId: Int): Call<BookPage>
+
+
     @GET("profile/")
     fun getUserProfile(): Call<UserProfile>
+
+    @GET("library/books/")
+    fun getLibraryBooks(
+        @Query("page") page: Int,
+        @QueryMap filterQuery: Map<String, String>
+    ): Call<BooksInProgressResponse>
+
+    @POST("library/add/{book_id}/")
+    fun addBookToLibrary(@Path("book_id") bookId: Int): Call<Message>
+
+    @FormUrlEncoded
+    @POST("library/update/{bookId}/")
+    fun updateReadingProgress(
+        @Path("bookId") bookId: Int,
+        @Field("reading_progress") readingProgress: Int
+    ): Call<Message>
+
+    @GET("library/reading-progress/{bookId}/")
+    fun getReadingProgress(@Path("bookId") bookId: Int): Call<ReadingProgress>
+
+    @GET("library/user-rating/{bookId}/")
+    fun getUserRating(@Path("bookId") bookId: Int): Call<UserRating>
+
     @GET("favorites/books/")
     fun getFavouriteBooks(
         @Query("page") page: Int,
@@ -77,8 +110,8 @@ interface APIServices {
     @GET("favorites/check/{bookId}/")
     fun checkIfBookInFavorites(@Path("bookId") bookId: Int): Call<CheckIfBookInFavorites>
     @POST("favorites/add/{book_id}/")
-    fun addToFavorites(@Path("book_id") bookId: Int): Call<AddRemoveFavorite>
+    fun addToFavorites(@Path("book_id") bookId: Int): Call<Message>
 
     @DELETE("favorites/remove/{book_id}/")
-    fun removeFromFavorites(@Path("book_id") bookId: Int): Call<AddRemoveFavorite>
+    fun removeFromFavorites(@Path("book_id") bookId: Int): Call<Message>
 }

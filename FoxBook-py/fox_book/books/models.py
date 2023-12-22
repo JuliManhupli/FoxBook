@@ -18,6 +18,7 @@ class Book(models.Model):
     cover = models.URLField(null=True)
     rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
     text = models.TextField()
+    pages = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
