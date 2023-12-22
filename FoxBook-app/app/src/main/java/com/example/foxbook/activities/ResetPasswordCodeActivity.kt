@@ -48,7 +48,6 @@ class ResetPasswordCodeActivity : AppCompatActivity() {
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    // Додаткова функція для зміни
                 }
 
                 // Пісял введення числа на місце EditText

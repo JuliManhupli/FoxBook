@@ -1,17 +1,20 @@
 package com.example.foxbook.fragments
 
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.provider.Settings
 import android.util.TypedValue
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.core.content.res.ResourcesCompat
@@ -43,39 +46,42 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             transaction.commit()
         }
 
-//        val seekBrightnessBar: SeekBar = view.findViewById(R.id.seekBarBrightness)
-//        val brightness: Int = Settings.System.getInt(requireActivity().contentResolver,
-//            Settings.System.SCREEN_BRIGHTNESS, 0)
-//        seekBrightnessBar.progress = brightness
+        // Перевірка на дозвіл зміни яскравості
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.System.canWrite(context)) {
+                val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+                startActivity(intent)
+            }
+        }
 
-//        seekBrightnessBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
-//            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-//                val canWrite = Settings.System.canWrite(context)
-//
-//                if (canWrite) {
-//                    Settings.System.putInt(requireActivity().contentResolver,
-//                        Settings.System.SCREEN_BRIGHTNESS, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
-//                    Settings.System.putInt(requireActivity().contentResolver,
-//                        Settings.System.SCREEN_BRIGHTNESS, progress)
-//                } else {
-//                    val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-//                    startActivity(intent)
-//                }
-//            }
-//
-//            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-//                TODO("Not yet implemented")
-//            }
-//
-//        }
-//        )
+        val contentResolver = requireActivity().contentResolver
+        val seekBrightnessBar: SeekBar = view.findViewById(R.id.seekBarBrightness)
+        val brightness: Int = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, 0)
+        seekBrightnessBar.progress = brightness
 
+        val canWrite = Settings.System.canWrite(context)
+        if (canWrite) {
+            if (Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, 0) != Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL) {
+                Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
+            }
 
+            // Зміна яскравості
+            seekBrightnessBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    val validBrightness = kotlin.math.max(1, kotlin.math.min(progress, 255))
+                    Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, validBrightness)
+                }
 
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                }
+            })
+        } else {
+            val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+            startActivity(intent)
+        }
 
         // текстове поле
         exampleText = view.findViewById(R.id.sampleBookText)
@@ -122,13 +128,11 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         sizeSmallerBtn.setOnClickListener {
             exampleText.setTextSize(TypedValue.COMPLEX_UNIT_PX, exampleText.textSize - 1)
-            Log.d("TEXTSIZE", exampleText.textSize.toString())
             currentTextSize = exampleText.textSize
         }
 
         sizeBiggerBtn.setOnClickListener {
             exampleText.setTextSize(TypedValue.COMPLEX_UNIT_PX, exampleText.textSize + 1)
-            Log.d("TEXTSIZE", exampleText.textSize.toString())
             currentTextSize = exampleText.textSize
         }
 
@@ -159,7 +163,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 id: Long
             ) {
                 if (position == 0) {
-                        Log.d("TXTFONT", "Here")
                         val customFont = ResourcesCompat.getFont(requireContext(), R.font.inter)
                         exampleText.typeface = customFont
                 } else {
@@ -174,10 +177,12 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         }
 
+
         // встановлення всіх параметрів для тексту
-//        val changeSettingsBtn: Button = view.findViewById(R.id.btnChangeTextBookSettings)
-//        changeSettingsBtn.setOnClickListener {
-//        }
+        val changeSettingsBtn: Button = view.findViewById(R.id.btnChangeTextBookSettings)
+        changeSettingsBtn.setOnClickListener {
+            Toast.makeText(context, "Налаштування встановлено!", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun setBGColor(bgColor: Int, textColor: Int) {

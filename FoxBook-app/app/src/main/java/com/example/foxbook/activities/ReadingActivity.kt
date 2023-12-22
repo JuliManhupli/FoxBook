@@ -43,11 +43,13 @@ open class ReadingActivity : AppCompatActivity() {
 
     override fun onDestroy() {
 
+
         super.onDestroy()
         coroutineScope.cancel() // скасування корутини при закритті екрану
         Log.e("qwe", "page - $visiblePage")
         saveReadingProgressToAPI(visiblePage) // зберігання прогресу в бд
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
