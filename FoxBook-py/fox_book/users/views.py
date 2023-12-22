@@ -114,7 +114,6 @@ class UserBooksListView(ListAPIView):
             return Book.objects.none()
 
 
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_book_to_library(request, book_id):
@@ -128,6 +127,36 @@ def add_book_to_library(request, book_id):
     library_book.save()
 
     return Response({'message': 'Book added to library'})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_rating(request, book_id):
+    user = request.user
+    book = get_object_or_404(Book, pk=book_id)
+
+    try:
+        library_entry = Library.objects.get(user=user, book=book)
+        user_rating = library_entry.user_rating if library_entry.user_rating else -1
+        print(user_rating)
+        return Response({'user_rating': user_rating})
+    except Library.DoesNotExist:
+        return Response({'user_rating': -1})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_reading_progress(request, book_id):
+    user = request.user
+    book = get_object_or_404(Book, pk=book_id)
+
+    try:
+        library_entry = Library.objects.get(user=user, book=book)
+        reading_progress = library_entry.reading_progress
+        print(reading_progress)
+        return Response({'reading_progress': reading_progress})
+    except Library.DoesNotExist:
+        return Response({'reading_progress': 0})
 
 
 @api_view(['POST'])

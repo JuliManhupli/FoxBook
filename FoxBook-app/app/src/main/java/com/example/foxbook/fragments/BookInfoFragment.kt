@@ -19,13 +19,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
-import com.example.foxbook.ClientAPI
+import com.example.foxbook.ClientAPI.apiService
 import com.example.foxbook.R
 import com.example.foxbook.activities.ReadingActivity
 import com.example.foxbook.api.Book
 import com.example.foxbook.api.BookInProgress
 import com.example.foxbook.api.CheckIfBookInFavorites
 import com.example.foxbook.api.Message
+import com.example.foxbook.api.UserRating
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,6 +36,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
     private var targetFragment: String = ""
 
+    private var readingProgress = 0
     companion object {
         fun newInstance(targetFragment: String): BookInfoFragment {
             val fragment = BookInfoFragment()
@@ -52,18 +54,6 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
         } else {
             requireArguments().getParcelable<Book>("android")
         }
-//
-//        when (targetFragment) {
-//            SearchPageFragment::class.java.simpleName -> {
-//                data = requireArguments().getParcelable<Book>("android")
-//            }
-//            FavouriteBooksFragment::class.java.simpleName -> {
-//                data = requireArguments().getParcelable<Book>("android")
-//            }
-//            ReadingInProgressFragment::class.java.simpleName -> {
-//                data = requireArguments().getParcelable<BookInProgress>("android")
-//            }
-//        }
 
         Log.e("qwe", "data")
         Log.e("qwe", data.toString())
@@ -108,11 +98,17 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
     }
 
     private fun setupBookViews(book: Book, view: View) {
+        Log.e("qwe", "book")
+        getUserRatings(book.id)
         val btnToReadingBook: Button = view.findViewById(R.id.btnToReading)
 
         btnToReadingBook.setOnClickListener {
             addBookToLibrary(book.id)
             val intent = Intent(activity, ReadingActivity::class.java)
+            Log.e("qwe", "book.id.toString()")
+            Log.e("qwe", book.id.toString())
+            Log.e("qwe", "readingProgress")
+            Log.e("qwe", readingProgress.toString())
             intent.putExtra(ReadingActivity.BOOK_ID, book.id)
             startActivity(intent)
         }
@@ -204,6 +200,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
     }
 
     private fun setupBookInProgressViews(bookInProgress: BookInProgress, view: View) {
+        Log.e("qwe", "bookInProgress")
         val btnToReadingBook: Button = view.findViewById(R.id.btnToReading)
 
         btnToReadingBook.setOnClickListener {
@@ -331,9 +328,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
     }
 
     private fun checkIfBookInFavorites(bookId: Int, callback: (Boolean) -> Unit) {
-        // Replace this with your actual logic to check if the book is in favorites
-        // You may need to make an API call to check this on the server
-        val call = ClientAPI.apiService.checkIfBookInFavorites(bookId)
+        val call = apiService.checkIfBookInFavorites(bookId)
 
         call.enqueue(object : Callback<CheckIfBookInFavorites> {
             override fun onResponse(
@@ -362,7 +357,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
     }
 
     private fun addBookToFavorites(bookId: Int) {
-        val call = ClientAPI.apiService.addToFavorites(bookId)
+        val call = apiService.addToFavorites(bookId)
 
         call.enqueue(object : Callback<Message> {
             override fun onResponse(
@@ -401,7 +396,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
     }
 
     private fun removeBookFromFavorites(bookId: Int) {
-        val call = ClientAPI.apiService.removeFromFavorites(bookId)
+        val call = apiService.removeFromFavorites(bookId)
 
         call.enqueue(object : Callback<Message> {
             override fun onResponse(
@@ -442,8 +437,39 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
     }
 
 
+    private fun getUserRatings(bookId: Int) {
+        val call = apiService.getUserRating(bookId)
+
+        call.enqueue(object : Callback<UserRating> {
+            override fun onResponse(
+                call: Call<UserRating>,
+                response: Response<UserRating>
+            ) {
+                if (response.isSuccessful) {
+                    Log.e("qwe", "response - $response")
+                    Log.e("qwe", response.body()?.user_rating.toString())
+
+                    val userRating = response.body()?.user_rating ?: -1
+                    Log.e("qwe", "userRating - $userRating")
+                    // Now create the Intent with both values
+
+                } else {
+                    // Handle unsuccessful response
+                    Log.e("qwe", "Unsuccessful response addBookToLibrary: ${response.code()}")
+                    Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            override fun onFailure(call: Call<UserRating>, t: Throwable) {
+                Log.e("qwe", "API request failed with exception", t)
+                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
     private fun addBookToLibrary(bookId: Int) {
-        val call = ClientAPI.apiService.addBookToLibrary(bookId)
+        val call = apiService.addBookToLibrary(bookId)
 
         call.enqueue(object : Callback<Message> {
             override fun onResponse(

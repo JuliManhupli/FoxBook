@@ -9,10 +9,12 @@ import com.example.foxbook.api.Email
 import com.example.foxbook.api.Login
 import com.example.foxbook.api.Message
 import com.example.foxbook.api.PasswordResetVerify
+import com.example.foxbook.api.ReadingProgress
 import com.example.foxbook.api.RefreshToken
 import com.example.foxbook.api.Register
 import com.example.foxbook.api.SetNewPassword
 import com.example.foxbook.api.UserProfile
+import com.example.foxbook.api.UserRating
 import com.example.foxbook.api.VerifyEmail
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -92,6 +94,12 @@ interface APIServices {
         @Path("bookId") bookId: Int,
         @Field("reading_progress") readingProgress: Int
     ): Call<Message>
+
+    @GET("library/reading-progress/{bookId}/")
+    fun getReadingProgress(@Path("bookId") bookId: Int): Call<ReadingProgress>
+
+    @GET("library/user-rating/{bookId}/")
+    fun getUserRating(@Path("bookId") bookId: Int): Call<UserRating>
 
     @GET("favorites/books/")
     fun getFavouriteBooks(
