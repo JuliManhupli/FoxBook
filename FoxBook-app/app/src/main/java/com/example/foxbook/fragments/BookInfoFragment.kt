@@ -7,6 +7,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -22,6 +23,7 @@ import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
 import com.example.foxbook.activities.ReadingActivity
 import com.example.foxbook.api.Book
+import com.example.foxbook.api.BookInProgress
 import com.example.foxbook.api.CheckIfBookInFavorites
 import com.example.foxbook.api.Message
 import retrofit2.Call
@@ -43,7 +45,26 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val data = requireArguments().getParcelable<Book>("android")
+        Log.e("qwe", "onViewCreated")
+//        val data = requireArguments().getParcelable<BookInProgress>("android")
+        val data: Parcelable? = if (targetFragment == ReadingInProgressFragment::class.java.simpleName) {
+            requireArguments().getParcelable<BookInProgress>("android")
+        } else {
+            requireArguments().getParcelable<Book>("android")
+        }
+//
+//        when (targetFragment) {
+//            SearchPageFragment::class.java.simpleName -> {
+//                data = requireArguments().getParcelable<Book>("android")
+//            }
+//            FavouriteBooksFragment::class.java.simpleName -> {
+//                data = requireArguments().getParcelable<Book>("android")
+//            }
+//            ReadingInProgressFragment::class.java.simpleName -> {
+//                data = requireArguments().getParcelable<BookInProgress>("android")
+//            }
+//        }
+
         Log.e("qwe", "data")
         Log.e("qwe", data.toString())
 
@@ -51,110 +72,231 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
         val backButton: ImageButton = view.findViewById(R.id.imgBtnBackToSearch)
 
         backButton.setOnClickListener {
-            if (targetFragment == SearchPageFragment::class.java.simpleName) {
-                navigateToSearchPageFragment()
-            } else if (targetFragment == FavouriteBooksFragment::class.java.simpleName) {
-                navigateToFavoriteBooksFragment()
+            when (targetFragment) {
+                SearchPageFragment::class.java.simpleName -> {
+                    navigateToSearchPageFragment()
+                }
+                FavouriteBooksFragment::class.java.simpleName -> {
+                    navigateToFavoriteBooksFragment()
+                }
+                ReadingInProgressFragment::class.java.simpleName -> {
+                    navigateToReadingInProgressFragment()
+                }
             }
         }
 
+        val book: Book? = if (data is Book) data else null
+        val bookInProgress: BookInProgress? = if (data is BookInProgress) data else null
+
+        Log.e("qwe", "data: $data")
+        Log.e("qwe", "book: $book")
+        Log.e("qwe", "bookInProgress: $bookInProgress")
 
         if (data != null) {
-
-            // кнопка "читати"
-            val btnToReadingBook: Button = view.findViewById(R.id.btnToReading)
-
-            btnToReadingBook.setOnClickListener {
-                addBookToLibrary(data.id)
-                val intent = Intent(activity, ReadingActivity::class.java)
-                intent.putExtra(ReadingActivity.BOOK_ID, data.id)
-                startActivity(intent)
-            }
-
-            val likeButton: ImageButton = view.findViewById(R.id.imgBtnUnliked)
-
-            checkIfBookInFavorites(data.id) { isBookInFavorites ->
-                requireActivity().runOnUiThread {
-                    updateUI(isBookInFavorites)
+            when (data) {
+                is Book -> {
+                    val book = data
+                    setupBookViews(book, view)
                 }
-            }
-
-            likeButton.setOnClickListener {
-                checkIfBookInFavorites(data.id) { isBookInFavorites ->
-                    if (isBookInFavorites) {
-                        // Remove the book from favorites
-                        removeBookFromFavorites(data.id)
-                        likeButton.setImageResource(R.drawable.heart)
-                    } else {
-                        // Add the book to favorites
-                        addBookToFavorites(data.id)
-                        likeButton.setImageResource(R.drawable.heart_full)
-                    }
+                is BookInProgress -> {
+                    val bookInProgress = data
+                    setupBookInProgressViews(bookInProgress, view)
                 }
-            }
-
-            val coverImg: ImageView = view.findViewById(R.id.imgBookInfoCover)
-            val titleView: TextView = view.findViewById(R.id.txtBookInfoTitle)
-            val authorView: TextView = view.findViewById(R.id.txtBookInfoAuthor)
-            val userRatingView: TextView = view.findViewById(R.id.txtBookInfoUserRating)
-            val ratingView: TextView = view.findViewById(R.id.txtBookInfoRating)
-            val genreView: TextView = view.findViewById(R.id.txtBookInfoGenre)
-            val descView: TextView = view.findViewById(R.id.txtBookInfoDescription)
-
-
-            if (data.cover != null) {
-                Glide.with(coverImg.context)
-                    .load(data.cover)
-                    .placeholder(R.drawable.no_image) // Replace with your placeholder image
-                    .error(R.drawable.no_image) // Replace with your error image
-                    .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(
-                            e: GlideException?,
-                            model: Any?,
-                            target: Target<Drawable>?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            // Handle the error here
-                            Log.e("qwe", "Error loading image", e)
-                            return false // Return false to allow the error placeholder to be shown
-                        }
-
-                        override fun onResourceReady(
-                            resource: Drawable?,
-                            model: Any?,
-                            target: Target<Drawable>?,
-                            dataSource: DataSource?,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            // Image successfully loaded
-                            return false
-                        }
-                    })
-                    .into(coverImg)
-            } else {
-                coverImg.setImageResource(R.drawable.no_image)
-            }
-
-            titleView.text = data.title ?: "Назва невідома"
-            authorView.text = data.author ?: "Автор невідомий"
-            ratingView.text = (data.rating ?: "-").toString()
-            genreView.text = data.genre ?: "-"
-            descView.text = data.annotation ?: "Анотації немає"
-
-
-            // Оцінювання користувачем книги
-            val ratingBar: RatingBar = view.findViewById(R.id.ratingUserBar)
-
-            // Якщо оцінка вже стоїть
-            if (userRatingView.text == "2.0") {
-                ratingBar.rating = 2.0F
-            }
-
-            // Зміна оцінки
-            ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-                userRatingView.text = rating.toString()
             }
         }
+
+    }
+
+    private fun setupBookViews(book: Book, view: View) {
+        val btnToReadingBook: Button = view.findViewById(R.id.btnToReading)
+
+        btnToReadingBook.setOnClickListener {
+            addBookToLibrary(book.id)
+            val intent = Intent(activity, ReadingActivity::class.java)
+            intent.putExtra(ReadingActivity.BOOK_ID, book.id)
+            startActivity(intent)
+        }
+
+        val likeButton: ImageButton = view.findViewById(R.id.imgBtnUnliked)
+
+        checkIfBookInFavorites(book.id) { isBookInFavorites ->
+            requireActivity().runOnUiThread {
+                updateUI(isBookInFavorites)
+            }
+        }
+
+        likeButton.setOnClickListener {
+            checkIfBookInFavorites(book.id) { isBookInFavorites ->
+                if (isBookInFavorites) {
+                    // Remove the book from favorites
+                    removeBookFromFavorites(book.id)
+                    likeButton.setImageResource(R.drawable.heart)
+                } else {
+                    // Add the book to favorites
+                    addBookToFavorites(book.id)
+                    likeButton.setImageResource(R.drawable.heart_full)
+                }
+            }
+        }
+
+        val coverImg: ImageView = view.findViewById(R.id.imgBookInfoCover)
+        val titleView: TextView = view.findViewById(R.id.txtBookInfoTitle)
+        val authorView: TextView = view.findViewById(R.id.txtBookInfoAuthor)
+        val userRatingView: TextView = view.findViewById(R.id.txtBookInfoUserRating)
+        val ratingView: TextView = view.findViewById(R.id.txtBookInfoRating)
+        val genreView: TextView = view.findViewById(R.id.txtBookInfoGenre)
+        val descView: TextView = view.findViewById(R.id.txtBookInfoDescription)
+
+
+        if (book.cover != null) {
+            Glide.with(coverImg.context)
+                .load(book.cover)
+                .placeholder(R.drawable.no_image) // Replace with your placeholder image
+                .error(R.drawable.no_image) // Replace with your error image
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        // Handle the error here
+                        Log.e("qwe", "Error loading image", e)
+                        return false // Return false to allow the error placeholder to be shown
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        // Image successfully loaded
+                        return false
+                    }
+                })
+                .into(coverImg)
+        } else {
+            coverImg.setImageResource(R.drawable.no_image)
+        }
+
+        titleView.text = book.title ?: "Назва невідома"
+        authorView.text = book.author ?: "Автор невідомий"
+        ratingView.text = (book.rating ?: "-").toString()
+        genreView.text = book.genre ?: "-"
+        descView.text = book.annotation ?: "Анотації немає"
+
+
+        // Оцінювання користувачем книги
+        val ratingBar: RatingBar = view.findViewById(R.id.ratingUserBar)
+
+        // Якщо оцінка вже стоїть
+        if (userRatingView.text == "2.0") {
+            ratingBar.rating = 2.0F
+        }
+
+        // Зміна оцінки
+        ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+            userRatingView.text = rating.toString()
+        }
+
+    }
+
+    private fun setupBookInProgressViews(bookInProgress: BookInProgress, view: View) {
+        val btnToReadingBook: Button = view.findViewById(R.id.btnToReading)
+
+        btnToReadingBook.setOnClickListener {
+            addBookToLibrary(bookInProgress.id)
+            val intent = Intent(activity, ReadingActivity::class.java)
+            intent.putExtra(ReadingActivity.BOOK_ID, bookInProgress.id)
+            startActivity(intent)
+        }
+
+        val likeButton: ImageButton = view.findViewById(R.id.imgBtnUnliked)
+
+        checkIfBookInFavorites(bookInProgress.id) { isBookInFavorites ->
+            requireActivity().runOnUiThread {
+                updateUI(isBookInFavorites)
+            }
+        }
+
+        likeButton.setOnClickListener {
+            checkIfBookInFavorites(bookInProgress.id) { isBookInFavorites ->
+                if (isBookInFavorites) {
+                    // Remove the book from favorites
+                    removeBookFromFavorites(bookInProgress.id)
+                    likeButton.setImageResource(R.drawable.heart)
+                } else {
+                    // Add the book to favorites
+                    addBookToFavorites(bookInProgress.id)
+                    likeButton.setImageResource(R.drawable.heart_full)
+                }
+            }
+        }
+
+        val coverImg: ImageView = view.findViewById(R.id.imgBookInfoCover)
+        val titleView: TextView = view.findViewById(R.id.txtBookInfoTitle)
+        val authorView: TextView = view.findViewById(R.id.txtBookInfoAuthor)
+        val userRatingView: TextView = view.findViewById(R.id.txtBookInfoUserRating)
+        val ratingView: TextView = view.findViewById(R.id.txtBookInfoRating)
+        val genreView: TextView = view.findViewById(R.id.txtBookInfoGenre)
+        val descView: TextView = view.findViewById(R.id.txtBookInfoDescription)
+
+
+        if (bookInProgress.cover != null) {
+            Glide.with(coverImg.context)
+                .load(bookInProgress.cover)
+                .placeholder(R.drawable.no_image) // Replace with your placeholder image
+                .error(R.drawable.no_image) // Replace with your error image
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        // Handle the error here
+                        Log.e("qwe", "Error loading image", e)
+                        return false // Return false to allow the error placeholder to be shown
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        // Image successfully loaded
+                        return false
+                    }
+                })
+                .into(coverImg)
+        } else {
+            coverImg.setImageResource(R.drawable.no_image)
+        }
+
+        titleView.text = bookInProgress.title ?: "Назва невідома"
+        authorView.text = bookInProgress.author ?: "Автор невідомий"
+        ratingView.text = (bookInProgress.rating ?: "-").toString()
+        genreView.text = bookInProgress.genre ?: "-"
+        descView.text = bookInProgress.annotation ?: "Анотації немає"
+
+
+        // Оцінювання користувачем книги
+        val ratingBar: RatingBar = view.findViewById(R.id.ratingUserBar)
+
+        // Якщо оцінка вже стоїть
+        if (userRatingView.text == "2.0") {
+            ratingBar.rating = 2.0F
+        }
+
+        // Зміна оцінки
+        ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+            userRatingView.text = rating.toString()
+        }
+
     }
 
     private fun navigateToSearchPageFragment() {
@@ -167,6 +309,13 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
     private fun navigateToFavoriteBooksFragment() {
         val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
         transaction.replace(R.id.flFragment, FavouriteBooksFragment())
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
+    private fun navigateToReadingInProgressFragment() {
+        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
+        transaction.replace(R.id.flFragment, ReadingInProgressFragment())
         transaction.addToBackStack(null)
         transaction.commit()
     }

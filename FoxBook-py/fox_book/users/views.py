@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import FavoriteBook, Library
-from .serializers import UserProfileSerializer
+from .serializers import UserProfileSerializer, BookInProgressSerializer
 from books.models import Book
 from books.serializers import BookSerializer
 
@@ -67,6 +67,52 @@ class FavouriteBooksList(ListAPIView):
 
         except Exception as e:
             return Book.objects.none()
+
+
+@permission_classes([IsAuthenticated])
+class UserBooksListView(ListAPIView):
+    serializer_class = BookInProgressSerializer
+    pagination_class = CustomPageNumberPagination
+
+    def get_queryset(self):
+        try:
+            user = self.request.user
+            queryset = Book.objects.filter(library__user=user)
+            print(queryset)
+
+            genres = self.request.query_params.get('genres', None)
+            author = self.request.query_params.get('author', None)
+            sorting = self.request.query_params.get('sorting', None)
+
+            if genres:
+                genres = genres.split(',')
+                queryset = queryset.filter(genre__in=genres)
+
+            if author:
+                queryset = queryset.filter(type=author)
+
+            if sorting and sorting != "Без сортувань":
+                # Define a dictionary to map sorting options to fields
+                sorting_options = {
+                    'Назва(А-Я)': 'title',
+                    'Назва(Я-А)': '-title',
+                    'Автор(А-Я)': 'author',
+                    'Автор(Я-А)': '-author',
+                    'Оцінка(За зростанням)': 'rating',
+                    'Оцінка(За спаданням)': '-rating',
+                }
+
+                # Use get() to get the corresponding field or default to None
+                sort_field = sorting_options.get(sorting)
+
+                if sort_field:
+                    queryset = queryset.order_by(sort_field)
+
+            return queryset
+
+        except Exception as e:
+            return Book.objects.none()
+
 
 
 @api_view(['POST'])

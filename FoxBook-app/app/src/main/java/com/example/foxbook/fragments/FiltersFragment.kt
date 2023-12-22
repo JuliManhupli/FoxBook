@@ -58,10 +58,16 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
         val backToSearch: ImageButton = view.findViewById(R.id.imgBtnBackToSearchFromFilters)
 
         backToSearch.setOnClickListener {
-            if (targetFragment == SearchPageFragment::class.java.simpleName) {
-                navigateToSearchPageFragment()
-            } else if (targetFragment == FavouriteBooksFragment::class.java.simpleName) {
-                navigateToFavoriteBooksFragment()
+            when (targetFragment) {
+                SearchPageFragment::class.java.simpleName -> {
+                    navigateToSearchPageFragment()
+                }
+                FavouriteBooksFragment::class.java.simpleName -> {
+                    navigateToFavoriteBooksFragment()
+                }
+                ReadingInProgressFragment::class.java.simpleName -> {
+                    navigateToReadingInProgressFragment()
+                }
             }
         }
 
@@ -139,11 +145,19 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
             Log.d("qwe", selectedAuthors ?: "No Sorting Selected")
             Log.d("qwe", selectedSorting ?: "No Sorting Selected")
 
-            if (targetFragment == SearchPageFragment::class.java.simpleName) {
-                navigateToSearchPageFragment()
-            } else if (targetFragment == FavouriteBooksFragment::class.java.simpleName) {
-                navigateToFavoriteBooksFragment()
+
+            when (targetFragment) {
+                SearchPageFragment::class.java.simpleName -> {
+                    navigateToSearchPageFragment()
+                }
+                FavouriteBooksFragment::class.java.simpleName -> {
+                    navigateToFavoriteBooksFragment()
+                }
+                ReadingInProgressFragment::class.java.simpleName -> {
+                    navigateToReadingInProgressFragment()
+                }
             }
+
         }
 
         // Кнопка очищення фільтрів
@@ -185,6 +199,13 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
             arguments = createBundle()
         }
         navigateToFragment(favoriteBooksFragment)
+    }
+
+    private fun navigateToReadingInProgressFragment() {
+        val readingInProgressFragment = ReadingInProgressFragment().apply {
+            arguments = createBundle()
+        }
+        navigateToFragment(readingInProgressFragment)
     }
 
     private fun createBundle(): Bundle {

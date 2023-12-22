@@ -23,7 +23,7 @@ class BookInProgressAdapter (private val bookInProgressList: MutableList<BookInP
         parent: ViewGroup,
         viewType: Int
     ): BookInProgressViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.book_item_layout, parent,
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.book_in_progress_layout, parent,
             false)
         return BookInProgressViewHolder((itemView))
     }
@@ -69,9 +69,8 @@ class BookInProgressAdapter (private val bookInProgressList: MutableList<BookInP
         holder.bookAuthor.text = currentItem.author
         holder.bookRating.text = currentItem.rating.toString()
 
-        holder.bookReadPercent.text = currentItem.genre
-//        holder.bookProgressBar.progress = currentItem.progress
-//        holder.bookProgressBar.max = currentItem.all_pages
+        holder.bookProgressBar.progress = currentItem.reading_progress
+        holder.bookProgressBar.max = currentItem.pages
 
         holder.itemView.setOnClickListener{
             onItemClick?.invoke(currentItem)
@@ -88,7 +87,7 @@ class BookInProgressAdapter (private val bookInProgressList: MutableList<BookInP
         val bookTitle: TextView = itemView.findViewById(R.id.txtBookInProgressName)
         val bookAuthor: TextView = itemView.findViewById(R.id.txtBookInProgressAuthor)
         val bookRating: TextView = itemView.findViewById(R.id.txtBookInProgressRating)
-        val bookReadPercent: TextView = itemView.findViewById(R.id.txtReadingPercentage)
-//        val bookProgressBar: SeekBar = itemView.findViewById(R.id.progressBarInReading)
+//        val bookReadPercent: TextView = itemView.findViewById(R.id.txtReadingPercentage)
+        val bookProgressBar: SeekBar = itemView.findViewById(R.id.linearProgressIndicator)
     }
 }

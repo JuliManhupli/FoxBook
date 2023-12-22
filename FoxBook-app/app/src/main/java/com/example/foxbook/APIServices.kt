@@ -1,6 +1,8 @@
 package com.example.foxbook
 
+import com.example.foxbook.api.BookInProgress
 import com.example.foxbook.api.BookPage
+import com.example.foxbook.api.BooksInProgressResponse
 import com.example.foxbook.api.BooksResponse
 import com.example.foxbook.api.CheckIfBookInFavorites
 import com.example.foxbook.api.Email
@@ -74,6 +76,12 @@ interface APIServices {
 
     @GET("profile/")
     fun getUserProfile(): Call<UserProfile>
+
+    @GET("library/books/")
+    fun getLibraryBooks(
+        @Query("page") page: Int,
+        @QueryMap filterQuery: Map<String, String>
+    ): Call<BooksInProgressResponse>
 
     @POST("library/add/{book_id}/")
     fun addBookToLibrary(@Path("book_id") bookId: Int): Call<Message>

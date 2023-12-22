@@ -3,6 +3,7 @@ package com.example.foxbook.api
 import android.os.Parcel
 import android.os.Parcelable
 
+
 data class BookInProgress(
 
     val id: Int,
@@ -11,9 +12,10 @@ data class BookInProgress(
     val author: String,
     val rating: Double,
     val genre: String,
-    val progress: Int,
-    val all_pages: Int,
-    val annotation: String): Parcelable {
+    val annotation: String,
+    val pages: Int,
+    val reading_progress: Int): Parcelable {
+
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString()!!,
@@ -21,9 +23,9 @@ data class BookInProgress(
         parcel.readString()!!,
         parcel.readDouble(),
         parcel.readString()!!,
+        parcel.readString()!!,
         parcel.readInt(),
-        parcel.readInt(),
-        parcel.readString()!!
+        parcel.readInt()
     ) {
     }
 
@@ -34,9 +36,9 @@ data class BookInProgress(
         parcel.writeString(author)
         parcel.writeDouble(rating)
         parcel.writeString(genre)
-        parcel.writeInt(progress)
-        parcel.writeInt(all_pages)
         parcel.writeString(annotation)
+        parcel.writeInt(pages)
+        parcel.writeInt(reading_progress)
     }
 
     override fun describeContents(): Int {
