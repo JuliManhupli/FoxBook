@@ -1,6 +1,7 @@
 package com.example.foxbook
 
 import com.example.foxbook.api.BookPage
+import com.example.foxbook.api.BookTextChunks
 import com.example.foxbook.api.BooksInProgressResponse
 import com.example.foxbook.api.BooksResponse
 import com.example.foxbook.api.CheckIfBookInFavorites
@@ -80,6 +81,9 @@ interface APIServices {
     @GET("books/{bookId}/text")
     fun getBookText(@Path("bookId") bookId: Int): Call<BookPage>
 
+
+    @GET("books/{bookId}/text/сhunks")
+    fun getBookTextChunks(@Path("bookId") bookId: Int): Call<BookTextChunks>
 
     @GET("profile/")
     fun getUserProfile(): Call<UserProfile>

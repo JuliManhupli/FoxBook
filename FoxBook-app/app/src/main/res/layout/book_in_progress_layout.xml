@@ -31,6 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:ems="10"
+            android:lines="1"
             android:fontFamily="@font/inter"
             android:text="BookName1"
             android:textSize="20sp"
