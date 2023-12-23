@@ -1,10 +1,11 @@
-package com.example.foxbook
+package com.example.foxbook.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
+import com.example.foxbook.R
 import com.example.foxbook.api.Genre
 
 class GenreAdapter(private val genreList: ArrayList<Genre>): RecyclerView.Adapter<GenreAdapter.GenreViewHolder>() {
@@ -15,7 +16,8 @@ class GenreAdapter(private val genreList: ArrayList<Genre>): RecyclerView.Adapte
         parent: ViewGroup,
         viewType: Int
     ): GenreViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.genre_item_layout, parent,
+        val itemView = LayoutInflater.from(parent.context).inflate(
+            R.layout.genre_item_layout, parent,
             false)
         return GenreViewHolder((itemView))
     }

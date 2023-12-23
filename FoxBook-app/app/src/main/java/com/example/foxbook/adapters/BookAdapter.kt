@@ -1,4 +1,4 @@
-package com.example.foxbook
+package com.example.foxbook.adapters
 
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -13,6 +13,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.example.foxbook.R
 import com.example.foxbook.api.Book
 
 class BookAdapter(private val bookList: MutableList<Book>) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
@@ -20,7 +21,8 @@ class BookAdapter(private val bookList: MutableList<Book>) : RecyclerView.Adapte
     var onItemClick: ((Book) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.book_item_layout, parent,
+        val itemView = LayoutInflater.from(parent.context).inflate(
+            R.layout.book_item_layout, parent,
             false)
         return BookViewHolder((itemView))
     }

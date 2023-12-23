@@ -12,24 +12,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import com.example.foxbook.ClientAPI
 import com.example.foxbook.ClientAPI.apiService
-import com.example.foxbook.page.BookPageAdapter
+import com.example.foxbook.adapters.BookPageAdapter
 import com.example.foxbook.R
 import com.example.foxbook.api.BookPage
 import com.example.foxbook.api.BookTextChunks
-import com.example.foxbook.api.CheckIfBookInFavorites
 import com.example.foxbook.api.Message
 import com.example.foxbook.api.ReadingProgress
 import com.example.foxbook.api.ReadingSettingsBg
-import com.example.foxbook.api.ReadingSettingsText
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlinx.coroutines.*
-import kotlin.math.min
 
 open class ReadingActivity : AppCompatActivity() {
 

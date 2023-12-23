@@ -1,4 +1,4 @@
-package com.example.foxbook
+package com.example.foxbook.adapters
 
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -14,6 +14,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.example.foxbook.R
 import com.example.foxbook.api.BookInProgress
 
 class BookInProgressAdapter (private val bookInProgressList: MutableList<BookInProgress>) : RecyclerView.Adapter<BookInProgressAdapter.BookInProgressViewHolder>() {
@@ -23,7 +24,8 @@ class BookInProgressAdapter (private val bookInProgressList: MutableList<BookInP
         parent: ViewGroup,
         viewType: Int
     ): BookInProgressViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.book_in_progress_layout, parent,
+        val itemView = LayoutInflater.from(parent.context).inflate(
+            R.layout.book_in_progress_layout, parent,
             false)
         return BookInProgressViewHolder((itemView))
     }

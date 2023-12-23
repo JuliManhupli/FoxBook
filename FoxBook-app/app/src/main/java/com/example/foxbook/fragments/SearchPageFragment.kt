@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.foxbook.BookAdapter
+import com.example.foxbook.adapters.BookAdapter
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
 import com.example.foxbook.api.Book

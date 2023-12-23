@@ -1,3 +1,6 @@
+import random
+
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.generics import ListAPIView
@@ -9,6 +12,8 @@ from .models import FavoriteBook, Library, ReadingSettings
 from .serializers import UserProfileSerializer, BookInProgressSerializer
 from books.models import Book
 from books.serializers import BookSerializer
+
+from collections import Counter
 
 
 @api_view(['GET'])
@@ -127,6 +132,35 @@ def add_book_to_library(request, book_id):
     library_book.save()
 
     return Response({'message': 'Book added to library'})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_recommendations(request):
+    try:
+        user = request.user
+        queryset = Book.objects.filter(library__user=user)
+
+        genre_list = list(book['genre'] for book in queryset.values('genre'))
+        counts = Counter(genre_list)
+        most_common_element = max(counts, key=counts.get)
+
+        genre_book_data = Book.objects.filter(genre=most_common_element)
+        serializer = BookSerializer(genre_book_data, many=True)
+        serialized_data = serializer.data
+
+        if len(serialized_data) >= 5:
+            recommendations = random.sample(serialized_data, 5)
+        else:
+            recommendations = serialized_data
+
+        return Response({'recommendations': recommendations})
+
+    except Exception as e:
+        serializer = BookSerializer(Book.objects.all(), many=True)
+        serialized_data = serializer.data
+        recommendations = random.sample(serialized_data, 5)
+        return Response({'recommendations': recommendations})
 
 
 @api_view(['GET'])

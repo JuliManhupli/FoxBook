@@ -17,15 +17,12 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foxbook.ClientAPI
-import com.example.foxbook.GenreAdapter
+import com.example.foxbook.adapters.GenreAdapter
 import com.example.foxbook.R
-import com.example.foxbook.api.Book
-import com.example.foxbook.api.BooksResponse
 import com.example.foxbook.api.Genre
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.Locale
 
 
 class FiltersFragment : Fragment(R.layout.fragment_filters) {

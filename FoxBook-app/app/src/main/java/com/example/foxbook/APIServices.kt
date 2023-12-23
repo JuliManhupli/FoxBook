@@ -13,6 +13,7 @@ import com.example.foxbook.api.ReadingProgress
 import com.example.foxbook.api.ReadingSettings
 import com.example.foxbook.api.ReadingSettingsBg
 import com.example.foxbook.api.ReadingSettingsText
+import com.example.foxbook.api.Recommendations
 import com.example.foxbook.api.RefreshToken
 import com.example.foxbook.api.Register
 import com.example.foxbook.api.SetNewPassword
@@ -96,6 +97,9 @@ interface APIServices {
 
     @POST("library/add/{book_id}/")
     fun addBookToLibrary(@Path("book_id") bookId: Int): Call<Message>
+
+    @GET("library/recommend/")
+    fun getRecommendations(): Call<Recommendations>
 
     @FormUrlEncoded
     @POST("library/update/{bookId}/")
