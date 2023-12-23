@@ -4,7 +4,9 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+
 import android.provider.Settings
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.AdapterView
@@ -20,7 +22,13 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.example.foxbook.ClientAPI.apiService
 import com.example.foxbook.R
+import com.example.foxbook.api.Message
+import com.example.foxbook.api.ReadingSettings
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import kotlin.properties.Delegates
 
 
@@ -28,10 +36,10 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     private lateinit var exampleText: TextView
 
-    private var currentBg by Delegates.notNull<Int>()
-    private var currentSampleTextColor by Delegates.notNull<Int>()
+    private lateinit var currentBg: String
+    private lateinit var currentSampleTextColor: String
     private var currentTextSize by Delegates.notNull<Float>()
-    private lateinit var currentFont: Typeface
+    private lateinit var currentFont: String
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,20 +64,38 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         val contentResolver = requireActivity().contentResolver
         val seekBrightnessBar: SeekBar = view.findViewById(R.id.seekBarBrightness)
-        val brightness: Int = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, 0)
+        val brightness: Int =
+            Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, 0)
         seekBrightnessBar.progress = brightness
 
         val canWrite = Settings.System.canWrite(context)
         if (canWrite) {
-            if (Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, 0) != Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL) {
-                Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL)
+            if (Settings.System.getInt(
+                    contentResolver,
+                    Settings.System.SCREEN_BRIGHTNESS_MODE,
+                    0
+                ) != Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
+            ) {
+                Settings.System.putInt(
+                    contentResolver,
+                    Settings.System.SCREEN_BRIGHTNESS_MODE,
+                    Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
+                )
             }
 
             // Зміна яскравості
             seekBrightnessBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
                     val validBrightness = kotlin.math.max(1, kotlin.math.min(progress, 255))
-                    Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, validBrightness)
+                    Settings.System.putInt(
+                        contentResolver,
+                        Settings.System.SCREEN_BRIGHTNESS,
+                        validBrightness
+                    )
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -100,26 +126,27 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         val blackColor = R.color.black
 
 
-        currentBg = resources.getColor(beigeColor)
-        currentSampleTextColor = resources.getColor(blackColor)
+        currentBg = "beige"
+        currentSampleTextColor = "black"
         currentTextSize = exampleText.textSize
-        currentFont = exampleText.typeface
+        currentFont = "inter"
 
 
         whiteBG.setOnClickListener {
-            setBGColor(whiteColor, blackColor)
+            setBGColor(whiteColor, blackColor, "white", "black")
+
         }
 
         beigeBG.setOnClickListener {
-            setBGColor(beigeColor, blackColor)
+            setBGColor(beigeColor, blackColor, "beige", "black")
         }
 
         greyBG.setOnClickListener {
-            setBGColor(greyColor, whiteColor)
+            setBGColor(greyColor, whiteColor, "grey", "white")
         }
 
         blackBG.setOnClickListener {
-            setBGColor(blackColor, whiteColor)
+            setBGColor(blackColor, whiteColor, "black", "white")
         }
 
         // збільшення/зменшення тексту
@@ -146,15 +173,17 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             "Sans-serif-black",
             "Sans-serif-condensed",
             "Sans-serif-condensed-light",
-            "Sans-serif-smallcaps")
+            "Sans-serif-smallcaps"
+        )
 
         // Адаптер для шрифтів
-        val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, listOfSortings)
+        val arrayAdapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, listOfSortings)
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = arrayAdapter
 
         // При виборі елементу
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onItemSelected(
                 parent: AdapterView<*>,
@@ -163,13 +192,15 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 id: Long
             ) {
                 if (position == 0) {
-                        val customFont = ResourcesCompat.getFont(requireContext(), R.font.inter)
-                        exampleText.typeface = customFont
+                    val customFont = ResourcesCompat.getFont(requireContext(), R.font.inter)
+                    exampleText.typeface = customFont
+                    currentFont = "inter"
                 } else {
                     val chosenFont = parent.getItemAtPosition(position).toString().lowercase()
                     exampleText.typeface = Typeface.create(chosenFont, Typeface.NORMAL)
+                    currentFont = chosenFont
                 }
-                currentFont = exampleText.typeface
+//                currentFont = exampleText.typeface
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -181,16 +212,51 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         // встановлення всіх параметрів для тексту
         val changeSettingsBtn: Button = view.findViewById(R.id.btnChangeTextBookSettings)
         changeSettingsBtn.setOnClickListener {
-            Toast.makeText(context, "Налаштування встановлено!", Toast.LENGTH_SHORT).show()
+            sendReadingSettingsToAPI()
         }
     }
 
-    private fun setBGColor(bgColor: Int, textColor: Int) {
+    private fun setBGColor(bgColor: Int, textColor: Int, bgColorStr: String, textColorStr: String) {
         exampleText.setBackgroundColor(resources.getColor(bgColor))
         exampleText.setTextColor(resources.getColor(textColor))
-
-        currentBg = resources.getColor(bgColor)
-        currentSampleTextColor = resources.getColor(textColor)
+        currentBg = bgColorStr
+        currentSampleTextColor = textColorStr
     }
 
+    private fun sendReadingSettingsToAPI() {
+        val readingSettingsRequest = ReadingSettings(
+            bg_color = currentBg,
+            text_color = currentSampleTextColor,
+            text_size = currentTextSize,
+            text_font = currentFont.toString()
+        )
+        Log.d("qwe", "currentBg $currentBg")
+        Log.d("qwe", "currentSampleTextColor $currentSampleTextColor")
+        Log.d("qwe", "currentTextSize $currentTextSize")
+        Log.d("qwe", "currentFont $currentFont")
+        // Make the API call
+        val call = apiService.addReadingSettings(readingSettingsRequest)
+
+        // Execute the call
+        call.enqueue(object : Callback<Message> {
+            override fun onResponse(call: Call<Message>, response: Response<Message>) {
+                if (response.isSuccessful) {
+                    // Handle successful response
+                    Toast.makeText(context, "Налаштування встановлено!", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Handle unsuccessful response
+                    Toast.makeText(
+                        requireContext(), "Помилка встановлення налаштувань!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Message>, t: Throwable) {
+                // Handle failure
+                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
+
+            }
+        })
+    }
 }

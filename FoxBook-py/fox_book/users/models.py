@@ -20,3 +20,18 @@ class Library(models.Model):
 
     class Meta:
         unique_together = ('user', 'book')
+
+
+class ReadingSettings(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bg_color = models.CharField(max_length=255)
+    text_color = models.CharField(max_length=255)
+    text_size = models.FloatField()
+    text_font = models.CharField(max_length=255)
+
+    def str(self):
+        return f"{self.user.name} " \
+               f"{self.bg_color} " \
+               f"{self.text_color} " \
+               f"{self.text_size}" \
+               f"{self.text_font}"
