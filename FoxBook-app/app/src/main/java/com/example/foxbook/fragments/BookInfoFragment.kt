@@ -446,11 +446,9 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 response: Response<UserRating>
             ) {
                 if (response.isSuccessful) {
-                    Log.e("qwe", "response - $response")
                     Log.e("qwe", response.body()?.user_rating.toString())
 
                     val userRating = response.body()?.user_rating ?: -1
-                    Log.e("qwe", "userRating - $userRating")
                     // Now create the Intent with both values
 
                 } else {

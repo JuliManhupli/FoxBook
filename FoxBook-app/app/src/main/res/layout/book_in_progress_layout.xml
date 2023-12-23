@@ -46,6 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:lines="1"
             android:fontFamily="@font/inter"
             android:text="BookAuthor1"
             app:layout_constraintStart_toEndOf="@+id/imgBookInProgressCover"
