@@ -1,6 +1,6 @@
 import random
 
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
 
 from .models import User, OneTimePassword, PasswordReset
@@ -24,7 +24,6 @@ def send_code_to_user(email, create_code=True, otp_code=None, purpose='verificat
             PasswordReset.objects.create(user=user, code=otp_code)
 
     email_body = f"Привіт {user.name}!\nБудь ласка, введіть код {otp_code} щоб підтвердити пошту."
-    from_email = settings.DEFAULT_FROM_EMAIL
+    from_email = settings.EMAIL_HOST_USER
 
-    send_email = EmailMessage(subject=subject, body=email_body, from_email=from_email, to=[email])
-    send_email.send(fail_silently=True)
+    send_mail(subject, email_body, from_email, [user], fail_silently=False)

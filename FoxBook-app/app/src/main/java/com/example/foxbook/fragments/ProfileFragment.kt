@@ -1,5 +1,6 @@
 package com.example.foxbook.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,10 +10,12 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.example.foxbook.APIServices
 import com.example.foxbook.ClientAPI
-import com.example.foxbook.EditProfileFragment
 import com.example.foxbook.R
+import com.example.foxbook.activities.LoginActivity
 import com.example.foxbook.api.UserProfile
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,26 +23,13 @@ import retrofit2.Response
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
 
-//    private lateinit var txtProfileName: TextView
-//    private lateinit var txtProfileEmail: TextView
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // до редагування профілю
-        val toProfileEdit: Button = view.findViewById(R.id.btnEditProfile)
-        toProfileEdit.setOnClickListener {
-            val editProfileFragment = EditProfileFragment()
-            val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-            transaction.replace(R.id.flFragment, editProfileFragment)
-            transaction.addToBackStack(null)
-            transaction.commit()
-        }
 
         // вихід з акаунту
         val exitBtn: Button = view.findViewById(R.id.btnExit)
         exitBtn.setOnClickListener {
-            Toast.makeText(context, "Вихід з акаунту!", Toast.LENGTH_SHORT).show()
+            logoutUser()
         }
 
 
@@ -100,4 +90,24 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
         })
     }
+
+    private fun logoutUser(){
+        val call = ClientAPI.apiService.logout()
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val intent = Intent(requireContext(), LoginActivity::class.java)
+                    startActivity(intent)
+                    requireActivity().finish()
+                } else {
+                    Toast.makeText(requireContext(), "Помилка виходу!", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
 }

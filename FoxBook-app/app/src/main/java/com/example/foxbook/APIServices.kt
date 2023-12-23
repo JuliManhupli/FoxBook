@@ -1,6 +1,5 @@
 package com.example.foxbook
 
-import com.example.foxbook.api.BookInProgress
 import com.example.foxbook.api.BookPage
 import com.example.foxbook.api.BooksInProgressResponse
 import com.example.foxbook.api.BooksResponse
@@ -53,6 +52,9 @@ interface APIServices {
     @Headers("NoAuth: true")
     @POST("login/")
     fun login(@Body data: Login) : Call<ResponseBody>
+
+    @POST("logout/")
+    fun logout(): Call<ResponseBody>
 
     @Headers("NoAuth: true")
     @POST("password-reset-request/")

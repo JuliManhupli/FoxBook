@@ -1,9 +1,12 @@
-from django.contrib.auth import authenticate
-from django.http import HttpResponse
+from django.contrib.auth import authenticate, logout
+from django.http import HttpResponse, JsonResponse
 from rest_framework import status
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
 
 from .serializers import UserRegisterSerializer, UserLoginSerializer, ResendVerificationCodeSerializer, \
     PasswordResetRequestSerializer, PasswordResetConfirmSerializer
@@ -169,7 +172,8 @@ class LoginUserView(GenericAPIView):
         user = authenticate(request, email=email, password=password)
 
         if not user:
-            return Response({"message": "Користувача не знайдено. Перевірте дані!"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"message": "Користувача не знайдено. Перевірте дані!"},
+                            status=status.HTTP_401_UNAUTHORIZED)
         if not user.is_verified:
             return Response({"message": "Пошта не підтверджена"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -183,6 +187,14 @@ class LoginUserView(GenericAPIView):
             "user_id": user.id,
             "username": user.name,
         }, status=status.HTTP_200_OK)
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        logout(request)
+        return Response({"message": "Ви вийшли з облікового запису"}, status=status.HTTP_200_OK)
 
 
 class AccessRecovery(GenericAPIView):

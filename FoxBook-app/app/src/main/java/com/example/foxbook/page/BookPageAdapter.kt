@@ -48,6 +48,8 @@ class BookPageAdapter : RecyclerView.Adapter<BookPageAdapter.PageViewHolder>() {
         @SuppressLint("ResourceType")
         fun bind(pageText: String) {
             getReadingSettingsAndApply(pageText)
+            // додаємо текст
+            contentTextView.text = pageText
         }
 
         private fun getReadingSettingsAndApply(pageText: String) {
@@ -75,9 +77,6 @@ class BookPageAdapter : RecyclerView.Adapter<BookPageAdapter.PageViewHolder>() {
                         }
 
                         contentTextView.typeface = Typeface.create(textFont ?: "inter", Typeface.NORMAL)
-
-                        // додаємо текст
-                        contentTextView.text = pageText
 
                     } else {
                         // неуспішний запит

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.ClientAPI.apiService
@@ -218,8 +219,14 @@ open class ReadingActivity : AppCompatActivity() {
                             // Add the pages to the adapter
                             pageAdapter.addPage(pagesText)
                             // Scroll to the last visible position after adding the pages
-//                            recyclerView.scrollToPosition(currentPage)
-                            recyclerView.scrollToPosition(end)
+                            val smoothScroller: RecyclerView.SmoothScroller = object : LinearSmoothScroller(this@ReadingActivity) {
+                                override fun getVerticalSnapPreference(): Int {
+                                    return SNAP_TO_START
+                                    }
+                            }
+                            smoothScroller.targetPosition = end
+                            layoutManager.startSmoothScroll(smoothScroller)
+//                            recyclerView.scrollToPosition(end)
                             callback()
                         }
                     }

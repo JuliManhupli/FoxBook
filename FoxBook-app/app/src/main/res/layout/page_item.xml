@@ -12,6 +12,7 @@
         android:scrollbars="vertical"
         android:fontFamily="@font/inter"
         android:textSize="16sp"
+        android:textColor="@color/black"
         android:text="BookText"/>
 
 </LinearLayout>
