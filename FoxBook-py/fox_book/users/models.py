@@ -16,7 +16,7 @@ class Library(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     user_rating = models.IntegerField(default=-1, blank=True)
-    reading_progress = models.IntegerField(default=None, null=True, blank=True)
+    reading_progress = models.IntegerField(default=0, blank=True)
 
     class Meta:
         unique_together = ('user', 'book')

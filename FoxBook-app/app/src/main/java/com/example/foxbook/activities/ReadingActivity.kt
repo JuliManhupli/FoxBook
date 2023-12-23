@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -18,6 +19,7 @@ import com.example.foxbook.ClientAPI.apiService
 import com.example.foxbook.page.BookPageAdapter
 import com.example.foxbook.R
 import com.example.foxbook.api.BookPage
+import com.example.foxbook.api.BookTextChunks
 import com.example.foxbook.api.CheckIfBookInFavorites
 import com.example.foxbook.api.Message
 import com.example.foxbook.api.ReadingProgress
@@ -31,19 +33,15 @@ import kotlin.math.min
 
 open class ReadingActivity : AppCompatActivity() {
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
-
-
     private lateinit var recyclerView: RecyclerView
-    private lateinit var pageAdapter: BookPageAdapter
+    private lateinit var pageArrayList: ArrayList<BookPage>
 
-    private var pageText: ArrayList<String> = ArrayList()
-    private var totalNumberOfPages = 0
-    private var currentPage = 0
-    private val pageSize = 1000
+    lateinit var pageAdapter: BookPageAdapter
+
+    private val processedItems = mutableSetOf<Int>()
     private var visiblePage = 0
-    private lateinit var layoutManager: LinearLayoutManager // оголошення layoutManager
-    private var lastVisiblePosition = 0
+    private lateinit var pageText: ArrayList<String>
+
 
     companion object {
         const val BOOK_ID = ""
@@ -51,35 +49,37 @@ open class ReadingActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        coroutineScope.cancel() // скасування корутини при закритті екрану
-        Log.e("qwe", "page - $visiblePage")
         saveReadingProgressToAPI(visiblePage) // зберігання прогресу в бд
     }
 
-
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reading)
         val layoutReading: ConstraintLayout = findViewById(R.id.readingLayout)
 
         // змінюємо колір фону за налаштуваннями
-        getReadingSettingsBg {bgColor ->
-            Log.d("qwe", "bgColor --- $bgColor")
+        getReadingSettingsBg { bgColor ->
 
             when (bgColor) {
                 "white" -> {
                     layoutReading.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
 
                 }
+
                 "grey" -> {
-                    layoutReading.setBackgroundColor(ContextCompat.getColor(this, R.color.settings_grey_bg))
+                    layoutReading.setBackgroundColor(
+                        ContextCompat.getColor(
+                            this, R.color.settings_grey_bg
+                        )
+                    )
 
                 }
+
                 "black" -> {
                     layoutReading.setBackgroundColor(ContextCompat.getColor(this, R.color.black))
 
                 }
+
                 else -> {
                     layoutReading.setBackgroundColor(ContextCompat.getColor(this, R.color.book_bg))
                 }
@@ -88,7 +88,6 @@ open class ReadingActivity : AppCompatActivity() {
 
 
         val bookId = intent.getIntExtra(BOOK_ID, -1)
-        Log.e("qwe", "bookId - $bookId")
 
         // кнопка назад
         val backButton: ImageButton = findViewById(R.id.imgBtnBackFromReading)
@@ -96,175 +95,96 @@ open class ReadingActivity : AppCompatActivity() {
             finish()
         }
 
-        // налаштування RecyclerView та Adapter
-        recyclerView = findViewById(R.id.recyclerPageViewReading)
-        layoutManager = LinearLayoutManager(this) // ініціалізація layoutManager
-        recyclerView.layoutManager = layoutManager
-        recyclerView.setHasFixedSize(true)
-
-        pageAdapter = BookPageAdapter()
-        recyclerView.adapter = pageAdapter
-
         // Отримання тексту книги
-
-        getReadingProgress(bookId) { readingProgress ->
-            currentPage = readingProgress
-            Log.e("qwe", "readingProgress - $readingProgress")
-//            recyclerView.scrollToPosition(readingProgress)
-            getBookText(bookId, readingProgress)
-        }
-//        getBookText(20)
-    }
+        getBookTextChunks(bookId) { pageTextChunks ->
+            pageText = pageTextChunks
 
 
+            recyclerView = findViewById(R.id.recyclerPageViewReading)
+            val layoutManager = LinearLayoutManager(this)
 
+            recyclerView.layoutManager = layoutManager
+            recyclerView.setHasFixedSize(true)
 
-    private fun getBookText(bookId: Int, readingProgress: Int) {
-        val call = apiService.getBookText(bookId)
+            pageArrayList = arrayListOf()
 
-        call.enqueue(object : Callback<BookPage> {
-            override fun onResponse(call: Call<BookPage>, response: Response<BookPage>) {
-                if (response.isSuccessful) {
-                    val bookText = response.body()?.text
-                    Log.e("qwe", "bookText.toString()")
-                    if (bookText != null) {
-                        pageText.add(bookText)
+            loadData()
+            getReadingProgress(bookId) { readingProgress ->
+                recyclerView.scrollToPosition(readingProgress)
+            }
+            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
-                        totalNumberOfPages = (bookText.length + pageSize - 1) / pageSize
-                        Log.e("qwe", "totalNumberOfPages")
-                        Log.e("qwe", totalNumberOfPages.toString())
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
 
-                        // Load pages from 0 to readingProgress initially
-                        loadPages(0, currentPage) {
-                            Log.e("qwe", "1 - readingProgress")
+                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                    if (firstVisibleItemPosition != RecyclerView.NO_POSITION) {
 
-                            Log.e("qwe", "3 - scrollToPosition")
-                            // Load additional pages when the last item is visible
-                            Log.e("qwe", "$currentPage")
-                            loadNextPages()
+                        val firstVisibleItem = layoutManager.findViewByPosition(
+                            firstVisibleItemPosition
+                        )
+                        val visibleHeight = recyclerView.height - firstVisibleItem?.top!!
+                        val itemHeight = firstVisibleItem.height ?: 1
+                        visiblePage = (firstVisibleItemPosition + visibleHeight / itemHeight)
+                        Log.e("RecyclerViewScroll", "visiblePage - $visiblePage")
+                    }
 
-                            // Setup scrolling for pagination
-                            recyclerView.addOnScrollListener(object :
-                                RecyclerView.OnScrollListener() {
-                                override fun onScrolled(
-                                    recyclerView: RecyclerView,
-                                    dx: Int,
-                                    dy: Int
-                                ) {
-                                    super.onScrolled(recyclerView, dx, dy)
-                                    val firstVisibleItemPosition =
-                                        layoutManager.findFirstVisibleItemPosition()
-                                    if (firstVisibleItemPosition != RecyclerView.NO_POSITION) {
-
-                                        val firstVisibleItem =
-                                            layoutManager.findViewByPosition(
-                                                firstVisibleItemPosition
-                                            )
-                                        val visibleHeight =
-                                            recyclerView.height - firstVisibleItem?.top!!
-                                        val itemHeight =
-                                            firstVisibleItem.height ?: 1
-                                        visiblePage =
-                                            (firstVisibleItemPosition + visibleHeight / itemHeight) + 1
-                                        Log.e("qwe", "visiblePage - $visiblePage")
-                                    }
-
-                                    val lastVisibleItemPosition =
-                                        layoutManager.findLastVisibleItemPosition()
-                                    val totalItemCount = layoutManager.itemCount
-
-                                    if (currentPage * pageSize < pageText[0].length) {
-                                        if (lastVisibleItemPosition == totalItemCount - 1) {
-                                            // Load additional pages when the last item is visible
-                                            loadNextPages()
-                                        }
-                                    }
-                                }
-                            })
+                    for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
+                        if (!processedItems.contains(i)) {
+                            // Add the item to the set of processed items to avoid duplicates
+                            processedItems.add(i)
                         }
                     }
+                }
+
+
+            })
+        }
+
+    }
+
+    private fun loadData() {
+        for (i in pageText) {
+            val bookPageText = BookPage(i)
+            pageArrayList.add(bookPageText)
+        }
+        recyclerView.adapter = BookPageAdapter(pageArrayList)
+    }
+
+    private fun getBookTextChunks(bookId: Int, callback: (ArrayList<String>) -> Unit) {
+        val call = apiService.getBookTextChunks(bookId)
+
+        call.enqueue(object : Callback<BookTextChunks> {
+            override fun onResponse(
+                call: Call<BookTextChunks>, response: Response<BookTextChunks>
+            ) {
+                if (response.isSuccessful) {
+                    val textChunks = response.body()?.text_chunks
+                    val chunksSize = textChunks?.size ?: 0
+                    Log.d("Chunks Size", "Number of Chunks: $chunksSize")
+                    textChunks?.forEachIndexed { index, chunk ->
+                        Log.d("Chunk", "Chunk $index: $chunk")
+                    }
+
+                    callback(textChunks as ArrayList<String>)
+
                 } else {
-                    // Handle unsuccessful response
-                    Log.e("qwe", "Unsuccessful response getBookText: ${response.code()}")
+
+                    // обробка невдачі відповіді
+                    Log.e(
+                        "qwe", "Unsuccessful response getBookTextChunks: ${response.code()}"
+                    )
                 }
             }
 
-            override fun onFailure(call: Call<BookPage>, t: Throwable) {
-                // Handle failure
+            override fun onFailure(call: Call<BookTextChunks>, t: Throwable) {
+                // обробка невдачі
                 Log.e("qwe", "API request failed with exception", t)
             }
         })
     }
 
-    private fun loadPages(start: Int, end: Int, callback: () -> Unit) {
-        Log.e("qwe", "2 - loadPages")
-        Log.e("qwe", "$end")
-        coroutineScope.launch {
-            // Execute the following code on the IO dispatcher
-            withContext(Dispatchers.IO) {
-                if (pageText.isNotEmpty()) {
-                    val textLength = pageText[0].length
-
-                    // Ensure the start and end positions are within the valid range
-                    val actualStart = min(start * pageSize, textLength)
-                    val actualEnd = min(end * pageSize, textLength)
-
-                    // Check if there are pages to load
-                    if (actualStart < actualEnd) {
-                        // Retrieve the text for the specified pages
-                        val pagesText = pageText[0].substring(actualStart, actualEnd)
-
-                        // Switch back to the main dispatcher to update the UI
-                        withContext(Dispatchers.Main) {
-                            // Add the pages to the adapter
-                            pageAdapter.addPage(pagesText)
-                            // Scroll to the last visible position after adding the pages
-                            val smoothScroller: RecyclerView.SmoothScroller = object : LinearSmoothScroller(this@ReadingActivity) {
-                                override fun getVerticalSnapPreference(): Int {
-                                    return SNAP_TO_START
-                                    }
-                            }
-                            smoothScroller.targetPosition = end
-                            layoutManager.startSmoothScroll(smoothScroller)
-//                            recyclerView.scrollToPosition(end)
-                            callback()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun loadNextPages() {
-        coroutineScope.launch {
-            // Execute the following code on the IO dispatcher
-            withContext(Dispatchers.IO) {
-                // Calculate the end position of the next page
-                val end = (currentPage + 1) * pageSize
-
-                // Retrieve the text for the next page
-                val textLength = if (pageText.isNotEmpty()) pageText[0].length else 0
-                val actualEnd = min(end, textLength)
-
-                // Ensure the indices are within the valid range
-                val actualStart = currentPage * pageSize
-                val actualEndSubstring = min(actualEnd, textLength)
-
-                if (actualStart < actualEndSubstring) {
-                    val nextPageText = pageText[0].substring(actualStart, actualEndSubstring)
-
-                    // Update the current page
-                    currentPage++
-
-                    // Switch back to the main dispatcher to update the UI
-                    withContext(Dispatchers.Main) {
-                        // Add the next page to the adapter
-                        pageAdapter.addPage(nextPageText)
-                    }
-                }
-            }
-        }
-    }
     private fun getReadingProgress(bookId: Int, callback: (Int) -> Unit) {
         val call = apiService.getReadingProgress(bookId)
 
@@ -316,13 +236,10 @@ open class ReadingActivity : AppCompatActivity() {
             }
         })
     }
-
-
     private fun getReadingSettingsBg(callback: (String) -> Unit) {
         apiService.getReadingSettingsBg().enqueue(object : Callback<ReadingSettingsBg> {
             override fun onResponse(
-                call: Call<ReadingSettingsBg>,
-                response: Response<ReadingSettingsBg>
+                call: Call<ReadingSettingsBg>, response: Response<ReadingSettingsBg>
             ) {
                 if (response.isSuccessful) {
                     val readingSettings = response.body()

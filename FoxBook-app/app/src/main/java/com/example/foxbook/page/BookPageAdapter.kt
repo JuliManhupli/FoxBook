@@ -21,78 +21,73 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class BookPageAdapter : RecyclerView.Adapter<BookPageAdapter.PageViewHolder>() {
 
-    private val pages: MutableList<String> = mutableListOf()
 
-    fun addPage(pageText: String) {
-        pages.add(pageText)
-        notifyDataSetChanged()
-    }
-
+class BookPageAdapter(private val pageList: ArrayList<BookPage>): RecyclerView.Adapter<BookPageAdapter.PageViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.page_item, parent, false)
-        return PageViewHolder(view)
+        val itemView = LayoutInflater.from(parent.context).inflate(
+            R.layout.page_item, parent,
+            false)
+        return PageViewHolder((itemView))
     }
 
     override fun onBindViewHolder(holder: PageViewHolder, position: Int) {
+        getReadingSettingsAndApply(holder)
+        val currentItem = pageList[position]
+        holder.bookPage.text = currentItem.text
 
-        holder.bind(pages[position])
     }
 
-    override fun getItemCount(): Int = pages.size
+    override fun getItemCount(): Int {
+        return pageList.size
+    }
 
-    class PageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val contentTextView: TextView = itemView.findViewById(R.id.mText)
+    class PageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+        val bookPage: TextView = itemView.findViewById(R.id.mText)
+    }
 
-        @SuppressLint("ResourceType")
-        fun bind(pageText: String) {
-            getReadingSettingsAndApply(pageText)
-            // додаємо текст
-            contentTextView.text = pageText
-        }
 
-        private fun getReadingSettingsAndApply(pageText: String) {
-            apiService.getReadingSettingsText().enqueue(object : Callback<ReadingSettingsText> {
-                override fun onResponse(
-                    call: Call<ReadingSettingsText>,
-                    response: Response<ReadingSettingsText>
-                ) {
-                    if (response.isSuccessful) {
-                        val readingSettings = response.body()
+    private fun getReadingSettingsAndApply(holder: PageViewHolder) {
+        apiService.getReadingSettingsText().enqueue(object : Callback<ReadingSettingsText> {
+            override fun onResponse(
+                call: Call<ReadingSettingsText>,
+                response: Response<ReadingSettingsText>
+            ) {
+                if (response.isSuccessful) {
+                    val readingSettings = response.body()
 
-                        // дістаємо значення
-                        val textColor = readingSettings?.text_color
-                        val textSize = readingSettings?.text_size
-                        val textFont = readingSettings?.text_font
+                    // дістаємо значення
+                    val textColor = readingSettings?.text_color
+                    val textSize = readingSettings?.text_size
+                    val textFont = readingSettings?.text_font
 
-                        // змінюємо налаштування
-                        contentTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize ?: 44.0F)
-                        if (textColor == "white") {
-                            contentTextView.setTextColor(contentTextView.context.resources.getColor(
-                            textColor?.toIntOrNull() ?: R.color.white))
-                        } else {
-                            contentTextView.setTextColor(contentTextView.context.resources.getColor(
-                            textColor?.toIntOrNull() ?: R.color.black))
-                        }
-
-                        contentTextView.typeface = Typeface.create(textFont ?: "inter", Typeface.NORMAL)
-
+                    // змінюємо налаштування
+                    holder.bookPage.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize ?: 44.0F)
+                    if (textColor == "white") {
+                        holder.bookPage.setTextColor(
+                            holder.bookPage.context.resources.getColor(
+                                textColor?.toIntOrNull() ?: R.color.white
+                            )
+                        )
                     } else {
-                        // неуспішний запит
-                        Log.e("qwe", "Failed to get reading settings: ${response.code()}")
+                        holder.bookPage.setTextColor(
+                            holder.bookPage.context.resources.getColor(
+                                textColor?.toIntOrNull() ?: R.color.black
+                            )
+                        )
                     }
+                    holder.bookPage.typeface = Typeface.create(textFont ?: "inter", Typeface.NORMAL)
+                } else {
+                    // неуспішний запит
+                    Log.e("qwe", "Failed to get reading settings: ${response.code()}")
                 }
+            }
 
-                override fun onFailure(call: Call<ReadingSettingsText>, t: Throwable) {
-                    // помилка мережі
-                    Log.e("qwe", "Network error: ${t.message}")
-                }
-            })
-        }
+            override fun onFailure(call: Call<ReadingSettingsText>, t: Throwable) {
+                // помилка мережі
+                Log.e("qwe", "Network error: ${t.message}")
+            }
+        })
     }
 }
-
-
-
 
