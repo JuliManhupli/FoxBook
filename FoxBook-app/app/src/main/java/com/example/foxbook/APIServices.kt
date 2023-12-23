@@ -10,6 +10,9 @@ import com.example.foxbook.api.Login
 import com.example.foxbook.api.Message
 import com.example.foxbook.api.PasswordResetVerify
 import com.example.foxbook.api.ReadingProgress
+import com.example.foxbook.api.ReadingSettings
+import com.example.foxbook.api.ReadingSettingsBg
+import com.example.foxbook.api.ReadingSettingsText
 import com.example.foxbook.api.RefreshToken
 import com.example.foxbook.api.Register
 import com.example.foxbook.api.SetNewPassword
@@ -100,6 +103,18 @@ interface APIServices {
 
     @GET("library/user-rating/{bookId}/")
     fun getUserRating(@Path("bookId") bookId: Int): Call<UserRating>
+
+
+    @POST("reading-settings/add/")
+    fun addReadingSettings(@Body request: ReadingSettings): Call<Message>
+
+
+    @GET("reading-settings/text/")
+    fun getReadingSettingsText(): Call<ReadingSettingsText>
+
+
+    @GET("reading-settings/bg/")
+    fun getReadingSettingsBg(): Call<ReadingSettingsBg>
 
     @GET("favorites/books/")
     fun getFavouriteBooks(

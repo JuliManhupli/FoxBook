@@ -5,7 +5,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import FavoriteBook, Library
+from .models import FavoriteBook, Library, ReadingSettings
 from .serializers import UserProfileSerializer, BookInProgressSerializer
 from books.models import Book
 from books.serializers import BookSerializer
@@ -176,6 +176,70 @@ def update_reading_progress(request, book_id):
         return Response({'message': 'Reading progress updated successfully'})
     else:
         return Response({'message': 'Reading progress not provided in the request'})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_reading_settings(request):
+    user = request.user
+    data = request.data
+    print(data)
+    bg_color = data.get('bg_color')
+    text_color = data.get('text_color')
+    text_size = data.get('text_size')
+    text_font = data.get('text_font')
+
+    try:
+        reading_settings = ReadingSettings.objects.get(user=user)
+        reading_settings.bg_color = bg_color
+        reading_settings.text_color = text_color
+        reading_settings.text_size = text_size
+        reading_settings.text_font = text_font
+        reading_settings.save()
+    except ReadingSettings.DoesNotExist:
+        reading_settings = ReadingSettings(user=user, bg_color=bg_color, text_color=text_color, text_size=text_size,
+                                           text_font=text_font)
+        reading_settings.save()
+    print(reading_settings)
+    return Response({'message': 'Reading settings added successfully'})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_reading_settings_text(request):
+    user = request.user
+    try:
+        reading_settings = ReadingSettings.objects.get(user=user)
+        response_data = {
+            'text_color': reading_settings.text_color,
+            'text_size': reading_settings.text_size,
+            'text_font': reading_settings.text_font,
+        }
+    except ReadingSettings.DoesNotExist:
+        response_data = {
+            'text_color': "black",
+            'text_size': 44,
+            'text_font': "inter",
+        }
+    print(response_data)
+    return Response(response_data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_reading_settings_bg(request):
+    user = request.user
+    try:
+        reading_settings = ReadingSettings.objects.get(user=user)
+        response_data = {
+            'bg_color': reading_settings.bg_color,
+        }
+    except ReadingSettings.DoesNotExist:
+        response_data = {
+            'bg_color': "beige",
+        }
+    print(response_data)
+    return Response(response_data)
 
 
 @api_view(['GET'])

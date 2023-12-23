@@ -1,10 +1,15 @@
 package com.example.foxbook.activities
 
+import android.annotation.SuppressLint
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foxbook.ClientAPI
@@ -15,6 +20,8 @@ import com.example.foxbook.api.BookPage
 import com.example.foxbook.api.CheckIfBookInFavorites
 import com.example.foxbook.api.Message
 import com.example.foxbook.api.ReadingProgress
+import com.example.foxbook.api.ReadingSettingsBg
+import com.example.foxbook.api.ReadingSettingsText
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,8 +49,6 @@ open class ReadingActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-
-
         super.onDestroy()
         coroutineScope.cancel() // скасування корутини при закритті екрану
         Log.e("qwe", "page - $visiblePage")
@@ -51,9 +56,36 @@ open class ReadingActivity : AppCompatActivity() {
     }
 
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reading)
+        val layoutReading: ConstraintLayout = findViewById(R.id.readingLayout)
+
+        // змінюємо колір фону за налаштуваннями
+        getReadingSettingsBg {bgColor ->
+            Log.d("qwe", "bgColor --- $bgColor")
+
+            when (bgColor) {
+                "white" -> {
+                    layoutReading.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
+
+                }
+                "grey" -> {
+                    layoutReading.setBackgroundColor(ContextCompat.getColor(this, R.color.settings_grey_bg))
+
+                }
+                "black" -> {
+                    layoutReading.setBackgroundColor(ContextCompat.getColor(this, R.color.black))
+
+                }
+                else -> {
+                    layoutReading.setBackgroundColor(ContextCompat.getColor(this, R.color.book_bg))
+                }
+            }
+        }
+
+
         val bookId = intent.getIntExtra(BOOK_ID, -1)
         Log.e("qwe", "bookId - $bookId")
 
@@ -274,6 +306,36 @@ open class ReadingActivity : AppCompatActivity() {
             override fun onFailure(call: Call<Message>, t: Throwable) {
                 // обробка невдачі
                 Log.e("qwe", "API request failed with exception", t)
+            }
+        })
+    }
+
+
+    private fun getReadingSettingsBg(callback: (String) -> Unit) {
+        apiService.getReadingSettingsBg().enqueue(object : Callback<ReadingSettingsBg> {
+            override fun onResponse(
+                call: Call<ReadingSettingsBg>,
+                response: Response<ReadingSettingsBg>
+            ) {
+                if (response.isSuccessful) {
+                    val readingSettings = response.body()
+
+                    // дістаємо значення
+                    val bg_color = readingSettings?.bg_color
+
+                    if (bg_color != null) {
+                        callback(bg_color)
+                    }
+
+                } else {
+                    // неуспішний запит
+                    Log.e("qwe", "Failed to get reading settings: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ReadingSettingsBg>, t: Throwable) {
+                // помилка мережі
+                Log.e("qwe", "Network error: ${t.message}")
             }
         })
     }
