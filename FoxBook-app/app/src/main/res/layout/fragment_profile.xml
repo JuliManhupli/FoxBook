@@ -103,36 +103,23 @@
         android:lines="2"
         android:text="ProfileEmail"
         android:textAlignment="center"
-        app:layout_constraintBottom_toTopOf="@+id/btnEditProfile"
+        app:layout_constraintBottom_toTopOf="@+id/btnExit"
         app:layout_constraintEnd_toStartOf="@+id/guideline49"
         app:layout_constraintStart_toStartOf="@+id/guideline78"
         app:layout_constraintTop_toBottomOf="@+id/txtProfileName"
         app:layout_constraintVertical_bias="0.5" />
 
     <Button
-        android:id="@+id/btnEditProfile"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Редагувати"
-        android:fontFamily="@font/inter"
-        android:backgroundTint="@color/settings"
-        app:layout_constraintBottom_toTopOf="@+id/btnExit"
-        app:layout_constraintEnd_toStartOf="@+id/guideline49"
-        app:layout_constraintStart_toStartOf="@+id/guideline78"
-        app:layout_constraintTop_toBottomOf="@+id/txtProfileEmail"
-        app:layout_constraintVertical_bias="0.5" />
-
-    <Button
         android:id="@+id/btnExit"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Вийти"
-        android:fontFamily="@font/inter"
         android:backgroundTint="@color/settings"
+        android:fontFamily="@font/inter"
+        android:text="Вийти"
         app:layout_constraintBottom_toTopOf="@+id/guideline77"
         app:layout_constraintEnd_toStartOf="@+id/guideline49"
         app:layout_constraintStart_toStartOf="@+id/guideline78"
-        app:layout_constraintTop_toBottomOf="@+id/btnEditProfile"
+        app:layout_constraintTop_toBottomOf="@+id/txtProfileEmail"
         app:layout_constraintVertical_bias="0.5" />
 
     <androidx.cardview.widget.CardView

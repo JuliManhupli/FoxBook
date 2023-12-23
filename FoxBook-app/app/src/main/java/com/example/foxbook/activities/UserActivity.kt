@@ -17,7 +17,6 @@ class UserActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user)
 
-
         //фрагменти
         val homeFragment = HomePageFragment()
         val searchFragment = SearchPageFragment()

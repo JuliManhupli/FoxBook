@@ -7,7 +7,6 @@ import com.example.foxbook.databinding.ActivityMainBinding
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import android.widget.Toast
 import com.example.foxbook.TokenManager
 
