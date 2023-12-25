@@ -3,7 +3,7 @@ from django.urls import path
 from .views import get_user_profile, add_book_to_favorites, remove_book_from_favorites, check_if_book_in_favorites, \
     FavouriteBooksList, add_book_to_library, update_reading_progress, UserBooksListView, get_reading_progress, \
     get_user_rating, add_reading_settings, get_reading_settings_text, get_reading_settings_bg, get_recommendations, \
-    update_user_rating
+    update_user_rating, continue_reading
 
 app_name = "accounts"
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     path('library/books/', UserBooksListView.as_view(), name='library-books-list'),
     path('library/add/<int:book_id>/', add_book_to_library, name='add-library'),
     path('library/recommend/', get_recommendations, name='recommend'),
+    path('library/continue-reading/', continue_reading, name='continue-reading'),
 
     path('library/update/reading-progress/<int:book_id>/', update_reading_progress, name='update-reading-progress'),
     path('library/reading-progress/<int:book_id>/', get_reading_progress, name='library-reading-progress'),

@@ -15,17 +15,19 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline92"
         app:layout_constraintStart_toStartOf="@+id/guideline91"
         app:layout_constraintTop_toTopOf="@+id/guideline96">
-        
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/helloUser"
+                android:lines="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter"
                 android:padding="10dp"
-                android:text="Вітаємо, "
+                android:text="Вітаємо!"
                 android:textAlignment="center"
                 android:textSize="22sp"
                 android:textStyle="bold"
@@ -86,11 +88,25 @@
         app:layout_constraintGuide_percent="0.07" />
 
     <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline81"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.19" />
+
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline92"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.93" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline80"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.81" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline93"
@@ -125,19 +141,19 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline93"
         app:layout_constraintStart_toStartOf="@+id/guideline91" />
 
-    <TextView
-        android:id="@+id/noReadings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Книг у прочитанні нема!"
-        android:fontFamily="@font/inter"
-        android:textSize="16sp"
+    <ImageView
+        android:id="@+id/noReadingsFox"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/main_fox"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@+id/guideline91"
-        app:layout_constraintTop_toTopOf="@+id/guideline93" />
+        app:layout_constraintBottom_toTopOf="@+id/guideline94"
+        app:layout_constraintEnd_toStartOf="@+id/guideline80"
+        app:layout_constraintStart_toStartOf="@+id/guideline81"
+        app:layout_constraintTop_toTopOf="@+id/guideline93"/>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardView4"
+        android:id="@+id/cardViewBookToRead"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:backgroundTint="@color/book_bg"
