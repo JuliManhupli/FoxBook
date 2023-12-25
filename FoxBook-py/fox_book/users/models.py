@@ -15,7 +15,7 @@ class FavoriteBook(models.Model):
 class Library(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    user_rating = models.IntegerField(default=-1, blank=True)
+    user_rating = models.DecimalField(max_digits=3, decimal_places=2, default=-1, blank=True)
     reading_progress = models.IntegerField(default=0, blank=True)
 
     class Meta:

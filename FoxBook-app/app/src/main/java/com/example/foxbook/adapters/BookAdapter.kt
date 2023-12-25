@@ -70,7 +70,7 @@ class BookAdapter(private val bookList: MutableList<Book>) : RecyclerView.Adapte
 
         holder.bookTitle.text = currentItem.title
         holder.bookAuthor.text = currentItem.author
-        holder.bookRating.text = currentItem.rating.toString()
+        holder.bookRating.text = if (currentItem.rating == -1.0) "-" else currentItem.rating.toString()
         holder.bookGenre.text = currentItem.genre
 
         holder.itemView.setOnClickListener{

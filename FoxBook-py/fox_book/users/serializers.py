@@ -2,19 +2,13 @@ from rest_framework import serializers
 
 from accounts.models import User
 from books.models import Book
-from .models import FavoriteBook, Library
+from .models import Library
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'name']
-
-
-class LibrarySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Library
-        fields = ['user_rating', 'reading_progress']
 
 
 class BookInProgressSerializer(serializers.ModelSerializer):
@@ -32,7 +26,3 @@ class BookInProgressSerializer(serializers.ModelSerializer):
         except Library.DoesNotExist:
             return None
 
-class FavoriteBookSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FavoriteBook
-        fields = ['user', 'book']

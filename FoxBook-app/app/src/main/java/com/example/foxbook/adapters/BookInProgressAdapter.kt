@@ -69,7 +69,7 @@ class BookInProgressAdapter (private val bookInProgressList: MutableList<BookInP
 
         holder.bookTitle.text = currentItem.title
         holder.bookAuthor.text = currentItem.author
-        holder.bookRating.text = currentItem.rating.toString()
+        holder.bookRating.text = if (currentItem.rating == -1.0) "-" else currentItem.rating.toString()
 
 
         val progress = currentItem.reading_progress + 1
@@ -78,7 +78,6 @@ class BookInProgressAdapter (private val bookInProgressList: MutableList<BookInP
         holder.bookProgressBar.max = pages
 
         val readPercent = progress * 100 / pages
-        Log.e("readPercent", "readPercent: ${readPercent}")
         holder.bookReadPercent.text = "$readPercent %"
         holder.itemView.setOnClickListener{
             onItemClick?.invoke(currentItem)

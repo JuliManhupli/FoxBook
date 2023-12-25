@@ -41,34 +41,34 @@ interface APIServices {
 
     @Headers("NoAuth: true")
     @POST("register/")
-    fun register(@Body data: Register) : Call<ResponseBody>
+    fun register(@Body data: Register): Call<ResponseBody>
 
     @Headers("NoAuth: true")
     @POST("verify-email/")
-    fun verify(@Body data: VerifyEmail) : Call<ResponseBody>
+    fun verify(@Body data: VerifyEmail): Call<ResponseBody>
 
     @Headers("NoAuth: true")
     @POST("resend-verification/")
-    fun resendVerification(@Body data: Email) : Call<ResponseBody>
+    fun resendVerification(@Body data: Email): Call<ResponseBody>
 
     @Headers("NoAuth: true")
     @POST("login/")
-    fun login(@Body data: Login) : Call<ResponseBody>
+    fun login(@Body data: Login): Call<ResponseBody>
 
     @POST("logout/")
     fun logout(): Call<ResponseBody>
 
     @Headers("NoAuth: true")
     @POST("password-reset-request/")
-    fun passwordResetRequest(@Body data: Email) : Call<ResponseBody>
+    fun passwordResetRequest(@Body data: Email): Call<ResponseBody>
 
     @Headers("NoAuth: true")
     @POST("password-reset/verify/")
-    fun passwordResetVerify(@Body data: PasswordResetVerify) : Call<ResponseBody>
+    fun passwordResetVerify(@Body data: PasswordResetVerify): Call<ResponseBody>
 
     @Headers("NoAuth: true")
     @POST("password-reset/set-password/")
-    fun passwordResetSetPassword(@Body data: SetNewPassword) : Call<ResponseBody>
+    fun passwordResetSetPassword(@Body data: SetNewPassword): Call<ResponseBody>
 
     @GET("books/")
     fun getBooks(
@@ -102,7 +102,7 @@ interface APIServices {
     fun getRecommendations(): Call<Recommendations>
 
     @FormUrlEncoded
-    @POST("library/update/{bookId}/")
+    @POST("library/update/reading-progress/{bookId}/")
     fun updateReadingProgress(
         @Path("bookId") bookId: Int,
         @Field("reading_progress") readingProgress: Int
@@ -114,6 +114,12 @@ interface APIServices {
     @GET("library/user-rating/{bookId}/")
     fun getUserRating(@Path("bookId") bookId: Int): Call<UserRating>
 
+    @FormUrlEncoded
+    @POST("library/update/user-rating/{bookId}/")
+    fun updateUserRating(
+        @Path("bookId") bookId: Int,
+        @Field("user_rating") userRating: Double
+    ): Call<Message>
 
     @POST("reading-settings/add/")
     fun addReadingSettings(@Body request: ReadingSettings): Call<Message>
@@ -126,6 +132,8 @@ interface APIServices {
     @GET("reading-settings/bg/")
     fun getReadingSettingsBg(): Call<ReadingSettingsBg>
 
+
+
     @GET("favorites/books/")
     fun getFavouriteBooks(
         @Query("page") page: Int,
@@ -134,6 +142,7 @@ interface APIServices {
 
     @GET("favorites/check/{bookId}/")
     fun checkIfBookInFavorites(@Path("bookId") bookId: Int): Call<CheckIfBookInFavorites>
+
     @POST("favorites/add/{book_id}/")
     fun addToFavorites(@Path("book_id") bookId: Int): Call<Message>
 

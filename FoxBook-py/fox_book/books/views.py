@@ -76,10 +76,8 @@ def get_book_text_array(request, book_id):
         book = Book.objects.get(id=book_id)
         full_text = book.text
 
-        # Divide the text into chunks of 1000 characters
         chunk_size = 1000
         text_chunks = [full_text[i:i + chunk_size] for i in range(0, len(full_text), chunk_size)]
-        print(len(text_chunks))
         return Response({'text_chunks': text_chunks})
     except Book.DoesNotExist:
         return Response({"error": "Book not found"}, status=404)
