@@ -17,6 +17,7 @@
 
         <ImageView
             android:id="@+id/imgRecommendationCover"
+            android:src="@drawable/no_image"
             android:layout_width="110dp"
             android:layout_height="150dp"
             android:scaleType="fitXY"/>

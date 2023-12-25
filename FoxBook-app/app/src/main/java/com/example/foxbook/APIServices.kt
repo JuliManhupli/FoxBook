@@ -2,6 +2,7 @@ package com.example.foxbook
 
 import com.example.foxbook.api.BookPage
 import com.example.foxbook.api.BookTextChunks
+import com.example.foxbook.api.BookToRead
 import com.example.foxbook.api.BooksInProgressResponse
 import com.example.foxbook.api.BooksResponse
 import com.example.foxbook.api.CheckIfBookInFavorites
@@ -97,6 +98,9 @@ interface APIServices {
 
     @POST("library/add/{book_id}/")
     fun addBookToLibrary(@Path("book_id") bookId: Int): Call<Message>
+
+    @GET("library/continue-reading/")
+    fun continueReading(): Call<BookToRead>
 
     @GET("library/recommend/")
     fun getRecommendations(): Call<Recommendations>

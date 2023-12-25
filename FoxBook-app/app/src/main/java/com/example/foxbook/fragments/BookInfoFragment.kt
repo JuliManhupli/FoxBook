@@ -58,6 +58,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
         backButton.setOnClickListener {
             when (targetFragment) {
+                HomePageFragment::class.java.simpleName -> navigateTo(HomePageFragment())
                 SearchPageFragment::class.java.simpleName -> navigateTo(SearchPageFragment())
                 FavouriteBooksFragment::class.java.simpleName -> navigateTo(FavouriteBooksFragment())
                 ReadingInProgressFragment::class.java.simpleName -> navigateTo(ReadingInProgressFragment())
@@ -452,7 +453,8 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
             ) {
                 if (response.isSuccessful) {
                     val responseMessage = response.body()?.message
-                    Toast.makeText(requireContext(), responseMessage, Toast.LENGTH_SHORT).show()
+                    Log.d("qwe", responseMessage.toString())
+//                    Toast.makeText(requireContext(), responseMessage, Toast.LENGTH_SHORT).show()
                 } else {
                     // обробка невдалої відповіді
                     Log.e("qwe", "Unsuccessful response addBookToLibrary: ${response.code()}")

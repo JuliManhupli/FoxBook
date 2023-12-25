@@ -136,6 +136,44 @@ def add_book_to_library(request, book_id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def continue_reading(request):
+    try:
+        user = request.user
+        queryset = Library.objects.filter(user=user)
+        books_in_progress = [library_entry.book for library_entry in queryset]
+        print(books_in_progress)
+        serializer = BookInProgressSerializer(books_in_progress, many=True, context={'request': request})
+        print(serializer)
+        serialized_data = serializer.data
+        print(serialized_data)
+
+
+        # user = request.user
+        # queryset = Book.objects.filter(library__user=user)
+        # print(queryset)
+        # serializer = BookInProgressSerializer(queryset, many=True)
+        # print(serializer)
+        # serialized_data = serializer.data
+        # print(serialized_data)
+
+        random.shuffle(serialized_data)
+        print('--------')
+        print(serialized_data)
+        book_to_read = serialized_data[:1]
+        print('******************')
+        print(book_to_read)
+
+        return Response({'book_to_read': book_to_read})
+
+    except Exception as e:
+        print("No")
+        return Response({'book_to_read': Book.objects.none()})
+
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_recommendations(request):
     try:
         user = request.user

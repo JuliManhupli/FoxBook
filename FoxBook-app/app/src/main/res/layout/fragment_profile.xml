@@ -177,7 +177,7 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="20dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/baseline_text_format_24"
+                android:src="@drawable/baseline_text_fields_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
