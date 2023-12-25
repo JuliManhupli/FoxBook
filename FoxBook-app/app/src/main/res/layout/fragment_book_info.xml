@@ -18,6 +18,18 @@
         app:layout_constraintTop_toTopOf="@+id/guideline57" />
 
     <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/imgBtnDeleteFromReading"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="20dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Видалення"
+        android:scaleType="fitXY"
+        android:src="@drawable/baseline_restore_from_trash_24"
+        app:layout_constraintEnd_toStartOf="@+id/imgBtnUnliked"
+        app:layout_constraintTop_toTopOf="@+id/guideline57" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/imgBtnUnliked"
         android:layout_width="35dp"
         android:layout_height="35dp"
@@ -205,14 +217,13 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginBottom="125dp"
                 app:cardCornerRadius="15dp"
-                app:layout_constraintTop_toBottomOf="@+id/txtBookInfoGenre"
-                tools:layout_editor_absoluteX="30dp">
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline72"
+                app:layout_constraintStart_toStartOf="@+id/guideline76">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constrlayout"
@@ -241,9 +252,9 @@
                         android:layout_marginLeft="15dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginRight="15dp"
-                        android:paddingBottom="15dp"
                         android:fontFamily="@font/inter"
                         android:justificationMode="inter_word"
+                        android:paddingBottom="15dp"
                         android:text="Description"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -258,17 +269,17 @@
                 android:id="@+id/btnToReading"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="125dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
                 android:backgroundTint="#9D8ED7"
                 android:fontFamily="@font/inter"
                 android:text="Читати"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/cardView3"
                 app:layout_constraintEnd_toStartOf="@+id/guideline55"
                 app:layout_constraintStart_toStartOf="@+id/guideline59"
-                app:layout_constraintTop_toBottomOf="@+id/cardView3" />
+                app:layout_constraintTop_toBottomOf="@+id/txtBookInfoGenre" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline55"
@@ -278,11 +289,25 @@
                 app:layout_constraintGuide_percent="0.73" />
 
             <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline72"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.93" />
+
+            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline59"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.27" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline76"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.07" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
