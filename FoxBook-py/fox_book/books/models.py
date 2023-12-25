@@ -16,7 +16,7 @@ class Book(models.Model):
     genre = models.CharField(max_length=255)
     annotation = models.TextField(null=True)
     cover = models.URLField(null=True)
-    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
+    rating = models.DecimalField(max_digits=3, decimal_places=2, default=-1, blank=True)
     text = models.TextField()
     pages = models.IntegerField(default=0)
 

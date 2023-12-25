@@ -36,7 +36,6 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
     private var targetFragment: String = ""
 
-    private var readingProgress = 0
     companion object {
         fun newInstance(targetFragment: String): BookInfoFragment {
             val fragment = BookInfoFragment()
@@ -48,67 +47,41 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.e("qwe", "onViewCreated")
-//        val data = requireArguments().getParcelable<BookInProgress>("android")
+
         val data: Parcelable? = if (targetFragment == ReadingInProgressFragment::class.java.simpleName) {
             requireArguments().getParcelable<BookInProgress>("android")
         } else {
             requireArguments().getParcelable<Book>("android")
         }
 
-        Log.e("qwe", "data")
-        Log.e("qwe", data.toString())
-
-
         val backButton: ImageButton = view.findViewById(R.id.imgBtnBackToSearch)
 
         backButton.setOnClickListener {
             when (targetFragment) {
-                SearchPageFragment::class.java.simpleName -> {
-                    navigateToSearchPageFragment()
-                }
-                FavouriteBooksFragment::class.java.simpleName -> {
-                    navigateToFavoriteBooksFragment()
-                }
-                ReadingInProgressFragment::class.java.simpleName -> {
-                    navigateToReadingInProgressFragment()
-                }
+                SearchPageFragment::class.java.simpleName -> navigateTo(SearchPageFragment())
+                FavouriteBooksFragment::class.java.simpleName -> navigateTo(FavouriteBooksFragment())
+                ReadingInProgressFragment::class.java.simpleName -> navigateTo(ReadingInProgressFragment())
             }
         }
 
-        val book: Book? = if (data is Book) data else null
-        val bookInProgress: BookInProgress? = if (data is BookInProgress) data else null
 
-        Log.e("qwe", "data: $data")
-        Log.e("qwe", "book: $book")
-        Log.e("qwe", "bookInProgress: $bookInProgress")
 
-        if (data != null) {
-            when (data) {
-                is Book -> {
-                    val book = data
-                    setupBookViews(book, view)
-                }
-                is BookInProgress -> {
-                    val bookInProgress = data
-                    setupBookInProgressViews(bookInProgress, view)
-                }
+        data?.let {
+            when (it) {
+                is Book -> setupBookViews(it, view)
+                is BookInProgress -> setupBookInProgressViews(it, view)
             }
         }
-
     }
 
     private fun setupBookViews(book: Book, view: View) {
         Log.e("qwe", "book")
-        getUserRatings(book.id)
+
         val btnToReadingBook: Button = view.findViewById(R.id.btnToReading)
 
         btnToReadingBook.setOnClickListener {
             addBookToLibrary(book.id)
             val intent = Intent(activity, ReadingActivity::class.java)
-            Log.e("qwe", "book.id.toString()")
-            Log.e("qwe", book.id.toString())
-            Log.e("qwe", "readingProgress")
-            Log.e("qwe", readingProgress.toString())
             intent.putExtra(ReadingActivity.BOOK_ID, book.id)
             startActivity(intent)
         }
@@ -117,7 +90,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
         checkIfBookInFavorites(book.id) { isBookInFavorites ->
             requireActivity().runOnUiThread {
-                updateUI(isBookInFavorites)
+                updateUI(isBookInFavorites, likeButton)
             }
         }
 
@@ -138,7 +111,6 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
         val coverImg: ImageView = view.findViewById(R.id.imgBookInfoCover)
         val titleView: TextView = view.findViewById(R.id.txtBookInfoTitle)
         val authorView: TextView = view.findViewById(R.id.txtBookInfoAuthor)
-        val userRatingView: TextView = view.findViewById(R.id.txtBookInfoUserRating)
         val ratingView: TextView = view.findViewById(R.id.txtBookInfoRating)
         val genreView: TextView = view.findViewById(R.id.txtBookInfoGenre)
         val descView: TextView = view.findViewById(R.id.txtBookInfoDescription)
@@ -179,28 +151,45 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
         titleView.text = book.title ?: "Назва невідома"
         authorView.text = book.author ?: "Автор невідомий"
-        ratingView.text = (book.rating ?: "-").toString()
+        Log.e("qwe", "book.rating - $book.rating")
+        ratingView.text = if (book.rating == -1.0) "-" else book.rating.toString()
         genreView.text = book.genre ?: "-"
         descView.text = book.annotation ?: "Анотації немає"
 
+        getUserRatings(book.id) {userRating ->
 
-        // Оцінювання користувачем книги
-        val ratingBar: RatingBar = view.findViewById(R.id.ratingUserBar)
+            // Оцінювання користувачем книги
+            val ratingBar: RatingBar = view.findViewById(R.id.ratingUserBar)
+            val textRatingUser: TextView = view.findViewById(R.id.txtRatingUser)
+            val userRatingView: TextView = view.findViewById(R.id.txtBookInfoUserRating)
+            val imgBookStarUser: ImageView = view.findViewById(R.id.imgBookStarUser)
 
-        // Якщо оцінка вже стоїть
-        if (userRatingView.text == "2.0") {
-            ratingBar.rating = 2.0F
+            if (userRating == -2.0) {
+                // Приховати виставлення оцінки
+                ratingBar.visibility = View.GONE
+                textRatingUser.visibility = View.GONE
+                userRatingView.visibility = View.GONE
+                imgBookStarUser.visibility = View.GONE
+            } else {
+                // Встановлення значення оцінки
+                userRatingView.text = if (userRating == -1.0) "-" else userRating.toString()
+                ratingBar.rating = userRating.toFloat()
+            }
+
+            // Зміна оцінки
+            ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+                userRatingView.text = rating.toString()
+                Log.e("qwe", "* - $rating")
+                Log.e("qwe", "*2 - ${userRatingView.text}")
+                updateUserRating(book.id, rating.toDouble())
+            }
+
         }
 
-        // Зміна оцінки
-        ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-            userRatingView.text = rating.toString()
-        }
 
     }
 
     private fun setupBookInProgressViews(bookInProgress: BookInProgress, view: View) {
-        Log.e("qwe", "bookInProgress")
         val btnToReadingBook: Button = view.findViewById(R.id.btnToReading)
 
         btnToReadingBook.setOnClickListener {
@@ -214,7 +203,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
         checkIfBookInFavorites(bookInProgress.id) { isBookInFavorites ->
             requireActivity().runOnUiThread {
-                updateUI(isBookInFavorites)
+                updateUI(isBookInFavorites, likeButton)
             }
         }
 
@@ -235,7 +224,6 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
         val coverImg: ImageView = view.findViewById(R.id.imgBookInfoCover)
         val titleView: TextView = view.findViewById(R.id.txtBookInfoTitle)
         val authorView: TextView = view.findViewById(R.id.txtBookInfoAuthor)
-        val userRatingView: TextView = view.findViewById(R.id.txtBookInfoUserRating)
         val ratingView: TextView = view.findViewById(R.id.txtBookInfoRating)
         val genreView: TextView = view.findViewById(R.id.txtBookInfoGenre)
         val descView: TextView = view.findViewById(R.id.txtBookInfoDescription)
@@ -276,55 +264,50 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
         titleView.text = bookInProgress.title ?: "Назва невідома"
         authorView.text = bookInProgress.author ?: "Автор невідомий"
-        ratingView.text = (bookInProgress.rating ?: "-").toString()
+        ratingView.text = if (bookInProgress.rating == -1.0) "-" else bookInProgress.rating.toString()
         genreView.text = bookInProgress.genre ?: "-"
         descView.text = bookInProgress.annotation ?: "Анотації немає"
 
 
-        // Оцінювання користувачем книги
-        val ratingBar: RatingBar = view.findViewById(R.id.ratingUserBar)
+        getUserRatings(bookInProgress.id) {userRating ->
 
-        // Якщо оцінка вже стоїть
-        if (userRatingView.text == "2.0") {
-            ratingBar.rating = 2.0F
-        }
+            // Оцінювання користувачем книги
+            val ratingBar: RatingBar = view.findViewById(R.id.ratingUserBar)
+            val textRatingUser: TextView = view.findViewById(R.id.txtRatingUser)
+            val userRatingView: TextView = view.findViewById(R.id.txtBookInfoUserRating)
+            val imgBookStarUser: ImageView = view.findViewById(R.id.imgBookStarUser)
 
-        // Зміна оцінки
-        ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-            userRatingView.text = rating.toString()
+            if (userRating == -2.0) {
+                // Приховати виставлення оцінки
+                ratingBar.visibility = View.GONE
+                textRatingUser.visibility = View.GONE
+                userRatingView.visibility = View.GONE
+                imgBookStarUser.visibility = View.GONE
+            } else {
+                // Встановлення значення оцінки
+                userRatingView.text = if (userRating == -1.0) "-" else userRating.toString()
+                ratingBar.rating = userRating.toFloat()
+            }
+
+            // Зміна оцінки
+            ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+                userRatingView.text = rating.toString()
+                updateUserRating(bookInProgress.id, rating.toDouble())
+            }
+
         }
 
     }
 
-    private fun navigateToSearchPageFragment() {
+    private fun navigateTo(fragment: Fragment) {
         val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-        transaction.replace(R.id.flFragment, SearchPageFragment())
+        transaction.replace(R.id.flFragment, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
     }
 
-    private fun navigateToFavoriteBooksFragment() {
-        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-        transaction.replace(R.id.flFragment, FavouriteBooksFragment())
-        transaction.addToBackStack(null)
-        transaction.commit()
-    }
-
-    private fun navigateToReadingInProgressFragment() {
-        val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
-        transaction.replace(R.id.flFragment, ReadingInProgressFragment())
-        transaction.addToBackStack(null)
-        transaction.commit()
-    }
-
-    private fun updateUI(isBookInFavorites: Boolean) {
-        val likeButton: ImageButton = view?.findViewById(R.id.imgBtnUnliked) ?: return
-
-        if (isBookInFavorites) {
-            likeButton.setImageResource(R.drawable.heart_full)
-        } else {
-            likeButton.setImageResource(R.drawable.heart)
-        }
+    private fun updateUI(isBookInFavorites: Boolean, likeButton: ImageButton) {
+        likeButton.setImageResource(if (isBookInFavorites) R.drawable.heart_full else R.drawable.heart)
     }
 
     private fun checkIfBookInFavorites(bookId: Int, callback: (Boolean) -> Unit) {
@@ -335,14 +318,11 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 call: Call<CheckIfBookInFavorites>,
                 response: Response<CheckIfBookInFavorites>
             ) {
-
-
                 if (response.isSuccessful) {
-
                     val isBookInFavorites = response.body()?.isInFavorites ?: false
                     callback(isBookInFavorites)
                 } else {
-                    // Handle unsuccessful response
+                    // обробка невдалої відповіді
                     Log.e("qwe", "Unsuccessful response checkIfBookInFavorites: ${response.code()}")
                     Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
                         .show()
@@ -350,6 +330,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
             }
 
             override fun onFailure(call: Call<CheckIfBookInFavorites>, t: Throwable) {
+                // обробка невдалого підключення
                 Log.e("qwe", "API request failed with exception", t)
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
@@ -365,23 +346,10 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 response: Response<Message>
             ) {
                 if (response.isSuccessful) {
-
-                    val addRemoveFavoriteResponse = response.body()?.message
-                    // Handle the response as needed
-                    if (addRemoveFavoriteResponse == "Book added to favorites successfully") {
-                        // Update UI or perform other actions
-                        Toast.makeText(
-                            requireContext(), "Книгу успішно додано до улюбленого!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            requireContext(), "Помилка додавання!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    val responseMessage = response.body()?.message
+                    Toast.makeText(requireContext(), responseMessage, Toast.LENGTH_SHORT).show()
                 } else {
-                    // Handle unsuccessful response
+                    // обробка невдалої відповіді
                     Log.e("qwe", "Unsuccessful response addBookToFavorites: ${response.code()}")
                     Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
                         .show()
@@ -389,6 +357,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
             }
 
             override fun onFailure(call: Call<Message>, t: Throwable) {
+                // обробка невдалого підключення
                 Log.e("qwe", "API request failed with exception", t)
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
@@ -404,40 +373,25 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 response: Response<Message>
             ) {
                 if (response.isSuccessful) {
-                    val addRemoveFavoriteResponse = response.body()?.message
-                    // Handle the response as needed
-                    if (addRemoveFavoriteResponse == "Book removed from favorites successfully") {
-                        // Update UI or perform other actions
-                        Toast.makeText(
-                            requireContext(), "Книгу видалено з улюбленого!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            requireContext(), "Помилка видалення!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    val responseMessage = response.body()?.message
+                    Toast.makeText(requireContext(), responseMessage, Toast.LENGTH_SHORT).show()
                 } else {
-                    // Handle unsuccessful response
-                    Log.e(
-                        "qwe",
-                        "Unsuccessful response removeBookFromFavorites: ${response.code()}"
-                    )
+                    // обробка невдалої відповіді
+                    Log.e("qwe","Unsuccessful response removeBookFromFavorites: ${response.code()}")
                     Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
 
             override fun onFailure(call: Call<Message>, t: Throwable) {
+                // обробка невдалого підключення
                 Log.e("qwe", "API request failed with exception", t)
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-
-    private fun getUserRatings(bookId: Int) {
+    private fun getUserRatings(bookId: Int, callback: (Double) -> Unit) {
         val call = apiService.getUserRating(bookId)
 
         call.enqueue(object : Callback<UserRating> {
@@ -446,13 +400,10 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 response: Response<UserRating>
             ) {
                 if (response.isSuccessful) {
-                    Log.e("qwe", response.body()?.user_rating.toString())
-
-                    val userRating = response.body()?.user_rating ?: -1
-                    // Now create the Intent with both values
-
+                    val userRating = response.body()?.user_rating ?: -2
+                    callback(userRating.toDouble())
                 } else {
-                    // Handle unsuccessful response
+                    // обробка невдалої відповіді
                     Log.e("qwe", "Unsuccessful response addBookToLibrary: ${response.code()}")
                     Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
                         .show()
@@ -460,6 +411,31 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
             }
 
             override fun onFailure(call: Call<UserRating>, t: Throwable) {
+                // обробка невдалого підключення
+                Log.e("qwe", "API request failed with exception", t)
+                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun updateUserRating(bookId: Int, userRating: Double) {
+        val call = apiService.updateUserRating(bookId, userRating)
+
+        call.enqueue(object : Callback<Message> {
+            override fun onResponse(call: Call<Message>, response: Response<Message>) {
+                if (response.isSuccessful) {
+                    val responseMessage = response.body()?.message
+                    Log.e("qwe", "updatedLibraryEntry - ${responseMessage}")
+                    Toast.makeText(requireContext(), responseMessage, Toast.LENGTH_SHORT).show()
+                } else {
+                    // обробка невдалої відповіді
+                    Log.e("qwe", "Unsuccessful response updateUserRating: ${response.code()}")
+                    Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Message>, t: Throwable) {
+                // обробка невдалого підключення
                 Log.e("qwe", "API request failed with exception", t)
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
@@ -475,24 +451,10 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 response: Response<Message>
             ) {
                 if (response.isSuccessful) {
-
-                    val addBookToLibraryResponse = response.body()?.message
-                    Log.e("qwe", "addBookToLibraryResponse - $addBookToLibraryResponse")
-                    // Handle the response as needed
-                    if (addBookToLibraryResponse == "Book added to library") {
-                        // Update UI or perform other actions
-                        Toast.makeText(
-                            requireContext(), "Книгу додано до бібліотеки!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else if (addBookToLibraryResponse != "Book is already library") {
-                        Toast.makeText(
-                            requireContext(), "Помилка додавання!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    val responseMessage = response.body()?.message
+                    Toast.makeText(requireContext(), responseMessage, Toast.LENGTH_SHORT).show()
                 } else {
-                    // Handle unsuccessful response
+                    // обробка невдалої відповіді
                     Log.e("qwe", "Unsuccessful response addBookToLibrary: ${response.code()}")
                     Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
                         .show()
@@ -500,6 +462,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
             }
 
             override fun onFailure(call: Call<Message>, t: Throwable) {
+                // обробка невдалого підключення
                 Log.e("qwe", "API request failed with exception", t)
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }

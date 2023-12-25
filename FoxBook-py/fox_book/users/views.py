@@ -1,6 +1,6 @@
 import random
 
-from django.db.models import Count
+from django.db.models import Count, Avg
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.generics import ListAPIView
@@ -19,13 +19,14 @@ from collections import Counter
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_profile(request):
-    user = request.user  # Assuming the user is authenticated
+    # бере інформацію про профіль користувача
+    user = request.user
     serializer = UserProfileSerializer(user)
     return Response(serializer.data)
 
 
 class CustomPageNumberPagination(PageNumberPagination):
-    page_size = 5  # Number of items to return per page
+    page_size = 5  # кількість елементів на сторінці
     max_page_size = 100
 
 
@@ -83,7 +84,6 @@ class UserBooksListView(ListAPIView):
         try:
             user = self.request.user
             queryset = Book.objects.filter(library__user=user)
-            print(queryset)
 
             genres = self.request.query_params.get('genres', None)
             author = self.request.query_params.get('author', None)
@@ -131,7 +131,7 @@ def add_book_to_library(request, book_id):
     library_book = Library(user=user, book=book)
     library_book.save()
 
-    return Response({'message': 'Book added to library'})
+    return Response({'message': 'Кингу додано до бібліотеки!'})
 
 
 @api_view(['GET'])
@@ -172,10 +172,37 @@ def get_user_rating(request, book_id):
     try:
         library_entry = Library.objects.get(user=user, book=book)
         user_rating = library_entry.user_rating if library_entry.user_rating else -1
-        print(user_rating)
         return Response({'user_rating': user_rating})
     except Library.DoesNotExist:
-        return Response({'user_rating': -1})
+        return Response({'user_rating': -2})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def update_user_rating(request, book_id):
+    user = request.user
+    book = get_object_or_404(Book, pk=book_id)
+
+    try:
+        library_book = Library.objects.get(user=user, book=book)
+    except Library.DoesNotExist:
+        return Response({'message': 'Помилка! Книгу в бібліотеці не знайдено.'}, status=404)
+
+    if 'user_rating' in request.data:
+        user_rating = request.data['user_rating']
+
+        library_book.user_rating = user_rating
+        library_book.save()
+
+        # Recalculate the average rating for the book
+        avg_rating = Library.objects.filter(book=book).aggregate(Avg('user_rating'))['user_rating__avg']
+        book.rating = avg_rating if avg_rating is not None else -1
+        print(book.rating)
+        book.save()
+
+        return Response({'message': 'Оцінку успішно оновлено!'})
+    else:
+        return Response({'message': 'Помилка оновлення оцінки!'})
 
 
 @api_view(['GET'])
@@ -187,7 +214,6 @@ def get_reading_progress(request, book_id):
     try:
         library_entry = Library.objects.get(user=user, book=book)
         reading_progress = library_entry.reading_progress
-        print(reading_progress)
         return Response({'reading_progress': reading_progress})
     except Library.DoesNotExist:
         return Response({'reading_progress': 0})
@@ -203,7 +229,7 @@ def update_reading_progress(request, book_id):
 
     if 'reading_progress' in request.data:
         reading_progress = request.data['reading_progress']
-        print(reading_progress)
+
         library_book.reading_progress = reading_progress
         library_book.save()
 
@@ -217,7 +243,6 @@ def update_reading_progress(request, book_id):
 def add_reading_settings(request):
     user = request.user
     data = request.data
-    print(data)
     bg_color = data.get('bg_color')
     text_color = data.get('text_color')
     text_size = data.get('text_size')
@@ -234,7 +259,6 @@ def add_reading_settings(request):
         reading_settings = ReadingSettings(user=user, bg_color=bg_color, text_color=text_color, text_size=text_size,
                                            text_font=text_font)
         reading_settings.save()
-    print(reading_settings)
     return Response({'message': 'Reading settings added successfully'})
 
 
@@ -255,7 +279,6 @@ def get_reading_settings_text(request):
             'text_size': 44,
             'text_font': "inter",
         }
-    print(response_data)
     return Response(response_data)
 
 
@@ -272,7 +295,6 @@ def get_reading_settings_bg(request):
         response_data = {
             'bg_color': "beige",
         }
-    print(response_data)
     return Response(response_data)
 
 
@@ -281,13 +303,9 @@ def get_reading_settings_bg(request):
 def check_if_book_in_favorites(request, book_id):
     user = request.user
     book = get_object_or_404(Book, pk=book_id)
-    print("user")
-    print(user)
     if FavoriteBook.objects.filter(user=user, book=book).exists():
-        print("+")
         return Response({'isInFavorites': True})
     else:
-        print("-")
         return Response({'isInFavorites': False})
 
 
@@ -298,12 +316,12 @@ def add_book_to_favorites(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
 
     if FavoriteBook.objects.filter(user=user, book=book).exists():
-        return Response({'message': 'Book is already in favorites'})
+        return Response({'message': 'Книга вже в улюбленому!'})
 
     favorite_book = FavoriteBook(user=user, book=book)
     favorite_book.save()
 
-    return Response({'message': 'Book added to favorites successfully'})
+    return Response({'message': 'Книгу додано до улюбленого!'})
 
 
 @api_view(['DELETE'])
@@ -315,4 +333,4 @@ def remove_book_from_favorites(request, book_id):
     favorite_book = get_object_or_404(FavoriteBook, user=user, book=book)
     favorite_book.delete()
 
-    return Response({'message': 'Book removed from favorites successfully'})
+    return Response({'message': 'Книгу видалено з улюбленого!'})

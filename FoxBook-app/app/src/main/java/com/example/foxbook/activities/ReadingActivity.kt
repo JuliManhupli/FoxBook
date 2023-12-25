@@ -230,6 +230,7 @@ open class ReadingActivity : AppCompatActivity() {
             }
         })
     }
+
     private fun getReadingSettingsBg(callback: (String) -> Unit) {
         apiService.getReadingSettingsBg().enqueue(object : Callback<ReadingSettingsBg> {
             override fun onResponse(
@@ -246,14 +247,14 @@ open class ReadingActivity : AppCompatActivity() {
                     }
 
                 } else {
-                    // неуспішний запит
+                    // обробка невдалої відповіді
                     Log.e("qwe", "Failed to get reading settings: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<ReadingSettingsBg>, t: Throwable) {
-                // помилка мережі
-                Log.e("qwe", "Network error: ${t.message}")
+                // обробка невдалого підключення
+                Log.e("qwe", "API request failed with exception", t)
             }
         })
     }
