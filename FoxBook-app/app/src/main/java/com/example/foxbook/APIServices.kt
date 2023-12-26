@@ -5,7 +5,7 @@ import com.example.foxbook.api.BookTextChunks
 import com.example.foxbook.api.BookToRead
 import com.example.foxbook.api.BooksInProgressResponse
 import com.example.foxbook.api.BooksResponse
-import com.example.foxbook.api.CheckIfBookInFavorites
+import com.example.foxbook.api.CheckIfBook
 import com.example.foxbook.api.Email
 import com.example.foxbook.api.Login
 import com.example.foxbook.api.Message
@@ -99,11 +99,19 @@ interface APIServices {
     @POST("library/add/{book_id}/")
     fun addBookToLibrary(@Path("book_id") bookId: Int): Call<Message>
 
-    @GET("library/continue-reading/")
-    fun continueReading(): Call<BookToRead>
+
+
+    @POST("library/remove/{book_id}/")
+    fun removeBookFromLibrary(@Path("book_id") bookId: Int): Call<Message>
+
+    @GET("library/check/{bookId}/")
+    fun checkIfBookInLibrary(@Path("bookId") bookId: Int): Call<CheckIfBook>
 
     @GET("library/recommend/")
     fun getRecommendations(): Call<Recommendations>
+
+    @GET("library/continue-reading/")
+    fun continueReading(): Call<BookToRead>
 
     @FormUrlEncoded
     @POST("library/update/reading-progress/{bookId}/")
@@ -145,7 +153,7 @@ interface APIServices {
     ): Call<BooksResponse>
 
     @GET("favorites/check/{bookId}/")
-    fun checkIfBookInFavorites(@Path("bookId") bookId: Int): Call<CheckIfBookInFavorites>
+    fun checkIfBookInFavorites(@Path("bookId") bookId: Int): Call<CheckIfBook>
 
     @POST("favorites/add/{book_id}/")
     fun addToFavorites(@Path("book_id") bookId: Int): Call<Message>
