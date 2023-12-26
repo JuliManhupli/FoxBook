@@ -24,6 +24,5 @@ class BookInProgressSerializer(serializers.ModelSerializer):
             library_entry = Library.objects.get(user=user, book=obj)
             return library_entry.reading_progress
         except Library.DoesNotExist:
-            print("Library entry does not exist.")
             return None
 

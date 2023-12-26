@@ -10,7 +10,7 @@ import android.net.NetworkCapabilities
 import android.widget.Toast
 import com.example.foxbook.TokenManager
 
-// Function to check if the device has internet connectivity
+// Перевірка до доступу інтернету
 fun isNetworkAvailable(context: Context): Boolean {
     val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -31,22 +31,22 @@ class MainActivity : AppCompatActivity() {
 
 
         if (TokenManager.getAccessToken().isNotEmpty()) {
-            // User is authenticated, redirect to the appropriate activity (e.g., UserActivity)
+            // Користувача авторизовано
             val intent = Intent(this, UserActivity::class.java)
             startActivity(intent)
-            finish() // finish the current activity to prevent going back to the login screen
+            finish() // Завершуємо нинішню актівіті
         }
 
 
         binding.btnStart.setOnClickListener {
             if (isNetworkAvailable(this)) {
 
-                // Check if the user is already authenticated
+                // Перевірка авторизації користувача
                 if (TokenManager.getAccessToken().isNotEmpty()) {
-                    // User is authenticated, redirect to the appropriate activity (e.g., UserActivity)
+                    // Користувача авторизовано
                     val intent = Intent(this, UserActivity::class.java)
                     startActivity(intent)
-                    finish() // finish the current activity to prevent going back to the login screen
+                    finish() // Завершуємо актівіті
                 } else {
                     val intent = Intent(this, LoginActivity::class.java)
                     startActivity(intent)
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
 
             } else {
-                // No internet connection, show a message to the user
+                // Нема інтернет підключення
                 Toast.makeText(
                     this,
                     "Немає підключення до Інтернету!",

@@ -1,7 +1,6 @@
 package com.example.foxbook.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
@@ -15,7 +14,7 @@ import com.example.foxbook.adapters.BookAdapter
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
 import com.example.foxbook.api.Book
-import com.example.foxbook.api.BooksResponse
+import com.example.foxbook.api.BookApi
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -141,11 +140,10 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
                     transaction.commit()
                 }
             } else {
-                // To hide the ProgressBar
+                // Сховати прогрес
                 progressBar.visibility = View.GONE
-                // Handle the case when data retrieval fails
-                Log.e("qwe", "Failed to retrieve data from the API")
-                Log.e("qwe", page.toString())
+                // Помилка отримання даних
+                Toast.makeText(requireContext(), "Помилка отримання даних!", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -186,11 +184,10 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
 
                 page++
             } else {
-                // To hide the ProgressBar
+                // Сховати прогрес
                 progressBar.visibility = View.GONE
-                // Handle the case when data retrieval fails
-                Log.e("qwe", "Failed to retrieve more data from the API")
-                Log.e("qwe", page.toString())
+                // Помилка отримання даних
+                Toast.makeText(requireContext(), "Помилка отримання даних!", Toast.LENGTH_SHORT).show()
             }
 
             isLoading = false
@@ -204,9 +201,6 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
         if (genres.isNotEmpty()) {
             queryMap["genres"] = genres.joinToString(",")
         }
-
-        Log.d("qwe", genres.toString())
-        Log.d("qwe", "genres.toString()")
 
         if (!author.isNullOrBlank()) {
             queryMap["author"] = author
@@ -222,37 +216,29 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
     private fun getAllFavouriteBooks(page: Int, filterQuery: Map<String, String>, callback: (List<Book>?) -> Unit) {
         val requestCall = ClientAPI.apiService.getFavouriteBooks(page, filterQuery)
 
-        requestCall.enqueue(object : Callback<BooksResponse> {
-            override fun onResponse(call: Call<BooksResponse>, response: Response<BooksResponse>) {
+        requestCall.enqueue(object : Callback<BookApi.BooksResponse> {
+            override fun onResponse(call: Call<BookApi.BooksResponse>, response: Response<BookApi.BooksResponse>) {
                 if (response.isSuccessful) {
                     val booksResponse = response.body()
                     val books = booksResponse?.results
-                    Log.d("qwe", "books.toString()")
-                    Log.d("qwe", books.toString())
                     if (!books.isNullOrEmpty()) {
-                        Log.d("qwe", books.toString())
                         callback(books)
                     } else {
-                        Toast.makeText(requireContext(), "Даних немає!",Toast.LENGTH_SHORT).show()
-                        Log.e("qwe", "Books list is null")
+                        Toast.makeText(requireContext(), "Список книг пустий!",Toast.LENGTH_SHORT).show()
                         callback(null)
                     }
                 } else {
                     if (response.code() == 404) {
-                        // Handle 404 response (data not found) here
-                        Log.e("qwe", "Data not found (404)")
+                        Toast.makeText(requireContext(), "Дані не було знайдено!",Toast.LENGTH_SHORT).show()
                         callback(null)
                     } else {
-                        // Handle unsuccessful response
-                        Log.e("qwe", "Unsuccessful response: ${response.code()}")
-                        Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
+                        Toast.makeText(requireContext(), "Не вдалося отримати дані!", Toast.LENGTH_SHORT)
                             .show()
                         callback(null)
                     }
                 }
             }
-            override fun onFailure(call: Call<BooksResponse>, t: Throwable) {
-                Log.e("qwe", "API request failed with exception", t)
+            override fun onFailure(call: Call<BookApi.BooksResponse>, t: Throwable) {
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
                 callback(null)
             }

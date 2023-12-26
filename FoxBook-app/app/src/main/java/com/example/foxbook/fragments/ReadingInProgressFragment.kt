@@ -1,7 +1,6 @@
 package com.example.foxbook.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
@@ -14,10 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.foxbook.adapters.BookInProgressAdapter
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
-import com.example.foxbook.adapters.BookAdapter
+import com.example.foxbook.api.BookApi
 
 import com.example.foxbook.api.BookInProgress
-import com.example.foxbook.api.BooksInProgressResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -130,12 +128,10 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
                         return false
                     }
                 })
-                Log.e("qwe", "5")
                 bookAdapter = BookInProgressAdapter(searchList)
                 recyclerView.adapter = bookAdapter
 
                 bookAdapter.onItemClick = {
-                    Log.e("qwe", "ReadingInProgressFragment")
                     val bookInfoFragment = BookInfoFragment.newInstance(ReadingInProgressFragment::class.java.simpleName)
                     val bundle = Bundle()
                     bundle.putParcelable("android", it)
@@ -146,20 +142,17 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
                     transaction.addToBackStack("$bookInfoFragment")
                     transaction.commit()
                 }
-                Log.e("qwe", "6")
             } else {
                 // To hide the ProgressBar
                 progressBar.visibility = View.GONE
                 // Handle the case when data retrieval fails
-                Log.e("qwe", "Failed to retrieve data from the API")
-                Log.e("qwe", page.toString())
+                Toast.makeText(requireContext(), "Помилка отримання даних!",Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun loadMoreData() {
         isLoading = true
-        Log.e("qwe", "7")
         val progressBar: ProgressBar = requireView().findViewById(R.id.progressBarSearchInProgress)
         progressBar.visibility = View.VISIBLE
         val query = buildFilterQuery(selectedGenres, selectedAuthors, selectedSorting)
@@ -195,25 +188,19 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
                 page++
             } else {
                 progressBar.visibility = View.GONE
-                Log.e("qwe", "Failed to retrieve more data from the API")
-                Log.e("qwe", page.toString())
+                Toast.makeText(requireContext(), "Помилка отримання наступних даних!",Toast.LENGTH_SHORT).show()
             }
 
             isLoading = false
             progressBar.visibility = View.GONE
-            Log.e("qwe", "10")
         }
     }
 
     private fun buildFilterQuery(genres: List<String>, author: String?, sorting: String?): Map<String, String> {
         val queryMap = mutableMapOf<String, String>()
-        Log.e("qwe", "9")
         if (genres.isNotEmpty()) {
             queryMap["genres"] = genres.joinToString(",")
         }
-
-        Log.d("qwe", genres.toString())
-        Log.d("qwe", "genres.toString()")
 
         if (!author.isNullOrBlank()) {
             queryMap["author"] = author
@@ -227,40 +214,31 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
     }
 
     private fun getAllLibraryBooks(page: Int, filterQuery: Map<String, String>, callback: (List<BookInProgress>?) -> Unit) {
-//        val requestCall = ClientAPI.apiService.getLibraryBooks()
         val requestCall = ClientAPI.apiService.getLibraryBooks(page, filterQuery)
 
-        requestCall.enqueue(object : Callback<BooksInProgressResponse> {
-            override fun onResponse(call: Call<BooksInProgressResponse>, response: Response<BooksInProgressResponse>) {
+        requestCall.enqueue(object : Callback<BookApi.BooksInProgressResponse> {
+            override fun onResponse(call: Call<BookApi.BooksInProgressResponse>, response: Response<BookApi.BooksInProgressResponse>) {
                 if (response.isSuccessful) {
                     val booksResponse = response.body()
                     val books = booksResponse?.results
-                    Log.d("qwe", "books.toString()")
-                    Log.d("qwe", books.toString())
                     if (!books.isNullOrEmpty()) {
-                        Log.d("qwe", books.toString())
                         callback(books)
                     } else {
-                        Toast.makeText(requireContext(), "Даних немає!", Toast.LENGTH_SHORT).show()
-                        Log.e("qwe", "Books list is null")
+                        Toast.makeText(requireContext(), "Список книг пустий!", Toast.LENGTH_SHORT).show()
                         callback(null)
                     }
                 } else {
                     if (response.code() == 404) {
-                        // Handle 404 response (data not found) here
-                        Log.e("qwe", "Data not found (404)")
+                        Toast.makeText(requireContext(), "Дані не було знайдено!",Toast.LENGTH_SHORT).show()
                         callback(null)
                     } else {
-                        // Handle unsuccessful response
-                        Log.e("qwe", "Unsuccessful response: ${response.code()}")
-                        Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
+                        Toast.makeText(requireContext(), "Помилка отримання книг бібліотеки!", Toast.LENGTH_SHORT)
                             .show()
                         callback(null)
                     }
                 }
             }
-            override fun onFailure(call: Call<BooksInProgressResponse>, t: Throwable) {
-                Log.e("qwe", "API request failed with exception", t)
+            override fun onFailure(call: Call<BookApi.BooksInProgressResponse>, t: Throwable) {
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
                 callback(null)
             }

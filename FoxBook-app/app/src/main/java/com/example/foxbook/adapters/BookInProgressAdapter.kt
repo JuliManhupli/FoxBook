@@ -32,13 +32,12 @@ class BookInProgressAdapter (private val bookInProgressList: MutableList<BookInP
 
     override fun onBindViewHolder(holder: BookInProgressViewHolder, position: Int) {
         val currentItem = bookInProgressList[position]
-//        Glide.with(holder.bookCover.context).load(currentItem.cover).into(holder.bookCover)
 
         if (currentItem.cover != null) {
             Glide.with(holder.bookCover.context)
                 .load(currentItem.cover)
-                .placeholder(R.drawable.no_image) // Replace with your placeholder image
-                .error(R.drawable.no_image) // Replace with your error image
+                .placeholder(R.drawable.no_image) // Вставте тимчасову обкладинку
+                .error(R.drawable.no_image) // Змініть на тимчасову
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
                         e: GlideException?,
@@ -46,9 +45,9 @@ class BookInProgressAdapter (private val bookInProgressList: MutableList<BookInP
                         target: Target<Drawable>?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        // Handle the error here
-                        Log.e("qwe", "Error loading image", e)
-                        return false // Return false to allow the error placeholder to be shown
+                        // Помилка завантаження
+                        Log.e("SYSTEM_ERROR", "Error loading image", e)
+                        return false
                     }
 
                     override fun onResourceReady(
@@ -58,7 +57,7 @@ class BookInProgressAdapter (private val bookInProgressList: MutableList<BookInP
                         dataSource: DataSource?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        // Image successfully loaded
+                        // Обкладинка завантажилася
                         return false
                     }
                 })

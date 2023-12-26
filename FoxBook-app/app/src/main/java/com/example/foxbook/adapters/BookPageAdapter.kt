@@ -10,16 +10,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foxbook.ClientAPI.apiService
 import com.example.foxbook.R
-import com.example.foxbook.api.BookPage
-import com.example.foxbook.api.ReadingSettingsText
+import com.example.foxbook.api.BookApi
+import com.example.foxbook.api.UserData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-
-
-class BookPageAdapter(private val pageList: ArrayList<BookPage>): RecyclerView.Adapter<BookPageAdapter.PageViewHolder>() {
+class BookPageAdapter(private val pageList: ArrayList<BookApi.BookPage>): RecyclerView.Adapter<BookPageAdapter.PageViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(
             R.layout.page_item, parent,
@@ -44,10 +42,10 @@ class BookPageAdapter(private val pageList: ArrayList<BookPage>): RecyclerView.A
 
 
     private fun getReadingSettingsAndApply(holder: PageViewHolder) {
-        apiService.getReadingSettingsText().enqueue(object : Callback<ReadingSettingsText> {
+        apiService.getReadingSettingsText().enqueue(object : Callback<UserData.ReadingSettingsText> {
             override fun onResponse(
-                call: Call<ReadingSettingsText>,
-                response: Response<ReadingSettingsText>
+                call: Call<UserData.ReadingSettingsText>,
+                response: Response<UserData.ReadingSettingsText>
             ) {
                 if (response.isSuccessful) {
                     val readingSettings = response.body()
@@ -75,13 +73,13 @@ class BookPageAdapter(private val pageList: ArrayList<BookPage>): RecyclerView.A
                     holder.bookPage.typeface = Typeface.create(textFont ?: "inter", Typeface.NORMAL)
                 } else {
                     // неуспішний запит
-                    Log.e("qwe", "Failed to get reading settings: ${response.code()}")
+                    Log.e("SYSTEM_ERROR", "Failed to get reading settings: ${response.code()}")
                 }
             }
 
-            override fun onFailure(call: Call<ReadingSettingsText>, t: Throwable) {
+            override fun onFailure(call: Call<UserData.ReadingSettingsText>, t: Throwable) {
                 // помилка мережі
-                Log.e("qwe", "Network error: ${t.message}")
+                Log.e("SYSTEM_ERROR", "Network error: ${t.message}")
             }
         })
     }

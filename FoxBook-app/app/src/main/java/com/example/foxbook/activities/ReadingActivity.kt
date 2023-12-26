@@ -1,13 +1,6 @@
 package com.example.foxbook.activities
-
-import android.annotation.SuppressLint
-import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
-import android.util.TypedValue
 import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -17,11 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.foxbook.ClientAPI.apiService
 import com.example.foxbook.adapters.BookPageAdapter
 import com.example.foxbook.R
-import com.example.foxbook.api.BookPage
-import com.example.foxbook.api.BookTextChunks
-import com.example.foxbook.api.Message
-import com.example.foxbook.api.ReadingProgress
-import com.example.foxbook.api.ReadingSettingsBg
+import com.example.foxbook.api.BookApi
+import com.example.foxbook.api.UserData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,9 +19,7 @@ import retrofit2.Response
 open class ReadingActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var pageArrayList: ArrayList<BookPage>
-
-    lateinit var pageAdapter: BookPageAdapter
+    private lateinit var pageArrayList: ArrayList<BookApi.BookPage>
 
     private val processedItems = mutableSetOf<Int>()
     private var visiblePage = 0
@@ -125,26 +113,22 @@ open class ReadingActivity : AppCompatActivity() {
                         val visibleHeight = recyclerView.height - firstVisibleItem?.top!!
                         val itemHeight = firstVisibleItem.height ?: 1
                         visiblePage = (firstVisibleItemPosition + visibleHeight / itemHeight)
-                        Log.e("RecyclerViewScroll", "visiblePage - $visiblePage")
                     }
 
                     for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
                         if (!processedItems.contains(i)) {
-                            // Add the item to the set of processed items to avoid duplicates
+                            // Додаємо елемент до оброблених, щоб недопустити повторвів
                             processedItems.add(i)
                         }
                     }
                 }
-
-
             })
         }
-
     }
 
     private fun loadData() {
         for (i in pageText) {
-            val bookPageText = BookPage(i)
+            val bookPageText = BookApi.BookPage(i)
             pageArrayList.add(bookPageText)
         }
         recyclerView.adapter = BookPageAdapter(pageArrayList)
@@ -153,32 +137,26 @@ open class ReadingActivity : AppCompatActivity() {
     private fun getBookTextChunks(bookId: Int, callback: (ArrayList<String>) -> Unit) {
         val call = apiService.getBookTextChunks(bookId)
 
-        call.enqueue(object : Callback<BookTextChunks> {
+        call.enqueue(object : Callback<BookApi.BookTextChunks> {
             override fun onResponse(
-                call: Call<BookTextChunks>, response: Response<BookTextChunks>
+                call: Call<BookApi.BookTextChunks>, response: Response<BookApi.BookTextChunks>
             ) {
                 if (response.isSuccessful) {
                     val textChunks = response.body()?.text_chunks
-                    val chunksSize = textChunks?.size ?: 0
-                    Log.d("Chunks Size", "Number of Chunks: $chunksSize")
                     textChunks?.forEachIndexed { index, chunk ->
-                        Log.d("Chunk", "Chunk $index: $chunk")
                     }
 
                     callback(textChunks as ArrayList<String>)
 
                 } else {
-
                     // обробка невдачі відповіді
-                    Log.e(
-                        "qwe", "Unsuccessful response getBookTextChunks: ${response.code()}"
-                    )
+                    Toast.makeText(this@ReadingActivity, "Помилка отримання тексту!", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<BookTextChunks>, t: Throwable) {
+            override fun onFailure(call: Call<BookApi.BookTextChunks>, t: Throwable) {
                 // обробка невдачі
-                Log.e("qwe", "API request failed with exception", t)
+                Toast.makeText(this@ReadingActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -186,26 +164,21 @@ open class ReadingActivity : AppCompatActivity() {
     private fun getReadingProgress(bookId: Int, callback: (Int) -> Unit) {
         val call = apiService.getReadingProgress(bookId)
 
-        call.enqueue(object : Callback<ReadingProgress> {
+        call.enqueue(object : Callback<BookApi.ReadingProgress> {
             override fun onResponse(
-                call: Call<ReadingProgress>,
-                response: Response<ReadingProgress>
+                call: Call<BookApi.ReadingProgress>,
+                response: Response<BookApi.ReadingProgress>
             ) {
                 if (response.isSuccessful) {
-                    Log.e("qwe", "response - $response")
-                    Log.e("qwe", response.body()?.reading_progress.toString())
-
                     val readingProgress = response.body()?.reading_progress ?: 0
-                    Log.e("qwe", "reading_progress - $readingProgress")
                     callback(readingProgress)
                 } else {
-
-                    Log.e("qwe", "Unsuccessful response getReadingProgress: ${response.code()}")
+                    Toast.makeText(this@ReadingActivity, "Помилка отримання прогресу!", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<ReadingProgress>, t: Throwable) {
-                Log.e("qwe", "API request failed with exception", t)
+            override fun onFailure(call: Call<BookApi.ReadingProgress>, t: Throwable) {
+                Toast.makeText(this@ReadingActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -214,31 +187,28 @@ open class ReadingActivity : AppCompatActivity() {
         val bookId = intent.getIntExtra(BOOK_ID, -1)
         val call = apiService.updateReadingProgress(bookId, readingProgress)
 
-        call.enqueue(object : Callback<Message> {
-            override fun onResponse(call: Call<Message>, response: Response<Message>) {
+        call.enqueue(object : Callback<UserData.Message> {
+            override fun onResponse(call: Call<UserData.Message>, response: Response<UserData.Message>) {
                 if (response.isSuccessful) {
                     // усіх
-                    Log.e("qwe", "Reading progress saved successfully")
+                    Toast.makeText(this@ReadingActivity, "Прогрес читання збережено!", Toast.LENGTH_SHORT).show()
                 } else {
                     // обробка невдачі відповіді
-                    Log.e(
-                        "qwe",
-                        "Unsuccessful response saveReadingProgressToAPI: ${response.code()}"
-                    )
+                    Toast.makeText(this@ReadingActivity, "Помилка збереження читання!", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<Message>, t: Throwable) {
+            override fun onFailure(call: Call<UserData.Message>, t: Throwable) {
                 // обробка невдачі
-                Log.e("qwe", "API request failed with exception", t)
+                Toast.makeText(this@ReadingActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
     private fun getReadingSettingsBg(callback: (String) -> Unit) {
-        apiService.getReadingSettingsBg().enqueue(object : Callback<ReadingSettingsBg> {
+        apiService.getReadingSettingsBg().enqueue(object : Callback<UserData.ReadingSettingsBg> {
             override fun onResponse(
-                call: Call<ReadingSettingsBg>, response: Response<ReadingSettingsBg>
+                call: Call<UserData.ReadingSettingsBg>, response: Response<UserData.ReadingSettingsBg>
             ) {
                 if (response.isSuccessful) {
                     val readingSettings = response.body()
@@ -252,13 +222,13 @@ open class ReadingActivity : AppCompatActivity() {
 
                 } else {
                     // обробка невдалої відповіді
-                    Log.e("qwe", "Failed to get reading settings: ${response.code()}")
+                    Toast.makeText(this@ReadingActivity, "Помилка отримання фону читання!", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<ReadingSettingsBg>, t: Throwable) {
+            override fun onFailure(call: Call<UserData.ReadingSettingsBg>, t: Throwable) {
                 // обробка невдалого підключення
-                Log.e("qwe", "API request failed with exception", t)
+                Toast.makeText(this@ReadingActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
     }

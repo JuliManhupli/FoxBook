@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -14,6 +15,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.example.foxbook.R
+import com.example.foxbook.activities.UserActivity
 import com.example.foxbook.api.Book
 
 class BookAdapter(private val bookList: MutableList<Book>) : RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
@@ -33,13 +35,12 @@ class BookAdapter(private val bookList: MutableList<Book>) : RecyclerView.Adapte
 
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
         val currentItem = bookList[position]
-//        Glide.with(holder.bookCover.context).load(currentItem.cover).into(holder.bookCover)
 
         if (currentItem.cover != null) {
             Glide.with(holder.bookCover.context)
                 .load(currentItem.cover)
-                .placeholder(R.drawable.no_image) // Replace with your placeholder image
-                .error(R.drawable.no_image) // Replace with your error image
+                .placeholder(R.drawable.no_image) // Вставте тимчасову обкладинку
+                .error(R.drawable.no_image) // Змініть на тимчасову
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
                         e: GlideException?,
@@ -47,9 +48,9 @@ class BookAdapter(private val bookList: MutableList<Book>) : RecyclerView.Adapte
                         target: Target<Drawable>?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        // Handle the error here
-                        Log.e("qwe", "Error loading image", e)
-                        return false // Return false to allow the error placeholder to be shown
+                        // Помилка
+                        Log.e("SYSTEM_ERROR", "Error loading image", e)
+                        return false
                     }
 
                     override fun onResourceReady(
@@ -59,7 +60,7 @@ class BookAdapter(private val bookList: MutableList<Book>) : RecyclerView.Adapte
                         dataSource: DataSource?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        // Image successfully loaded
+                        // Обкладинка завантажилася
                         return false
                     }
                 })

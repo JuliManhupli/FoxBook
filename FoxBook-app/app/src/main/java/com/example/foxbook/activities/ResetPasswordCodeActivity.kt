@@ -11,8 +11,7 @@ import android.widget.EditText
 import android.widget.Toast
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
-import com.example.foxbook.api.Email
-import com.example.foxbook.api.PasswordResetVerify
+import com.example.foxbook.api.AccountData
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -110,7 +109,7 @@ class ResetPasswordCodeActivity : AppCompatActivity() {
             Toast.makeText(this, "Помилка перевірки пошти!", Toast.LENGTH_SHORT).show()
         }
         else {
-            val resendCodeResetPassword = Email(email)
+            val resendCodeResetPassword = AccountData.Email(email)
             val requestCall = ClientAPI.apiService.passwordResetRequest(resendCodeResetPassword)
 
             requestCall.enqueue(object: Callback<ResponseBody> {
@@ -152,10 +151,9 @@ class ResetPasswordCodeActivity : AppCompatActivity() {
     }
 
     private fun resetPassword(vefificationCode: String, email: String?) {
-//        progressDialog.setMessage("Створюється акаунт...")
-//        progressDialog.show()
 
-        val resetPasswordCompletely = PasswordResetVerify(email.toString(), vefificationCode)
+        val resetPasswordCompletely =
+            AccountData.PasswordResetVerify(email.toString(), vefificationCode)
         val requestCall = ClientAPI.apiService.passwordResetVerify(resetPasswordCompletely)
 
         requestCall.enqueue(object: Callback<ResponseBody> {
