@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -69,7 +70,10 @@ open class ReadingActivity : AppCompatActivity() {
 
                 }
 
+
                 "black" -> {
+                    val btnBackFromReading: ImageButton = findViewById(R.id.imgBtnBackFromReading)
+                    btnBackFromReading.setImageResource(R.drawable.baseline_arrow_white_24)
                     layoutReading.setBackgroundColor(ContextCompat.getColor(this, R.color.black))
 
                 }
