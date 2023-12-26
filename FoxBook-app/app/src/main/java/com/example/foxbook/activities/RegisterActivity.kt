@@ -13,7 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
-import com.example.foxbook.api.Register
+import com.example.foxbook.api.AccountData
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -44,11 +44,11 @@ class RegisterActivity : AppCompatActivity() {
                 != PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(
-                    this, arrayOf<String>(Manifest.permission.INTERNET),
+                    this, arrayOf(Manifest.permission.INTERNET),
                     REQUEST_INTERNET_PERMISSION
                 )
             } else {
-                // Permission already granted, perform your actions
+                // Дозвіл отримано
                 performNetworkOperation()
             }
         }
@@ -61,10 +61,10 @@ class RegisterActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_INTERNET_PERMISSION) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission granted, perform your actions
+                // Дозвіл отримано
                 performNetworkOperation()
             } else {
-                // Permission denied, handle accordingly
+                // Відмова дозволу
                 Toast.makeText(this, "Дозвіл не отримано!", Toast.LENGTH_SHORT).show()
             }
         }
@@ -130,7 +130,7 @@ class RegisterActivity : AppCompatActivity() {
 
 
     private fun createUserBeforeValidation() {
-        val userRegistration = Register(email, name, password, passwordAgain)
+        val userRegistration = AccountData.Register(email, name, password, passwordAgain)
         val requestCall = ClientAPI.apiService.register(userRegistration)
 
         requestCall.enqueue(object: Callback<ResponseBody> {

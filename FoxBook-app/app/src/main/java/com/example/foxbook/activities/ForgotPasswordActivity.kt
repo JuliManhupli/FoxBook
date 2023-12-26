@@ -2,7 +2,6 @@ package com.example.foxbook.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
@@ -10,7 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
-import com.example.foxbook.api.Email
+import com.example.foxbook.api.AccountData
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -64,7 +63,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
     private fun sendCodeForNewPassword() {
 
-        val sendCodeForgotPassword = Email(email)
+        val sendCodeForgotPassword = AccountData.Email(email)
         val requestCall = ClientAPI.apiService.passwordResetRequest(sendCodeForgotPassword)
 
         requestCall.enqueue(object: Callback<ResponseBody> {

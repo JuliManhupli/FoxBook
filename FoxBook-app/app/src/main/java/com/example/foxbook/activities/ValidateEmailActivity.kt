@@ -1,20 +1,17 @@
 package com.example.foxbook.activities
 
-import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.KeyEvent
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
-import com.example.foxbook.api.Email
-import com.example.foxbook.api.VerifyEmail
+import com.example.foxbook.api.AccountData
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -115,7 +112,7 @@ class ValidateEmailActivity : AppCompatActivity() {
             Toast.makeText(this, "Помилка перевірки пошти!", Toast.LENGTH_SHORT).show()
         }
         else {
-            val resendCodeToEmail = Email(email)
+            val resendCodeToEmail = AccountData.Email(email)
             val requestCall = ClientAPI.apiService.resendVerification(resendCodeToEmail)
 
             requestCall.enqueue(object: Callback<ResponseBody> {
@@ -164,10 +161,10 @@ class ValidateEmailActivity : AppCompatActivity() {
 
     private fun createUserAfterValidation(vefificationCode: String) {
 
-        val userEmailValidation = VerifyEmail(vefificationCode)
+        val userEmailValidation = AccountData.VerifyEmail(vefificationCode)
         val requestCall = ClientAPI.apiService.verify(userEmailValidation)
 
-        requestCall.enqueue(object: retrofit2.Callback<ResponseBody> {
+        requestCall.enqueue(object: Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {// успішне надсилання запиту
                     Toast.makeText(this@ValidateEmailActivity, "Пошту успішно підтверджено!", Toast.LENGTH_SHORT).show()

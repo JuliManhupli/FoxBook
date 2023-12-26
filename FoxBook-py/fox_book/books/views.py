@@ -4,11 +4,11 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from .models import Book
-from .serializers import BookSerializer, BookTextSerializer, BookTextChunksSerializer
+from .serializers import BookSerializer, BookTextSerializer
 
 
 class CustomPageNumberPagination(PageNumberPagination):
-    page_size = 5  # Number of items to return per page
+    page_size = 5  # Кількість елементів на сторінку
     max_page_size = 100
 
 
@@ -32,7 +32,7 @@ class BookList(ListAPIView):
                 queryset = queryset.filter(type=author)
 
             if sorting and sorting != "Без сортувань":
-                # Define a dictionary to map sorting options to fields
+                # Визначаємо способи сортування
                 sorting_options = {
                     'Назва(А-Я)': 'title',
                     'Назва(Я-А)': '-title',
@@ -42,7 +42,7 @@ class BookList(ListAPIView):
                     'Оцінка(За спаданням)': '-rating',
                 }
 
-                # Use get() to get the corresponding field or default to None
+                # get() щоб отримати відповідне поле або None
                 sort_field = sorting_options.get(sorting)
 
                 if sort_field:

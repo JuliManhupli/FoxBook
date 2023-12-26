@@ -22,10 +22,9 @@ import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
 import com.example.foxbook.adapters.RecommendationAdapter
 import com.example.foxbook.api.Book
+import com.example.foxbook.api.BookApi
 import com.example.foxbook.api.BookInProgress
-import com.example.foxbook.api.BookToRead
-import com.example.foxbook.api.Recommendations
-import com.example.foxbook.api.UserProfile
+import com.example.foxbook.api.UserData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,7 +52,6 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
         val txtProfileName: TextView = view.findViewById(R.id.helloUser)
 
         getUserProfileInfo { profileInfo ->
-            Log.d("BOKTOREAD", profileInfo.toString())
             txtProfileName.text = "Вітаємо, ${profileInfo?.name}!" ?: "Вітаємо!"
         }
 
@@ -61,7 +59,6 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
         getBookToRead { bookToRead ->
             if (bookToRead != null) {
                 val book = bookToRead[0]
-                Log.d("BOKTOREAD", book.toString())
 
                 putData(book)
 
@@ -82,7 +79,7 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
                 }
             }
             else {
-                Log.d("READINGS", "Не було отримано книгу!!")
+                Toast.makeText(requireContext(), "Не було отримано книгу!",Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -111,33 +108,28 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
                 }
             }
             else {
-                Toast.makeText( requireContext(), "Не було отримано рекомендації!!", Toast.LENGTH_SHORT
+                Toast.makeText( requireContext(), "Не було отримано рекомендації!", Toast.LENGTH_SHORT
                     ).show()
             }
         }
     }
 
-    private fun getUserProfileInfo(callback: (UserProfile?) -> Unit) {
+    private fun getUserProfileInfo(callback: (UserData.UserProfile?) -> Unit) {
         val call = ClientAPI.apiService.getUserProfile()
 
-        call.enqueue(object : Callback<UserProfile> {
-            override fun onResponse(call: Call<UserProfile>, response: Response<UserProfile>) {
+        call.enqueue(object : Callback<UserData.UserProfile> {
+            override fun onResponse(call: Call<UserData.UserProfile>, response: Response<UserData.UserProfile>) {
                 if (response.isSuccessful) {
 
                     val profileInfo = response.body()
-                    Log.e("qwe", "profileInfo")
-                    Log.e("qwe", profileInfo.toString())
                     callback(profileInfo)
                 } else {
-                    // Handle unsuccessful response
-                    Log.e("qwe", "Unsuccessful response getUserProfileInfo: ${response.code()}")
                     Toast.makeText(requireContext(), "Не отримано дані імені!", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
 
-            override fun onFailure(call: Call<UserProfile>, t: Throwable) {
-                Log.e("qwe", "API request failed with exception", t)
+            override fun onFailure(call: Call<UserData.UserProfile>, t: Throwable) {
                 Toast.makeText(requireContext(), "Помилка підключення профілю!", Toast.LENGTH_SHORT).show()
             }
         })
@@ -154,8 +146,8 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
         if (currentItem.cover != null) {
             Glide.with(bookCover.context)
                 .load(currentItem.cover)
-                .placeholder(R.drawable.no_image) // Replace with your placeholder image
-                .error(R.drawable.no_image) // Replace with your error image
+                .placeholder(R.drawable.no_image)
+                .error(R.drawable.no_image)
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
                         e: GlideException?,
@@ -163,9 +155,9 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
                         target: Target<Drawable>?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        // Handle the error here
-                        Log.e("qwe", "Error loading image", e)
-                        return false // Return false to allow the error placeholder to be shown
+                        // Помилка завантаження обкладинки
+                        Toast.makeText(requireContext(), "Помилка завантаження обкладинки!",Toast.LENGTH_SHORT).show()
+                        return false
                     }
 
                     override fun onResourceReady(
@@ -175,7 +167,7 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
                         dataSource: DataSource?,
                         isFirstResource: Boolean
                     ): Boolean {
-                        // Image successfully loaded
+                        // Обкладинку завантажено
                         return false
                     }
                 })
@@ -195,23 +187,18 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
         bookProgressBar.max = pages
 
         val readPercent = progress * 100 / pages
-        Log.e("readPercent", "readPercent: $readPercent")
         bookReadPercent.text = "$readPercent %"
-        Log.e("readPercent", "readPercent: ${bookReadPercent.text}")
     }
 
     private fun getBookToRead(callback: (List<BookInProgress>?) -> Unit){
         val requestCall = ClientAPI.apiService.continueReading()
 
-        requestCall.enqueue(object : Callback<BookToRead> {
-            override fun onResponse(call: Call<BookToRead>, response: Response<BookToRead>) {
+        requestCall.enqueue(object : Callback<BookApi.BookToRead> {
+            override fun onResponse(call: Call<BookApi.BookToRead>, response: Response<BookApi.BookToRead>) {
                 if (response.isSuccessful) {
                     val booksResponse = response.body()
                     val bookToContinue = booksResponse?.book_to_read
-                    Log.d("BOOKTOREAD", booksResponse.toString())
-                    Log.d("BOOKTOREAD", bookToContinue.toString())
                     if (!bookToContinue.isNullOrEmpty()) {
-                        Log.d("BOOKTOREAD", bookToContinue.toString())
                         callback(bookToContinue)
                     } else {
                         val cardBook: CardView = requireView().findViewById(R.id.cardViewBookToRead)
@@ -221,24 +208,22 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
 
                         val foxImg: ImageView = requireView().findViewById(R.id.noReadingsFox)
                         foxImg.visibility = View.VISIBLE
-                        Log.e("BOOKTOREAD", "Books list is null")
+                        Log.e("SYSTEM_ERROR", "Books list is null")
                         callback(null)
                     }
                 } else {
                     if (response.code() == 404) {
-                        Log.e("BOOKTOREAD", "Data not found (404)")
+                        Toast.makeText(requireContext(), "Дані не було знайдено!",Toast.LENGTH_SHORT).show()
                         callback(null)
                     } else {
-                        Log.e("BOOKTOREAD", "Unsuccessful response: ${response.code()}")
-                        Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
+                        Toast.makeText(requireContext(), "Не вдалося отримати книгу для прочитанн!", Toast.LENGTH_SHORT)
                             .show()
                         callback(null)
                     }
                 }
             }
-            override fun onFailure(call: Call<BookToRead>, t: Throwable) {
-                Log.e("BOOKTOREAD", "API request failed with exception", t)
-                Toast.makeText(requireContext(), "Помилка підключення з книг!", Toast.LENGTH_SHORT).show()
+            override fun onFailure(call: Call<BookApi.BookToRead>, t: Throwable) {
+                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
                 callback(null)
             }
         })
@@ -248,13 +233,12 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
     private fun dataInitialise(callback: (List<Book>?) -> Unit){
         val requestCall = ClientAPI.apiService.getRecommendations()
 
-        requestCall.enqueue(object : Callback<Recommendations> {
-            override fun onResponse(call: Call<Recommendations>, response: Response<Recommendations>) {
+        requestCall.enqueue(object : Callback<BookApi.Recommendations> {
+            override fun onResponse(call: Call<BookApi.Recommendations>, response: Response<BookApi.Recommendations>) {
                 if (response.isSuccessful) {
                     val booksResponse = response.body()
                     val books = booksResponse?.recommendations
                     if (!books.isNullOrEmpty()) {
-                        Log.d("RECOMMEND", books.toString())
                         callback(books)
                     } else {
                         Toast.makeText(requireContext(), "Рекомендацій немає!", Toast.LENGTH_SHORT).show()
@@ -262,16 +246,16 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
                     }
                 } else {
                     if (response.code() == 404) {
-                        Log.e("RECOMMEND", "Data not found (404)")
+                        Toast.makeText(requireContext(), "Не було отримано рекомендації!",Toast.LENGTH_SHORT).show()
                         callback(null)
                     } else {
-                        Toast.makeText(requireContext(), "Не отримано дані рекомендацій!", Toast.LENGTH_SHORT)
+                        Toast.makeText(requireContext(), "Помилка завантаження рекомендацій!", Toast.LENGTH_SHORT)
                             .show()
                         callback(null)
                     }
                 }
             }
-            override fun onFailure(call: Call<Recommendations>, t: Throwable) {
+            override fun onFailure(call: Call<BookApi.Recommendations>, t: Throwable) {
                 Toast.makeText(requireContext(), "Помилка підключення рекомендацій!", Toast.LENGTH_SHORT).show()
                 callback(null)
             }

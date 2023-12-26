@@ -126,22 +126,13 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-//                TODO()
-
-
             }
-
         }
 
 
         // Кнопка пошуку
         val searchByFilters: Button = view.findViewById(R.id.btnSearchByFilters)
         searchByFilters.setOnClickListener {
-            Log.d("qwe", "11")
-            Log.d("qwe", selectedGenres.toString())
-            Log.d("qwe", selectedAuthors ?: "No Sorting Selected")
-            Log.d("qwe", selectedSorting ?: "No Sorting Selected")
-
 
             when (targetFragment) {
                 SearchPageFragment::class.java.simpleName -> {
@@ -259,10 +250,6 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
         } else {
             selectedGenres + genreName
         }
-
-        // Print or use the selected genres as needed
-        Log.d("SelectedGenres", selectedGenres.toString())
-
     }
 
     private fun getAllGenre() {
@@ -273,31 +260,22 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
                 if (response.isSuccessful) {
                     val genres = response.body()
                     if (genres != null) {
-                        Log.d("qwe", genres.toString())
                         updateUIWithGenres(genres)
                     } else {
-                        Log.e("qwe", "Genres list is null")
-                        // Handle the case where genres list is null
+                        Toast.makeText(requireContext(), "Список жанрів пустий!",Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Handle unsuccessful response
-                    Log.e("qwe", "Unsuccessful response: ${response.code()}")
                     Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT).show()
-                    // Handle the case where the response is not successful
                 }
             }
 
             override fun onFailure(call: Call<List<String>>, t: Throwable) {
-                Log.e("qwe", "API request failed with exception", t)
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
-                // Handle the case where the API request fails
             }
         })
     }
 
     private fun updateUIWithGenres(genres: List<String>) {
-        // Update your UI with the fetched genres
-        // Assuming you have a recycler view adapter (genreAdapter), update the data and notify the adapter
         genreArrayList.clear()
         for (genreName in genres) {
             val genre = Genre(genreName)

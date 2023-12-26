@@ -1,6 +1,6 @@
 import random
 
-from django.db.models import Count, Avg
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.generics import ListAPIView
@@ -53,7 +53,7 @@ class FavouriteBooksList(ListAPIView):
                 queryset = queryset.filter(type=author)
 
             if sorting and sorting != "Без сортувань":
-                # Define a dictionary to map sorting options to fields
+                # Визначаємо сортування
                 sorting_options = {
                     'Назва(А-Я)': 'title',
                     'Назва(Я-А)': '-title',
@@ -63,7 +63,7 @@ class FavouriteBooksList(ListAPIView):
                     'Оцінка(За спаданням)': '-rating',
                 }
 
-                # Use get() to get the corresponding field or default to None
+                # get(), щоб отримати відповідне поле, або None
                 sort_field = sorting_options.get(sorting)
 
                 if sort_field:
@@ -97,7 +97,7 @@ class UserBooksListView(ListAPIView):
                 queryset = queryset.filter(type=author)
 
             if sorting and sorting != "Без сортувань":
-                # Define a dictionary to map sorting options to fields
+                # Визначаємо сортування
                 sorting_options = {
                     'Назва(А-Я)': 'title',
                     'Назва(Я-А)': '-title',
@@ -107,7 +107,7 @@ class UserBooksListView(ListAPIView):
                     'Оцінка(За спаданням)': '-rating',
                 }
 
-                # Use get() to get the corresponding field or default to None
+                # get(), щоб отримати відповідне поле, або No
                 sort_field = sorting_options.get(sorting)
 
                 if sort_field:
@@ -183,7 +183,6 @@ def continue_reading(request):
         return Response({'book_to_read': book_to_read})
 
     except Exception as e:
-        print("No")
         return Response({'book_to_read': Book.objects.none()})
 
 

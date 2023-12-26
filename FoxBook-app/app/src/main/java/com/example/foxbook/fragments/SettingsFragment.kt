@@ -24,8 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.foxbook.ClientAPI.apiService
 import com.example.foxbook.R
-import com.example.foxbook.api.Message
-import com.example.foxbook.api.ReadingSettings
+import com.example.foxbook.api.UserData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -200,7 +199,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                     exampleText.typeface = Typeface.create(chosenFont, Typeface.NORMAL)
                     currentFont = chosenFont
                 }
-//                currentFont = exampleText.typeface
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -224,27 +222,20 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
     private fun sendReadingSettingsToAPI() {
-        val readingSettingsRequest = ReadingSettings(
+        val readingSettingsRequest = UserData.ReadingSettings(
             bg_color = currentBg,
             text_color = currentSampleTextColor,
             text_size = currentTextSize,
             text_font = currentFont.toString()
         )
-        Log.d("qwe", "currentBg $currentBg")
-        Log.d("qwe", "currentSampleTextColor $currentSampleTextColor")
-        Log.d("qwe", "currentTextSize $currentTextSize")
-        Log.d("qwe", "currentFont $currentFont")
-        // Make the API call
+
         val call = apiService.addReadingSettings(readingSettingsRequest)
 
-        // Execute the call
-        call.enqueue(object : Callback<Message> {
-            override fun onResponse(call: Call<Message>, response: Response<Message>) {
+        call.enqueue(object : Callback<UserData.Message> {
+            override fun onResponse(call: Call<UserData.Message>, response: Response<UserData.Message>) {
                 if (response.isSuccessful) {
-                    // Handle successful response
                     Toast.makeText(context, "Налаштування встановлено!", Toast.LENGTH_SHORT).show()
                 } else {
-                    // Handle unsuccessful response
                     Toast.makeText(
                         requireContext(), "Помилка встановлення налаштувань!",
                         Toast.LENGTH_SHORT
@@ -252,8 +243,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 }
             }
 
-            override fun onFailure(call: Call<Message>, t: Throwable) {
-                // Handle failure
+            override fun onFailure(call: Call<UserData.Message>, t: Throwable) {
                 Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
 
             }

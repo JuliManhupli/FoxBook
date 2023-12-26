@@ -1,7 +1,6 @@
 from django.contrib.auth import authenticate, logout
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from rest_framework import status
-from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
@@ -78,11 +77,11 @@ class ResendVerificationView(GenericAPIView):
             if user.is_verified:
                 return Response({"message": "Акаунт вже підтверджено"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Спробуйте отримати існуючий OneTimePassword або створити новий
+            # Отримуємо існуючий OneTimePassword або створити новий
             otp_instance, created = OneTimePassword.objects.get_or_create(user=user)
 
             if not created:
-                # Якщо існуючий OneTimePassword, оновіть його код
+                # Якщо існуючий OneTimePassword, оновлюємо його код
                 otp_instance.code = generate_otp()
                 otp_instance.save()
                 send_code_to_user(email, False, otp_instance.code)
@@ -120,7 +119,6 @@ class PasswordResetRequestView(GenericAPIView):
 
 
 class PasswordResetVerifyView(GenericAPIView):
-    # serializer_class = serializers.CharField()
 
     def post(self, request, *args, **kwargs):
         code = request.data.get('code')
@@ -151,7 +149,7 @@ class PasswordResetSetPasswordView(GenericAPIView):
             user.set_password(new_password)
             user.save()
 
-            # Optionally, delete the PasswordReset instance to prevent reuse
+            # Видаляє PasswordReset, щоб не допустити повторного використання
             reset_instance.delete()
 
             return Response({"message": "Пароль успішно скинутий"},

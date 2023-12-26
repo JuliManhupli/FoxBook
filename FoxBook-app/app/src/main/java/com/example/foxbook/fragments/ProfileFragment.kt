@@ -14,7 +14,7 @@ import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
 import com.example.foxbook.TokenManager
 import com.example.foxbook.activities.LoginActivity
-import com.example.foxbook.api.UserProfile
+import com.example.foxbook.api.UserData
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -67,28 +67,22 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
     }
 
-    private fun getUserProfileInfo(callback: (UserProfile?) -> Unit) {
+    private fun getUserProfileInfo(callback: (UserData.UserProfile?) -> Unit) {
         val call = ClientAPI.apiService.getUserProfile()
 
-        call.enqueue(object : Callback<UserProfile> {
-            override fun onResponse(call: Call<UserProfile>, response: Response<UserProfile>) {
+        call.enqueue(object : Callback<UserData.UserProfile> {
+            override fun onResponse(call: Call<UserData.UserProfile>, response: Response<UserData.UserProfile>) {
                 if (response.isSuccessful) {
-
                     val profileInfo = response.body()
-                    Log.e("qwe", "profileInfo")
-                    Log.e("qwe", profileInfo.toString())
                     callback(profileInfo)
                 } else {
-                    // Handle unsuccessful response
-                    Log.e("qwe", "Unsuccessful response getUserProfileInfo: ${response.code()}")
-                    Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), "Не вдалося отримати дані профілю!", Toast.LENGTH_SHORT)
                         .show()
                 }
             }
 
-            override fun onFailure(call: Call<UserProfile>, t: Throwable) {
-                Log.e("qwe", "API request failed with exception", t)
-                Toast.makeText(requireContext(), "Помилка підключення!", Toast.LENGTH_SHORT).show()
+            override fun onFailure(call: Call<UserData.UserProfile>, t: Throwable) {
+                Toast.makeText(requireContext(), "Помилка підключення профілю!", Toast.LENGTH_SHORT).show()
             }
         })
     }

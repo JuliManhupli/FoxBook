@@ -2,7 +2,6 @@ package com.example.foxbook
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 
 object TokenManager {
     private const val PREF_NAME = "TokenPrefs"

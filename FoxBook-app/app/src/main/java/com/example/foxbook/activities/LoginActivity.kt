@@ -3,7 +3,6 @@ package com.example.foxbook.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
@@ -11,7 +10,7 @@ import android.widget.Toast
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
 import com.example.foxbook.TokenManager
-import com.example.foxbook.api.Login
+import com.example.foxbook.api.AccountData
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
@@ -93,15 +92,14 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginUser() {
-        val authoriseUser = Login(email, password)
+        val authoriseUser = AccountData.Login(email, password)
         val requestCall = ClientAPI.apiService.login(authoriseUser)
 
         requestCall.enqueue(object: Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>
             ) {
-                Log.d("qwe", response.toString())
                 if (response.isSuccessful){
-                    // Extract tokens from the response
+                    // Токени із відповіді
                     val tokens = extractTokensFromResponse(response)
                     if (tokens != null) {
                         TokenManager.saveTokens(tokens.first, tokens.second)
@@ -128,14 +126,12 @@ class LoginActivity : AppCompatActivity() {
                             Toast.makeText(this@LoginActivity, message, Toast.LENGTH_LONG).show()
                         }
                     } catch (e: Exception) {
-                        Log.d("qwe", e.toString())
                         Toast.makeText(this@LoginActivity, "Помилка авторизації!", Toast.LENGTH_LONG).show()
                     }
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.d("response", t.toString())
                 Toast.makeText(this@LoginActivity, "Помилка підключення!", Toast.LENGTH_SHORT).show()
             }
         })
