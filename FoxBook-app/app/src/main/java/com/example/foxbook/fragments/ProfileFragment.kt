@@ -52,7 +52,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             val favouriteBooksFragment = FavouriteBooksFragment()
             val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
             transaction.replace(R.id.flFragment, favouriteBooksFragment)
-            transaction.addToBackStack(null)
+            transaction.addToBackStack("$favouriteBooksFragment")
             transaction.commit()
         }
 
@@ -62,7 +62,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             val settingsFragment = SettingsFragment()
             val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
             transaction.replace(R.id.flFragment, settingsFragment)
-            transaction.addToBackStack(null)
+            transaction.addToBackStack("$settingsFragment")
             transaction.commit()
         }
     }

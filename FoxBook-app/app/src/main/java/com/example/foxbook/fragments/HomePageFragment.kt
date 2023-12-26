@@ -37,6 +37,7 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
 
     lateinit var bookRecommendAdapter: RecommendationAdapter
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -76,7 +77,7 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
                     val transaction: FragmentTransaction =
                         requireFragmentManager().beginTransaction()
                     transaction.replace(R.id.flFragment, bookInfoFragment)
-                    transaction.addToBackStack(null)
+                    transaction.addToBackStack("$bookInfoFragment")
                     transaction.commit()
                 }
             }
@@ -105,7 +106,7 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
                     val transaction: FragmentTransaction =
                         requireFragmentManager().beginTransaction()
                     transaction.replace(R.id.flFragment, bookInfoFragment)
-                    transaction.addToBackStack(null)
+                    transaction.addToBackStack("$bookInfoFragment")
                     transaction.commit()
                 }
             }

@@ -59,7 +59,7 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
                 FiltersFragment.newInstance(ReadingInProgressFragment::class.java.simpleName)
             val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
             transaction.replace(R.id.flFragment, filtersFragment)
-            transaction.addToBackStack(null)
+            transaction.addToBackStack("$filtersFragment")
             transaction.commit()
         }
 
@@ -143,7 +143,7 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
 
                     val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
                     transaction.replace(R.id.flFragment, bookInfoFragment)
-                    transaction.addToBackStack(null)
+                    transaction.addToBackStack("$bookInfoFragment")
                     transaction.commit()
                 }
                 Log.e("qwe", "6")

@@ -216,7 +216,7 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
     private fun navigateToFragment(fragment: Fragment) {
         val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
         transaction.replace(R.id.flFragment, fragment)
-        transaction.addToBackStack(null)
+        transaction.addToBackStack("$fragment")
         transaction.commit()
     }
 

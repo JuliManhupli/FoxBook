@@ -50,7 +50,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             val profileFragment = ProfileFragment()
             val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
             transaction.replace(R.id.flFragment, profileFragment)
-            transaction.addToBackStack(null)
+            transaction.addToBackStack("$profileFragment")
             transaction.commit()
         }
 

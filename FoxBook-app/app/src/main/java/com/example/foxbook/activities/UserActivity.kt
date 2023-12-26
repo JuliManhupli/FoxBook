@@ -43,16 +43,25 @@ class UserActivity : AppCompatActivity() {
     private fun setCurrentFragment(fragment: Fragment){
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment)
-            addToBackStack(null)
+            addToBackStack("$fragment")
             commit()
         }
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0) {
-            supportFragmentManager.popBackStack()
-        } else {
+        if (supportFragmentManager.backStackEntryCount > 1) {
             super.onBackPressed()
+
+            val buttonNavView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+
+            when (supportFragmentManager.findFragmentById(R.id.flFragment)) {
+                is HomePageFragment -> buttonNavView.selectedItemId = R.id.miHome
+                is SearchPageFragment -> buttonNavView.selectedItemId = R.id.miSearch
+                is ReadingInProgressFragment -> buttonNavView.selectedItemId = R.id.miReadProgress
+                is ProfileFragment -> buttonNavView.selectedItemId = R.id.miProfile
+            }
+        } else {
+            finish()
         }
     }
 }
