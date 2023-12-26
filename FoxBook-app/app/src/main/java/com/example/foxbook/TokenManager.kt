@@ -27,4 +27,8 @@ object TokenManager {
     fun getRefreshToken(): String {
         return getSharedPreferences().getString(KEY_REFRESH_TOKEN, "") ?: ""
     }
+
+    fun clearTokens() {
+        getSharedPreferences().edit().clear().apply()
+    }
 }

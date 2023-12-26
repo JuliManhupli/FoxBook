@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentTransaction
 import com.example.foxbook.APIServices
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
+import com.example.foxbook.TokenManager
 import com.example.foxbook.activities.LoginActivity
 import com.example.foxbook.api.UserProfile
 import okhttp3.ResponseBody
@@ -29,7 +30,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         // вихід з акаунту
         val exitBtn: Button = view.findViewById(R.id.btnExit)
         exitBtn.setOnClickListener {
+
             logoutUser()
+
         }
 
 
@@ -99,6 +102,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     val intent = Intent(requireContext(), LoginActivity::class.java)
                     startActivity(intent)
                     requireActivity().finish()
+                    TokenManager.clearTokens()
                 } else {
                     Toast.makeText(requireContext(), "Помилка виходу!", Toast.LENGTH_SHORT).show()
                 }

@@ -26,6 +26,7 @@
         android:contentDescription="Видалення"
         android:scaleType="fitXY"
         android:src="@drawable/baseline_restore_from_trash_24"
+        android:visibility="invisible"
         app:layout_constraintEnd_toStartOf="@+id/imgBtnUnliked"
         app:layout_constraintTop_toTopOf="@+id/guideline57" />
 

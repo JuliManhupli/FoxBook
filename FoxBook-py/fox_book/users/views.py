@@ -83,7 +83,7 @@ class UserBooksListView(ListAPIView):
     def get_queryset(self):
         try:
             user = self.request.user
-            queryset = Book.objects.filter(library__user=user)
+            queryset = Book.objects.filter(library__user=user, library__visible=True)
 
             genres = self.request.query_params.get('genres', None)
             author = self.request.query_params.get('author', None)
@@ -126,7 +126,10 @@ def add_book_to_library(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
 
     if Library.objects.filter(user=user, book=book).exists():
-        return Response({'message': 'Book is already library'})
+        library_book = Library.objects.get(user=user, book=book)
+        library_book.visible = True
+        library_book.save()
+        return Response({'message': ''})
 
     library_book = Library(user=user, book=book)
     library_book.save()
@@ -134,42 +137,54 @@ def add_book_to_library(request, book_id):
     return Response({'message': 'Кингу додано до бібліотеки!'})
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def remove_book_from_library(request, book_id):
+    user = request.user
+    book = get_object_or_404(Book, pk=book_id)
+
+    try:
+        library_book = Library.objects.get(user=user, book=book)
+        library_book.reading_progress = 0
+        library_book.visible = False
+        library_book.save()
+
+        return Response({'message': 'Кингу видалено з бібліотеки!'})
+
+    except Library.DoesNotExist:
+        return Response({'message': 'Помилка! Книгу в бібліотеці не знайдено.'}, status=404)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_if_book_in_library(request, book_id):
+    user = request.user
+    book = get_object_or_404(Book, pk=book_id)
+
+    try:
+        library_book = Library.objects.get(user=user, book=book)
+        return Response({'check_book': library_book.visible})
+
+    except Library.DoesNotExist:
+        return Response({'check_book': False})
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def continue_reading(request):
     try:
         user = request.user
-        queryset = Library.objects.filter(user=user)
+        queryset = Library.objects.filter(user=user, visible=True)
         books_in_progress = [library_entry.book for library_entry in queryset]
-        print(books_in_progress)
         serializer = BookInProgressSerializer(books_in_progress, many=True, context={'request': request})
-        print(serializer)
         serialized_data = serializer.data
-        print(serialized_data)
-
-
-        # user = request.user
-        # queryset = Book.objects.filter(library__user=user)
-        # print(queryset)
-        # serializer = BookInProgressSerializer(queryset, many=True)
-        # print(serializer)
-        # serialized_data = serializer.data
-        # print(serialized_data)
-
         random.shuffle(serialized_data)
-        print('--------')
-        print(serialized_data)
         book_to_read = serialized_data[:1]
-        print('******************')
-        print(book_to_read)
-
         return Response({'book_to_read': book_to_read})
 
     except Exception as e:
         print("No")
         return Response({'book_to_read': Book.objects.none()})
-
-
 
 
 @api_view(['GET'])
@@ -232,10 +247,9 @@ def update_user_rating(request, book_id):
         library_book.user_rating = user_rating
         library_book.save()
 
-        # Recalculate the average rating for the book
+        # Оновлення загального рейтингу книги
         avg_rating = Library.objects.filter(book=book).aggregate(Avg('user_rating'))['user_rating__avg']
         book.rating = avg_rating if avg_rating is not None else -1
-        print(book.rating)
         book.save()
 
         return Response({'message': 'Оцінку успішно оновлено!'})
@@ -342,9 +356,9 @@ def check_if_book_in_favorites(request, book_id):
     user = request.user
     book = get_object_or_404(Book, pk=book_id)
     if FavoriteBook.objects.filter(user=user, book=book).exists():
-        return Response({'isInFavorites': True})
+        return Response({'check_book': True})
     else:
-        return Response({'isInFavorites': False})
+        return Response({'check_book': False})
 
 
 @api_view(['POST'])

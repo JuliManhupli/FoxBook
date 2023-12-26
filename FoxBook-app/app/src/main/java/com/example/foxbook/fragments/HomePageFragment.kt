@@ -97,7 +97,7 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
 
                 bookRecommendAdapter.onItemClick = {
                     val bookInfoFragment =
-                        BookInfoFragment.newInstance(SearchPageFragment::class.java.simpleName)
+                        BookInfoFragment.newInstance(HomePageFragment::class.java.simpleName)
                     val bundle = Bundle()
                     bundle.putParcelable("android", it)
                     bookInfoFragment.arguments = bundle
