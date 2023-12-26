@@ -1,11 +1,17 @@
 package com.example.foxbook.fragments
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
@@ -17,6 +23,10 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
 import com.bumptech.glide.Glide
 import com.example.foxbook.ClientAPI.apiService
@@ -28,11 +38,13 @@ import com.example.foxbook.api.CheckIfBook
 
 import com.example.foxbook.api.Message
 import com.example.foxbook.api.UserRating
+import okhttp3.internal.notify
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
+const val CHANNEL_ID = "channelid"
 class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
 
     private var targetFragment: String = ""
@@ -66,7 +78,6 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 HomePageFragment::class.java.simpleName -> navigateTo(HomePageFragment())
             }
         }
-
 
 
         data?.let {
@@ -109,6 +120,26 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                     // Add the book to favorites
                     addBookToFavorites(book.id)
                     likeButton.setImageResource(R.drawable.heart_full)
+
+                    // сповіщення
+                    createNotificationChannel()
+
+                    val builder = NotificationCompat.Builder(requireContext(), CHANNEL_ID)
+                    builder.setSmallIcon(R.mipmap.ic_profile)
+                        .setContentTitle("Маєте чудовий смак :)")
+                        .setContentText("Книгу '${book.title}' було додано в Улюблене!")
+                        .priority = NotificationCompat.PRIORITY_DEFAULT
+
+                    with(NotificationManagerCompat.from(requireContext())) {
+                        if (ActivityCompat.checkSelfPermission(
+                                requireContext(),
+                                Manifest.permission.POST_NOTIFICATIONS
+                            ) != PackageManager.PERMISSION_GRANTED
+                        ) {
+                            return@checkIfBookInFavorites
+                        }
+                        notify(1, builder.build())
+                    }
                 }
             }
         }
@@ -201,10 +232,24 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
                 Log.e("qwe", "*2 - ${userRatingView.text}")
                 updateUserRating(book.id, rating.toDouble())
             }
-
         }
+    }
 
+    private fun createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Улюблені книги",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            channel.description = "Додати книгу в улюблене"
 
+            val notificationManager = ContextCompat.getSystemService(
+                requireContext(),
+                NotificationManager::class.java
+            ) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private fun setupBookInProgressViews(bookInProgress: BookInProgress, view: View) {
