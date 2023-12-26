@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.foxbook.adapters.BookInProgressAdapter
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
+import com.example.foxbook.adapters.BookAdapter
 
 import com.example.foxbook.api.BookInProgress
 import com.example.foxbook.api.BooksInProgressResponse
@@ -40,8 +41,10 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e("qwe", "1")
+
         page = 1
+
+        // аргументи для фільтрів
         val args = arguments
         if (args != null) {
             selectedGenres = args.getStringArrayList("selectedGenres") ?: emptyList()
@@ -59,7 +62,7 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
             transaction.addToBackStack(null)
             transaction.commit()
         }
-        //
+
         recyclerView = view.findViewById(R.id.searchRecyclerViewInProgress)
         searchView = view.findViewById(R.id.searchInProgressBar)
 
@@ -70,7 +73,6 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
         searchList = arrayListOf()
 
         loadData()
-        Log.e("qwe", "2")
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
@@ -88,7 +90,6 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
     }
 
     private fun loadData() {
-        Log.e("qwe", "3")
         val query = buildFilterQuery(selectedGenres, selectedAuthors, selectedSorting)
         val progressBar: ProgressBar = requireView().findViewById(R.id.progressBarSearchInProgress)
 
@@ -100,7 +101,6 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
                 recyclerView.adapter = BookInProgressAdapter(searchList)
 
                 searchView.clearFocus()
-                Log.e("qwe", "4")
                 searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                     override fun onQueryTextSubmit(query: String?): Boolean {
                         searchView.clearFocus()
@@ -109,19 +109,24 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
 
                     override fun onQueryTextChange(newText: String?): Boolean {
                         searchList.clear()
-                        val searchText = newText!!.toLowerCase(Locale.getDefault())
-                        if (searchText.isNotEmpty()) {
-                            bookArrayList.forEach {
-                                if (it.title.toLowerCase(Locale.getDefault()).contains(searchText)) {
-                                    searchList.add(it)
-                                }
-                            }
-                            recyclerView.adapter?.notifyDataSetChanged()
+                        val searchText = newText?.toLowerCase(Locale.getDefault()) ?: ""
+                        val filteredList = if (searchText.isBlank()) {
+                            // якщо пошук порожній, показати всі книги
+                            bookArrayList.toList()
                         } else {
-                            searchList.clear()
-                            searchList.addAll(bookArrayList)
-                            recyclerView.adapter?.notifyDataSetChanged()
+                            if (searchText.length >= 3) {
+                                // фільтровані книги за пошуком
+                                bookArrayList.filter {
+                                    it.title.toLowerCase(Locale.getDefault()).contains(searchText)
+                                }
+                            } else {
+                                bookArrayList.toList()
+                            }
                         }
+
+                        searchList.clear()
+                        searchList.addAll(filteredList)
+                        recyclerView.adapter?.notifyDataSetChanged()
                         return false
                     }
                 })
@@ -159,23 +164,37 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
         progressBar.visibility = View.VISIBLE
         val query = buildFilterQuery(selectedGenres, selectedAuthors, selectedSorting)
         getAllLibraryBooks(page, query) { newBooks ->
-            Log.e("qwe", "8")
+
             if (newBooks != null) {
                 bookArrayList.addAll(newBooks)
-                searchList.addAll(newBooks)
 
                 if (::bookAdapter.isInitialized) {
+                    // оновити searchList за пошуком
+                    val searchText = searchView.query.toString().toLowerCase(Locale.getDefault())
+                    val filteredList = if (searchText.isBlank()) {
+                        // якщо порожній, то показати всі книги
+                        bookArrayList.toList()
+                    } else {
+                        if (searchText.length >= 3) {
+                            // фільтровані книги за пошуком
+                            bookArrayList.filter {
+                                it.title.toLowerCase(Locale.getDefault()).contains(searchText)
+                            }
+                        } else {
+                            bookArrayList.toList()
+                        }
+                    }
+
+                    searchList.clear()
+                    searchList.addAll(filteredList)
                     bookAdapter.notifyDataSetChanged()
                 } else {
                     recyclerView.adapter = BookInProgressAdapter(searchList)
                 }
 
                 page++
-                Log.e("qwe", "8")
             } else {
-                // To hide the ProgressBar
                 progressBar.visibility = View.GONE
-                // Handle the case when data retrieval fails
                 Log.e("qwe", "Failed to retrieve more data from the API")
                 Log.e("qwe", page.toString())
             }

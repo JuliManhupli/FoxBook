@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import com.example.foxbook.APIServices
 import com.example.foxbook.ClientAPI
 import com.example.foxbook.R
 import com.example.foxbook.TokenManager
