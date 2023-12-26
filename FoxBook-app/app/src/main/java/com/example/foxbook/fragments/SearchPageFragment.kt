@@ -53,7 +53,7 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
             val filtersFragment = FiltersFragment.newInstance(SearchPageFragment::class.java.simpleName)
             val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
             transaction.replace(R.id.flFragment, filtersFragment)
-            transaction.addToBackStack(null)
+            transaction.addToBackStack("$filtersFragment")
             transaction.commit()
         }
 
@@ -137,7 +137,7 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
 
                     val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
                     transaction.replace(R.id.flFragment, bookInfoFragment)
-                    transaction.addToBackStack(null)
+                    transaction.addToBackStack("$bookInfoFragment")
                     transaction.commit()
                 }
             } else {

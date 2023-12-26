@@ -375,7 +375,7 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
     private fun navigateTo(fragment: Fragment) {
         val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
         transaction.replace(R.id.flFragment, fragment)
-        transaction.addToBackStack(null)
+        transaction.addToBackStack("$fragment")
         transaction.commit()
     }
 

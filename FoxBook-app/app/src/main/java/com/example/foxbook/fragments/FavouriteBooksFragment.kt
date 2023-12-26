@@ -53,7 +53,7 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
             val filtersFragment = FiltersFragment.newInstance(FavouriteBooksFragment::class.java.simpleName)
             val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
             transaction.replace(R.id.flFragment, filtersFragment)
-            transaction.addToBackStack(null)
+            transaction.addToBackStack("$filtersFragment")
             transaction.commit()
         }
 
@@ -137,7 +137,7 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
 
                     val transaction: FragmentTransaction = requireFragmentManager().beginTransaction()
                     transaction.replace(R.id.flFragment, bookInfoFragment)
-                    transaction.addToBackStack(null)
+                    transaction.addToBackStack("$bookInfoFragment")
                     transaction.commit()
                 }
             } else {
