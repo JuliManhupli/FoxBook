@@ -104,19 +104,24 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
 
                     override fun onQueryTextChange(newText: String?): Boolean {
                         searchList.clear()
-                        val searchText = newText!!.toLowerCase(Locale.getDefault())
-                        if (searchText.isNotEmpty()) {
-                            bookArrayList.forEach {
-                                if (it.title.toLowerCase(Locale.getDefault()).contains(searchText)) {
-                                    searchList.add(it)
-                                }
-                            }
-                            recyclerView.adapter?.notifyDataSetChanged()
+                        val searchText = newText?.toLowerCase(Locale.getDefault()) ?: ""
+                        val filteredList = if (searchText.isBlank()) {
+                            // якщо пошук порожній, показати всі книги
+                            bookArrayList.toList()
                         } else {
-                            searchList.clear()
-                            searchList.addAll(bookArrayList)
-                            recyclerView.adapter?.notifyDataSetChanged()
+                            if (searchText.length >= 3) {
+                                // фільтровані книги за пошуком
+                                bookArrayList.filter {
+                                    it.title.toLowerCase(Locale.getDefault()).contains(searchText)
+                                }
+                            } else {
+                                bookArrayList.toList()
+                            }
                         }
+
+                        searchList.clear()
+                        searchList.addAll(filteredList)
+                        recyclerView.adapter?.notifyDataSetChanged()
                         return false
                     }
                 })
@@ -154,9 +159,26 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
         getAllFavouriteBooks(page, query) { newBooks ->
             if (newBooks != null) {
                 bookArrayList.addAll(newBooks)
-                searchList.addAll(newBooks)
 
                 if (::bookAdapter.isInitialized) {
+                    // оновити searchList за пошуком
+                    val searchText = searchView.query.toString().toLowerCase(Locale.getDefault())
+                    val filteredList = if (searchText.isBlank()) {
+                        // якщо порожній, то показати всі книги
+                        bookArrayList.toList()
+                    } else {
+                        if (searchText.length >= 3) {
+                            // фільтровані книги за пошуком
+                            bookArrayList.filter {
+                                it.title.toLowerCase(Locale.getDefault()).contains(searchText)
+                            }
+                        } else {
+                            bookArrayList.toList()
+                        }
+                    }
+
+                    searchList.clear()
+                    searchList.addAll(filteredList)
                     bookAdapter.notifyDataSetChanged()
                 } else {
                     recyclerView.adapter = BookAdapter(searchList)

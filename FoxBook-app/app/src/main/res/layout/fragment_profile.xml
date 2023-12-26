@@ -72,6 +72,13 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.44" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline72"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.58" />
+
     <TextView
         android:id="@+id/txtProfileName"
         android:layout_width="0dp"
@@ -199,6 +206,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -35,10 +35,8 @@ import com.example.foxbook.activities.ReadingActivity
 import com.example.foxbook.api.Book
 import com.example.foxbook.api.BookInProgress
 import com.example.foxbook.api.CheckIfBook
-
 import com.example.foxbook.api.Message
 import com.example.foxbook.api.UserRating
-import okhttp3.internal.notify
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
