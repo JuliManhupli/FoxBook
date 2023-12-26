@@ -22,10 +22,10 @@
 
             <TextView
                 android:id="@+id/helloUser"
-                android:lines="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter"
+                android:lines="1"
                 android:padding="10dp"
                 android:text="Вітаємо!"
                 android:textAlignment="center"
@@ -50,34 +50,26 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.97" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline90"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.63" />
-
     <TextView
         android:id="@+id/textView25"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Рекомендації"
+        android:layout_marginBottom="12dp"
         android:fontFamily="@font/inter"
-        android:textStyle="bold"
+        android:text="Рекомендації"
         android:textSize="18sp"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline90"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerRecommendView"
         app:layout_constraintStart_toStartOf="@+id/guideline91" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerRecommendView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="250dp"
         android:background="@color/book_bg"
         app:layout_constraintBottom_toTopOf="@+id/guideline89"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline90"
         tools:listitem="@layout/book_recommendation_layout" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -167,15 +159,43 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline79"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.03" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline82"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.45" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline84"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline95"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.97" />
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView2"
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginVertical="10dp"
-                android:layout_marginStart="10dp"
                 app:cardCornerRadius="20dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline82"
+                app:layout_constraintStart_toStartOf="@+id/guideline79"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
@@ -183,44 +203,43 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="fitXY"
-                    android:src="@drawable/peremozhtsi" />
+                    android:src="@drawable/no_image" />
             </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/txtBookContinueReadName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
                 android:layout_marginTop="20dp"
                 android:lines="3"
                 android:text="BookName"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/cardView2"
+                app:layout_constraintEnd_toStartOf="@+id/guideline95"
+                app:layout_constraintStart_toStartOf="@+id/guideline84"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/bookContinueReadAuthor"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/inter"
                 android:text="Author"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/cardView2"
+                app:layout_constraintEnd_toStartOf="@+id/guideline95"
+                app:layout_constraintStart_toStartOf="@+id/guideline84"
                 app:layout_constraintTop_toBottomOf="@+id/txtBookContinueReadName" />
 
             <TextView
                 android:id="@+id/bookContinueReadRating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
                 android:fontFamily="@font/inter"
                 android:text="Rating"
                 android:textSize="14sp"
-                app:layout_constraintStart_toEndOf="@+id/cardView2"
+                app:layout_constraintStart_toStartOf="@+id/guideline84"
                 app:layout_constraintTop_toBottomOf="@+id/bookContinueReadAuthor" />
 
             <ImageView
@@ -237,25 +256,23 @@
                 android:id="@+id/txtBookContinueReadProgress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
                 android:layout_marginBottom="10dp"
                 android:fontFamily="@font/inter"
-                android:text="Прочитано"
+                android:text="Прочитано:"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/seekBarProgressContinueRead"
-                app:layout_constraintStart_toEndOf="@+id/cardView2" />
+                app:layout_constraintStart_toStartOf="@+id/guideline84" />
 
             <TextView
                 android:id="@+id/txtContinueReadPercentage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
                 android:fontFamily="@font/inter"
                 android:text="Percent%"
                 app:layout_constraintBottom_toTopOf="@+id/seekBarProgressContinueRead"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toStartOf="@+id/guideline95" />
 
             <SeekBar
                 android:id="@+id/seekBarProgressContinueRead"
@@ -266,12 +283,12 @@
                 android:max="255"
                 android:progress="50"
                 android:progressTint="@color/settings"
-                android:scaleX="1.1"
+                android:scaleX="1.25"
                 android:scaleY="5"
                 android:thumb="@color/transparent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/cardView2"
+                app:layout_constraintEnd_toStartOf="@+id/guideline95"
+                app:layout_constraintStart_toStartOf="@+id/guideline84"
                 app:trackThickness="10dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

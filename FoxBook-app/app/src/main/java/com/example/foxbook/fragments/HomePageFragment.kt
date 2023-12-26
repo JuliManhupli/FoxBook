@@ -68,7 +68,7 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
 
                 bookLayout.setOnClickListener {
                     val bookInfoFragment =
-                        BookInfoFragment.newInstance(SearchPageFragment::class.java.simpleName)
+                        BookInfoFragment.newInstance(HomePageFragment::class.java.simpleName)
                     val bundle = Bundle()
                     bundle.putParcelable("android", book)
                     bookInfoFragment.arguments = bundle
@@ -147,7 +147,7 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
         val bookTitle: TextView = requireView().findViewById(R.id.txtBookContinueReadName)
         val bookAuthor: TextView = requireView().findViewById(R.id.bookContinueReadAuthor)
         val bookRating: TextView = requireView().findViewById(R.id.bookContinueReadRating)
-        val bookReadPercent: TextView = requireView().findViewById(R.id.txtBookContinueReadProgress)
+        val bookReadPercent: TextView = requireView().findViewById(R.id.txtContinueReadPercentage)
         val bookProgressBar: SeekBar = requireView().findViewById(R.id.seekBarProgressContinueRead)
 
         if (currentItem.cover != null) {
@@ -196,6 +196,7 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
         val readPercent = progress * 100 / pages
         Log.e("readPercent", "readPercent: $readPercent")
         bookReadPercent.text = "$readPercent %"
+        Log.e("readPercent", "readPercent: ${bookReadPercent.text}")
     }
 
     private fun getBookToRead(callback: (List<BookInProgress>?) -> Unit){
