@@ -110,7 +110,6 @@
             android:max="255"
             android:progressTint="@color/settings"
             android:scaleY="5"
-            android:scaleX="1.15"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imgBookInProgressCover"

@@ -283,7 +283,6 @@
                 android:max="255"
                 android:progress="50"
                 android:progressTint="@color/settings"
-                android:scaleX="1.25"
                 android:scaleY="5"
                 android:thumb="@color/transparent"
                 app:layout_constraintBottom_toBottomOf="parent"

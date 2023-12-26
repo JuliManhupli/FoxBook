@@ -193,8 +193,8 @@
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
                 android:layout_marginStart="3dp"
+                android:layout_marginTop="5dp"
                 android:src="@drawable/baseline_star_24"
-                app:layout_constraintBottom_toTopOf="@+id/txtBookInfoGenre"
                 app:layout_constraintStart_toEndOf="@+id/txtBookInfoRating"
                 app:layout_constraintTop_toBottomOf="@+id/txtRatingUser" />
 
