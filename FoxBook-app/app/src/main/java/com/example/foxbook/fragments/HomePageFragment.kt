@@ -79,7 +79,7 @@ class HomePageFragment : Fragment(R.layout.fragment_home_page) {
                 }
             }
             else {
-                Toast.makeText(requireContext(), "Не було отримано книгу!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Поки нема прочитаного!",Toast.LENGTH_SHORT).show()
             }
         }
 

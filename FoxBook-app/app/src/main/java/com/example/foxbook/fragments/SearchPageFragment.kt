@@ -112,7 +112,8 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
                             if (searchText.length >= 3) {
                                 // фільтровані книги за пошуком
                                 bookArrayList.filter {
-                                    it.title.toLowerCase(Locale.getDefault()).contains(searchText)
+                                    it.title.toLowerCase(Locale.getDefault()).contains(searchText) ||
+                                            it.author.toLowerCase(Locale.getDefault()).contains(searchText)
                                 }
                             } else {
                                 bookArrayList.toList()
@@ -142,7 +143,7 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
                 }
             } else {
                 progressBar.visibility = View.GONE
-                Toast.makeText(requireContext(), "Помилка отримання даних!",Toast.LENGTH_SHORT).show()
+                Log.d("SYSTEM_ERROR", "Помилка отримання даних!")
             }
         }
     }
@@ -167,7 +168,8 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
                         if (searchText.length >= 3) {
                             // фільтровані книги за пошуком
                             bookArrayList.filter {
-                                it.title.toLowerCase(Locale.getDefault()).contains(searchText)
+                                it.title.toLowerCase(Locale.getDefault()).contains(searchText) ||
+                                        it.author.toLowerCase(Locale.getDefault()).contains(searchText)
                             }
                         } else {
                             bookArrayList.toList()
@@ -184,7 +186,7 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
                 page++
             } else {
                 progressBar.visibility = View.GONE
-                Toast.makeText(requireContext(), "Помилка отримання наступних даних!",Toast.LENGTH_SHORT).show()
+                Log.d("SYSTEM_ERROR", "Помилка отримання наступних даних!")
             }
 
             isLoading = false
@@ -226,7 +228,7 @@ class SearchPageFragment : Fragment(R.layout.fragment_search_page) {
                     }
                 } else {
                     if (response.code() == 404) {
-                        Toast.makeText(requireContext(), "Книги не було знайдено!",Toast.LENGTH_SHORT).show()
+                        Log.d("SYSTEM_ERROR","Книги не було знайдено!")
                         callback(null)
                     } else {
                         Toast.makeText(requireContext(), "Не отримано дані!", Toast.LENGTH_SHORT)
