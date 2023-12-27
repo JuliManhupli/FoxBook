@@ -1,6 +1,7 @@
 package com.example.foxbook.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
@@ -115,7 +116,8 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
                             if (searchText.length >= 3) {
                                 // фільтровані книги за пошуком
                                 bookArrayList.filter {
-                                    it.title.toLowerCase(Locale.getDefault()).contains(searchText)
+                                    it.title.toLowerCase(Locale.getDefault()).contains(searchText) ||
+                                            it.author.toLowerCase(Locale.getDefault()).contains(searchText)
                                 }
                             } else {
                                 bookArrayList.toList()
@@ -143,10 +145,8 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
                     transaction.commit()
                 }
             } else {
-                // To hide the ProgressBar
                 progressBar.visibility = View.GONE
-                // Handle the case when data retrieval fails
-                Toast.makeText(requireContext(), "Помилка отримання даних!",Toast.LENGTH_SHORT).show()
+                Log.d("SYSTEM_ERROR", "Помилка отримання даних!")
             }
         }
     }
@@ -171,7 +171,8 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
                         if (searchText.length >= 3) {
                             // фільтровані книги за пошуком
                             bookArrayList.filter {
-                                it.title.toLowerCase(Locale.getDefault()).contains(searchText)
+                                it.title.toLowerCase(Locale.getDefault()).contains(searchText) ||
+                                        it.author.toLowerCase(Locale.getDefault()).contains(searchText)
                             }
                         } else {
                             bookArrayList.toList()
@@ -188,7 +189,7 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
                 page++
             } else {
                 progressBar.visibility = View.GONE
-                Toast.makeText(requireContext(), "Помилка отримання наступних даних!",Toast.LENGTH_SHORT).show()
+                Log.d("SYSTEM_ERROR", "Помилка отримання наступних даних!")
             }
 
             isLoading = false
@@ -229,7 +230,7 @@ class ReadingInProgressFragment : Fragment(R.layout.fragment_reading_in_progress
                     }
                 } else {
                     if (response.code() == 404) {
-                        Toast.makeText(requireContext(), "Дані не було знайдено!",Toast.LENGTH_SHORT).show()
+                        Log.d("SYSTEM_ERROR","Книги не було знайдено!")
                         callback(null)
                     } else {
                         Toast.makeText(requireContext(), "Помилка отримання книг бібліотеки!", Toast.LENGTH_SHORT)

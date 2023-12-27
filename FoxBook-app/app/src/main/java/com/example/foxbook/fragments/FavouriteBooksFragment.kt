@@ -1,6 +1,7 @@
 package com.example.foxbook.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
@@ -111,13 +112,13 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
                             if (searchText.length >= 3) {
                                 // фільтровані книги за пошуком
                                 bookArrayList.filter {
-                                    it.title.toLowerCase(Locale.getDefault()).contains(searchText)
+                                    it.title.toLowerCase(Locale.getDefault()).contains(searchText) ||
+                                            it.author.toLowerCase(Locale.getDefault()).contains(searchText)
                                 }
                             } else {
                                 bookArrayList.toList()
                             }
                         }
-
                         searchList.clear()
                         searchList.addAll(filteredList)
                         recyclerView.adapter?.notifyDataSetChanged()
@@ -143,7 +144,7 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
                 // Сховати прогрес
                 progressBar.visibility = View.GONE
                 // Помилка отримання даних
-                Toast.makeText(requireContext(), "Помилка отримання даних!", Toast.LENGTH_SHORT).show()
+                Log.d("SYSTEM_ERROR", "Помилка отримання даних!")
             }
         }
     }
@@ -168,7 +169,8 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
                         if (searchText.length >= 3) {
                             // фільтровані книги за пошуком
                             bookArrayList.filter {
-                                it.title.toLowerCase(Locale.getDefault()).contains(searchText)
+                                it.title.toLowerCase(Locale.getDefault()).contains(searchText) ||
+                                        it.author.toLowerCase(Locale.getDefault()).contains(searchText)
                             }
                         } else {
                             bookArrayList.toList()
@@ -187,7 +189,7 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
                 // Сховати прогрес
                 progressBar.visibility = View.GONE
                 // Помилка отримання даних
-                Toast.makeText(requireContext(), "Помилка отримання даних!", Toast.LENGTH_SHORT).show()
+                Log.d("SYSTEM_ERROR", "Помилка отримання наступних даних!")
             }
 
             isLoading = false
@@ -229,7 +231,7 @@ class FavouriteBooksFragment : Fragment(R.layout.fragment_favourite_page) {
                     }
                 } else {
                     if (response.code() == 404) {
-                        Toast.makeText(requireContext(), "Дані не було знайдено!",Toast.LENGTH_SHORT).show()
+                        Log.d("SYSTEM_ERROR","Книги не було знайдено!")
                         callback(null)
                     } else {
                         Toast.makeText(requireContext(), "Не вдалося отримати дані!", Toast.LENGTH_SHORT)
