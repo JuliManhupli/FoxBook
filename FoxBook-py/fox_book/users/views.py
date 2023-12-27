@@ -194,17 +194,29 @@ def get_recommendations(request):
         queryset = Book.objects.filter(library__user=user)
 
         genre_list = list(book['genre'] for book in queryset.values('genre'))
-        counts = Counter(genre_list)
-        most_common_element = max(counts, key=counts.get)
+        recommend_genre_len = 0
+        recommendations = []
 
-        genre_book_data = Book.objects.filter(genre=most_common_element)
-        serializer = BookSerializer(genre_book_data, many=True)
-        serialized_data = serializer.data
+        while True:
+            counts = Counter(genre_list)
+            most_common_element = max(counts, key=counts.get)
 
-        if len(serialized_data) >= 5:
-            recommendations = random.sample(serialized_data, 5)
-        else:
-            recommendations = serialized_data
+            genre_book_data = Book.objects.filter(genre=most_common_element)
+            serializer = BookSerializer(genre_book_data, many=True)
+            serialized_data = serializer.data
+
+            recommend_genre_len += len(serialized_data)
+
+            if recommend_genre_len >= 5:
+                print(len(serialized_data))
+                recommendations = random.sample(serialized_data, 5)
+                break
+            else:
+                recommendations.add(serialized_data)
+                genre_list.remove(most_common_element)
+                if len(genre_list) == 0:
+                    remained_lem = 5 - recommend_genre_len
+                    recommendations = random.sample(serialized_data, remained_lem)
 
         return Response({'recommendations': recommendations})
 
