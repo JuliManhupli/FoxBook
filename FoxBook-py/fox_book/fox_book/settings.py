@@ -13,21 +13,29 @@ import os
 
 from pathlib import Path
 from datetime import timedelta
+
+import dj_database_url
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv()  # Завантажує змінні середовища з файлу .env
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b^bv6+&fx-(isu9$==%r&e6#9zxkz_7mcy)b93&v*!(vi#@%%e'
+SECRET_KEY = os.getenv("SECRET_KEY"),
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["192.168.0.107", "fox-book.fly.dev", '*']
+CSRF_TRUSTED_ORIGINS = [
+    "https://fox-book.fly.dev",
+    "http://192.168.0.107",
+    "http://localhost"
+]
 
 # Application definition
 
@@ -37,16 +45,18 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
     # Для бібліотеки "djangorestframework"
     "rest_framework",
 
     "rest_framework_simplejwt",
-
+    "fox_book",
     "accounts.apps.AccountsConfig",
+    "books.apps.BooksConfig",
+    "users.apps.UsersConfig",
 ]
-
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -54,9 +64,8 @@ REST_FRAMEWORK = {
     )
 }
 
-
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
     "ROTATE_REFRESH_TOKENS": False,  # Система автоматично генерує новий "refresh token"
     "BLACKLIST_AFTER_ROTATION": False,  # Старі токени неможливо використовувати
@@ -97,6 +106,7 @@ SIMPLE_JWT = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -107,10 +117,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'fox_book.urls'
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'fox_book', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,17 +140,9 @@ WSGI_APPLICATION = 'fox_book.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-load_dotenv()  # Завантажує змінні середовища з файлу .env
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("USER"),
-        "PASSWORD": os.getenv("PASSWORD"),
-        "HOST": os.getenv("DOMAIN"),
-        "PORT": os.getenv("PORT"),
-    }
+    'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
 }
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -175,14 +179,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'fox_book/static')
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
-EMAIL_HOST_USER = 'c40b205cc60167'
-EMAIL_HOST_PASSWORD = 'daecccb589c5ee'
-EMAIL_PORT = '2525'
+EMAIL_HOST = os.getenv("EMAIL_HOST"),
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER"),
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL"),
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD"),
+EMAIL_PORT = os.getenv("EMAIL_PORT"),
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

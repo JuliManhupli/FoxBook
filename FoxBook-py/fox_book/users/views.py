@@ -208,7 +208,6 @@ def get_recommendations(request):
             recommend_genre_len += len(serialized_data)
 
             if recommend_genre_len >= 5:
-                print(len(serialized_data))
                 recommendations = random.sample(serialized_data, 5)
                 break
             else:
