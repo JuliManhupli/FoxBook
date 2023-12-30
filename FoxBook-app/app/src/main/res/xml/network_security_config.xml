@@ -14,6 +14,6 @@
 
     <!-- Add domain configuration for your server -->
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">192.168.0.107</domain>
+        <domain includeSubdomains="true">https://fox-book.fly.dev</domain>
     </domain-config>
 </network-security-config>
