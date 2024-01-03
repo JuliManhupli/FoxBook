@@ -30,9 +30,8 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contact">Contributors</a></li>
+    <li><a href="#contributors">Contributors</a></li>
   </ol>
 </details>
 
@@ -77,16 +76,7 @@ To get a local copy up and running follow these simple example steps.
 
 ### Installation
 
-Download from [https://drive.google.com/drive/folders/1SilohYRphndzZEcXu_rvJTNFprWtFOWO?usp=sharing](https://drive.google.com/drive/folders/1SilohYRphndzZEcXu_rvJTNFprWtFOWO?usp=sharing)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-You can dowload app on Android devices, register new account and
+Download from [HERE](https://drive.google.com/drive/folders/1SilohYRphndzZEcXu_rvJTNFprWtFOWO?usp=sharing)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
