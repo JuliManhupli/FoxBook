@@ -205,13 +205,13 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
             val userRatingView: TextView = view.findViewById(R.id.txtBookInfoUserRating)
             val imgBookStarUser: ImageView = view.findViewById(R.id.imgBookStarUser)
 
-            if (userRating == -2.0) {
-                // Приховати виставлення оцінки
-                ratingBar.visibility = View.GONE
-                textRatingUser.visibility = View.GONE
-                userRatingView.visibility = View.GONE
-                imgBookStarUser.visibility = View.GONE
-            } else {
+            if (userRating != -2.0) {
+                // показати виставлення оцінки
+                ratingBar.visibility = View.VISIBLE
+                textRatingUser.visibility = View.VISIBLE
+                userRatingView.visibility = View.VISIBLE
+                imgBookStarUser.visibility = View.VISIBLE
+
                 // Встановлення значення оцінки
                 userRatingView.text = if (userRating == -1.0) "-" else userRating.toString()
                 ratingBar.rating = userRating.toFloat()
@@ -366,13 +366,13 @@ class BookInfoFragment : Fragment(R.layout.fragment_book_info) {
             val userRatingView: TextView = view.findViewById(R.id.txtBookInfoUserRating)
             val imgBookStarUser: ImageView = view.findViewById(R.id.imgBookStarUser)
 
-            if (userRating == -2.0) {
-                // Приховати виставлення оцінки
-                ratingBar.visibility = View.GONE
-                textRatingUser.visibility = View.GONE
-                userRatingView.visibility = View.GONE
-                imgBookStarUser.visibility = View.GONE
-            } else {
+            if (userRating != -2.0) {
+                // показати виставлення оцінки
+                ratingBar.visibility = View.VISIBLE
+                textRatingUser.visibility = View.VISIBLE
+                userRatingView.visibility = View.VISIBLE
+                imgBookStarUser.visibility = View.VISIBLE
+
                 // Встановлення значення оцінки
                 userRatingView.text = if (userRating == -1.0) "-" else userRating.toString()
                 ratingBar.rating = userRating.toFloat()

@@ -13,6 +13,8 @@ from .models import OneTimePassword, User, PasswordReset
 from .utils import send_code_to_user, generate_otp
 
 
+
+
 def home(request):
     return HttpResponse("API is working")
 
