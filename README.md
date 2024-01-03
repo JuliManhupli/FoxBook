@@ -10,9 +10,6 @@
   <p align="center">
     A mobile app for reading free books! 
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
   </p>
 </div>
 
@@ -68,7 +65,7 @@ FoxBook is a simple reading app that allows user to:
 ### Built With
 
 
-* [![Django][(https://www.djangoproject.com/)]][Next-url]
+* [![Django][Djangoproject.com]][Next-url]
 * [![React][React.js]][React-url]
 * [![Vue][Vue.js]][Vue-url]
 * [![Angular][Angular.io]][Angular-url]
