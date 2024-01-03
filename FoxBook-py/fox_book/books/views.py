@@ -61,16 +61,6 @@ def get_all_genres(request):
 
 
 @api_view(['GET'])
-def get_book_text(request, book_id):
-    try:
-        book = Book.objects.get(id=book_id)
-        serializer = BookTextSerializer(book)
-        return Response(serializer.data)
-    except Book.DoesNotExist:
-        return Response({"error": "Book not found"}, status=404)
-
-
-@api_view(['GET'])
 def get_book_text_array(request, book_id):
     try:
         book = Book.objects.get(id=book_id)

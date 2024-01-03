@@ -1,3 +1,4 @@
+import logging
 import random
 
 from django.db.models import Avg
@@ -191,39 +192,44 @@ def continue_reading(request):
 def get_recommendations(request):
     try:
         user = request.user
-        queryset = Book.objects.filter(library__user=user)
+        queryset = Book.objects.filter(library__user=user).order_by('title')
 
         genre_list = list(book['genre'] for book in queryset.values('genre'))
         recommend_genre_len = 0
         recommendations = []
 
-        while True:
-            counts = Counter(genre_list)
-            most_common_element = max(counts, key=counts.get)
+        if genre_list:
 
-            genre_book_data = Book.objects.filter(genre=most_common_element)
-            serializer = BookSerializer(genre_book_data, many=True)
-            serialized_data = serializer.data
+            while genre_list:
+                counts = Counter(genre_list)
+                most_common_element = max(counts, key=counts.get)
 
-            recommend_genre_len += len(serialized_data)
+                genre_book_data = Book.objects.filter(genre=most_common_element).order_by('?')
+                serializer = BookSerializer(genre_book_data, many=True)
+                serialized_data = serializer.data
 
-            if recommend_genre_len >= 5:
-                recommendations = random.sample(serialized_data, 5)
-                break
-            else:
-                recommendations.add(serialized_data)
-                genre_list.remove(most_common_element)
-                if len(genre_list) == 0:
-                    remained_lem = 5 - recommend_genre_len
-                    recommendations = random.sample(serialized_data, remained_lem)
+                recommend_genre_len += len(serialized_data)
+
+                if recommend_genre_len >= 5:
+                    random.shuffle(serialized_data)
+                    recommendations.extend(serialized_data[:5])
+                    recommendations = recommendations[:5]
+                    break
+                else:
+                    recommendations.extend(serialized_data)
+                    genre_list.remove(most_common_element)
+
+        else:
+            all_book_data = Book.objects.all().order_by('?')
+            random_books = all_book_data[:5]
+            serializer = BookSerializer(random_books, many=True)
+            recommendations = serializer.data
+            random.shuffle(recommendations)
 
         return Response({'recommendations': recommendations})
 
     except Exception as e:
-        serializer = BookSerializer(Book.objects.all(), many=True)
-        serialized_data = serializer.data
-        recommendations = random.sample(serialized_data, 5)
-        return Response({'recommendations': recommendations})
+        return Response({'message': 'Помилка! рекомендацій не знайдено.'})
 
 
 @api_view(['GET'])

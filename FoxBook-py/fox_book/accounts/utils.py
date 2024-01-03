@@ -1,11 +1,12 @@
 import random
 
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 from .models import User, OneTimePassword, PasswordReset
+
 
 
 def generate_otp():
@@ -25,17 +26,11 @@ def send_code_to_user(email, create_code=True, otp_code=None, purpose='verificat
             subject = "Код для скидання паролю FoxBook"
             PasswordReset.objects.create(user=user, code=otp_code)
 
-    # email_body = f"Привіт {user.name}!\nБудь ласка, введіть код {otp_code}, щоб підтвердити пошту."
-    # from_email = settings.EMAIL_HOST_USER
-    #
-    # send_mail(subject, email_body, from_email, [user], fail_silently=False)
-
     html_message = render_to_string('email_template.html', {'user': user, 'otp_code': otp_code, 'purpose': purpose})
 
-    # Create plain text version for clients that don't support HTML
     plain_message = strip_tags(html_message)
 
-    # Send the email
+    # відправка на пошту
     from_email = settings.EMAIL_HOST_USER
     to_email = [user.email]
 
