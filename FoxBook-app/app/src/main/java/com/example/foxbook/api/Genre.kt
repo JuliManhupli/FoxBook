@@ -3,7 +3,7 @@ package com.example.foxbook.api
 import android.os.Parcel
 import android.os.Parcelable
 
-data class Genre(val genre: String): Parcelable {
+data class Genre(val genre: String, var isSelected: Boolean = false): Parcelable {
     constructor(parcel: Parcel) : this(parcel.readString()!!) {
     }
 
