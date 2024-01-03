@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatButton
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.foxbook.R
 import com.example.foxbook.api.Genre
@@ -25,6 +26,13 @@ class GenreAdapter(private val genreList: ArrayList<Genre>): RecyclerView.Adapte
     override fun onBindViewHolder(holder: GenreViewHolder, position: Int) {
         val currentItem = genreList[position]
         holder.filterBtn.text = currentItem.genre
+        if (currentItem.isSelected) {
+            holder.filterBtn.setBackgroundResource(R.color.chosen_filter)
+            holder.filterBtn.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.white))
+        } else {
+            holder.filterBtn.setBackgroundResource(R.color.white)
+            holder.filterBtn.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.black))
+        }
         holder.filterBtn.setOnClickListener {
             onItemClick?.invoke(currentItem, holder.filterBtn)
         }
