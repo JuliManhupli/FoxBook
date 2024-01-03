@@ -8,15 +8,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 const val BASE_URL: String = "https://fox-book.fly.dev/"
 object ClientAPI {
 
-//    val apiService: APIServices by lazy {
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl(BASE_URL)
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//
-//        retrofit.create(APIServices::class.java)
-//    }
-
     private val client = OkHttpClient.Builder()
         .addInterceptor(AuthInterceptor())
         .build()
