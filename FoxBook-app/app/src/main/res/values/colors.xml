@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="genre_color">#F4B880</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="entrance_bg">#FCD7B5</color>
+    <color name="menu_bg">#D4A994</color>
+    <color name="book_bg">#FFECDA</color>
+    <color name="chosen_filter">#A69BD1</color>
+    <color name="reading_bg_standard">#FFECDA</color>
+    <color name="settings">#9D8ED7</color>
+    <color name="settings_grey_bg">#8E8E8E</color>
+    <color name="progress_leftover">#E2D3F6</color>
+</resources>

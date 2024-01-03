@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.BookInfoFragment">
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/imgBtnBackToSearch"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Сортування"
+        android:scaleType="fitXY"
+        android:src="@drawable/baseline_arrow_back_24"
+        app:layout_constraintStart_toStartOf="@+id/guideline58"
+        app:layout_constraintTop_toTopOf="@+id/guideline57" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/imgBtnDeleteFromReading"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="20dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Видалення"
+        android:scaleType="fitXY"
+        android:src="@drawable/baseline_restore_from_trash_24"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/imgBtnUnliked"
+        app:layout_constraintTop_toTopOf="@+id/guideline57" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/imgBtnUnliked"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="Сортування"
+        android:scaleType="fitXY"
+        android:src="@drawable/heart"
+        app:layout_constraintEnd_toStartOf="@+id/guideline56"
+        app:layout_constraintTop_toTopOf="@+id/guideline57" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline56"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.93" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline57"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.04" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline58"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.07" />
+
+    <ScrollView
+        android:id="@+id/scrollViewBookInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgBtnBackToSearch">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imgBookInfoCover"
+                android:layout_width="192dp"
+                android:layout_height="252dp"
+                android:contentDescription="Cover"
+                android:scaleType="fitXY"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txtBookInfoTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/inter"
+                android:text="BookName"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toStartOf="@+id/guideline55"
+                app:layout_constraintStart_toStartOf="@+id/guideline59"
+                app:layout_constraintTop_toBottomOf="@+id/imgBookInfoCover" />
+
+            <TextView
+                android:id="@+id/txtBookInfoAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/inter"
+                android:text="BookAuthor"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtBookInfoTitle" />
+
+            <RatingBar
+                android:id="@+id/ratingUserBar"
+                android:layout_width="240dp"
+                android:layout_height="50dp"
+                android:numStars="5"
+                android:stepSize="0.5"
+                android:scaleX=".9"
+                android:scaleY=".9"
+                android:max="5"
+                android:layout_marginTop="3dp"
+                android:progressTint="#FFA825"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/txtBookInfoAuthor" />
+
+            <TextView
+                android:id="@+id/txtRatingUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:fontFamily="@font/inter"
+                android:text="Ваша оцінка:"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/ratingUserBar" />
+
+            <TextView
+                android:id="@+id/txtBookInfoUserRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:layout_marginStart="5dp"
+                android:text="UserRating"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/txtForRating"
+                app:layout_constraintStart_toEndOf="@+id/txtRatingUser"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/ratingUserBar" />
+
+            <ImageView
+                android:id="@+id/imgBookStarUser"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/baseline_star_24"
+                android:layout_marginStart="3dp"
+                app:layout_constraintBottom_toTopOf="@+id/txtForRating"
+                app:layout_constraintStart_toEndOf="@+id/txtBookInfoUserRating"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/ratingUserBar" />
+
+            <TextView
+                android:id="@+id/txtForRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/inter"
+                android:text="Загальна оцінка: "
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtRatingUser" />
+
+            <TextView
+                android:id="@+id/txtBookInfoRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/inter"
+                android:text="AllRating"
+                android:textSize="16sp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintStart_toEndOf="@+id/txtForRating"
+                app:layout_constraintTop_toBottomOf="@+id/txtRatingUser" />
+
+            <ImageView
+                android:id="@+id/imgBookStar"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/baseline_star_24"
+                app:layout_constraintStart_toEndOf="@+id/txtBookInfoRating"
+                app:layout_constraintTop_toBottomOf="@+id/txtRatingUser" />
+
+            <TextView
+                android:id="@+id/txtBookInfoGenre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/rounded_genre_form_background"
+                android:fontFamily="@font/inter"
+                android:padding="3dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="BookGenre"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtBookInfoRating" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="125dp"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline72"
+                app:layout_constraintStart_toStartOf="@+id/guideline76">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constrlayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/book_bg"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent">
+
+                    <TextView
+                        android:id="@+id/textView32"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="15dp"
+                        android:fontFamily="@font/inter"
+                        android:text="Опис"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/txtBookInfoDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="15dp"
+                        android:fontFamily="@font/inter"
+                        android:justificationMode="inter_word"
+                        android:paddingBottom="15dp"
+                        android:text="Description"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView32" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <Button
+                android:id="@+id/btnToReading"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:backgroundTint="#9D8ED7"
+                android:fontFamily="@font/inter"
+                android:text="Читати"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/cardView3"
+                app:layout_constraintEnd_toStartOf="@+id/guideline55"
+                app:layout_constraintStart_toStartOf="@+id/guideline59"
+                app:layout_constraintTop_toBottomOf="@+id/txtBookInfoGenre" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline55"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.73" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline72"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.93" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline59"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.27" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline76"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.07" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

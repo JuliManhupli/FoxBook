@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">FoxBook</string>
+    <string name="underlined_text_register"><u>Зареєструватися</u></string>
+    <string name="underlined_text_login"><u>Авторизуватися</u></string>
+    <string name="underlined_text_password"><u>Забули пароль?</u></string>
+    <string name="underlined_text_code"><u>Надіслати ще раз</u></string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+<!--    <string name="some_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla dapibus turpis sed vestibulum commodo. Nullam in lectus ipsum. Nunc ut commodo nisl. Etiam nec pretium odio. In hac habitasse platea dictumst. Donec non ex tortor. Pellentesque iaculis accumsan porta. Aliquam rhoncus commodo interdum. Cras sit amet suscipit turpis, non cursus nunc. Cras porta ultricies mauris vitae commodo. Sed tempor nibh non ligula gravida convallis. Nullam ornare lacus sed tempor fermentum. Integer eget auctor nibh, eu pellentesque ex.</string>-->
+    <string name="some_text">Жив собі в однім лісі Лис Микита, хитрий-прехитрий. Кілька разів гонили його стрільці, травили його псами, заставляли на нього заліза або підкидали йому затруєного м\'яса, нічим не могли йому доїхати кінця. Лис Микита кпив собі з них, оминав усякі небезпеки, ще й інших своїх товаришів остерігав. А вже як вибрався на лови — чи то до курника, чи до комори, то не було смілішого, вигадливішого та спритнішого злодія над нього. Дійшло до того, що він не раз у білий день вибирався на полювання і ніколи не вертав з порожніми руками.</string>
+
+</resources>
