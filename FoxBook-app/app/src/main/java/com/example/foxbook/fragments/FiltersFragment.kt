@@ -2,7 +2,6 @@ package com.example.foxbook.fragments
 
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -55,6 +54,11 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
         val backToSearch: ImageButton = view.findViewById(R.id.imgBtnBackToSearchFromFilters)
 
         backToSearch.setOnClickListener {
+
+            selectedGenres = emptyList()
+            selectedAuthors = null
+            selectedSorting = spinner.getItemAtPosition(0).toString()
+
             when (targetFragment) {
                 SearchPageFragment::class.java.simpleName -> {
                     navigateToSearchPageFragment()
@@ -89,12 +93,21 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
 
         authorUkraine.setOnClickListener {
             changeAuthorBackground(authorUkraine, authorForeign)
-            selectedAuthors = "Українська література"
+            selectedAuthors = if (selectedAuthors == "Українська література") {
+                null
+            } else {
+                "Українська література"
+            }
+
         }
 
         authorForeign.setOnClickListener {
             changeAuthorBackground(authorForeign, authorUkraine)
-            selectedAuthors = "Зарубіжна література"
+            selectedAuthors = if (selectedAuthors == "Зарубіжна література") {
+                null
+            } else {
+                "Зарубіжна література"
+            }
         }
 
         // Сортування
@@ -152,16 +165,11 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
         val clearButton: ImageButton = view.findViewById(R.id.imgBtnClearFilters)
         clearButton.setOnClickListener {
 
-            // змінюємо всі жанри у невибірковий стан
-            for (i in 0 until recyclerView.childCount) {
-                val viewHolder = recyclerView.findViewHolderForAdapterPosition(i)
-                if (viewHolder is GenreAdapter.GenreViewHolder) {
-                    val button = viewHolder.filterBtn
-
-                    button.setBackgroundResource(R.color.white)
-                    button.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-                }
+            for (genre in genreArrayList) {
+                genre.isSelected = false
             }
+
+            genreAdapter.notifyDataSetChanged()
 
             // змінюємо кнопки авторів у початковий стан
             authorUkraine.setBackgroundResource(R.color.white)
@@ -172,6 +180,10 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
 
             // Вертаємо сортування на варіант без нього
             spinner.setSelection(0)
+
+            selectedGenres = emptyList()
+            selectedAuthors = null
+            selectedSorting = spinner.getItemAtPosition(0).toString()
         }
     }
 
@@ -234,22 +246,20 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
 
         val standartStateColor = ContextCompat.getColor(requireContext(), R.color.white)
         val chosenStateColor = ContextCompat.getColor(requireContext(), R.color.chosen_filter)
+        val genreName = button.text.toString()
 
         if ((button.background as ColorDrawable).color == standartStateColor) {
-            button.setBackgroundResource(R.color.chosen_filter)
-            button.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            selectedGenres += genreName
         }
         else if ((button.background as ColorDrawable).color == chosenStateColor) {
-            button.setBackgroundResource(R.color.white)
-            button.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            selectedGenres -= genreName
         }
 
-        val genreName = button.text.toString()
-        selectedGenres = if (selectedGenres.contains(genreName)) {
-            selectedGenres - genreName
-        } else {
-            selectedGenres + genreName
+        for (genre in genreArrayList) {
+            genre.isSelected = selectedGenres.contains(genre.genre)
         }
+
+        genreAdapter.notifyDataSetChanged()
     }
 
     private fun getAllGenre() {

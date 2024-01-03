@@ -62,9 +62,6 @@ interface APIServices {
     @GET("genres/")
     fun getGenres(): Call<List<String>>
 
-    @GET("books/{bookId}/text")
-    fun getBookText(@Path("bookId") bookId: Int): Call<BookApi.BookPage>
-
     @GET("books/{bookId}/text/сhunks")
     fun getBookTextChunks(@Path("bookId") bookId: Int): Call<BookApi.BookTextChunks>
 
