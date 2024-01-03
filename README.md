@@ -65,7 +65,7 @@ FoxBook is a simple reading app that allows user to:
 ### Built With
 
 
-* [![Django][https://www.djangoproject.com/]][Django-url]
+* ![Django](https://www.djangoproject.com/)
 * [![React][React.js]][React-url]
 * [![Vue][Vue.js]][Vue-url]
 * [![Angular][Angular.io]][Angular-url]
