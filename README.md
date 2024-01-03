@@ -46,7 +46,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://github.com/JuliManhupli/FoxBook/blob/main/Screenshot_FoxBook.jpg)
+![Product Name Screen Shot](https://github.com/JuliManhupli/FoxBook/blob/main/Screenshot_FoxBook.jpg)
 
 FoxBook is a simple reading app that allows user to:
 * Search books
